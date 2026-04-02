@@ -1,0 +1,19 @@
+# Excel data files — never commit financial data
+*.xlsx
+*.xls
+*.xlsm
+
+# Node
+node_modules/
+
+# Local environment variables (contains DATA_URL etc.)
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel local dev cache
+.vercel

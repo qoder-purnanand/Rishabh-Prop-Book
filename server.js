@@ -1,59 +1,82 @@
 /**
- * server.js — Prop Book hosted deployment
+ * server.js — local development server
  *
  * Usage:
- *   npm install express
- *   node server.js
+ *   npm install
+ *   npm run dev          →  http://localhost:3000
  *
- * Opens:  http://localhost:3000
- * Auto-loads the most recently modified .xlsx file in the same directory.
- * The dashboard calls GET /api/data on boot and skips the upload screen.
+ * Place your .xlsx file in the data/ folder.
+ * The dashboard auto-loads the most recently modified one at startup.
+ *
+ * For Vercel deployment, see api/data.js and set the DATA_URL env var.
  */
 
 const express = require('express');
 const fs      = require('fs');
 const path    = require('path');
 
-const app  = express();
-const PORT = process.env.PORT || 3000;
-const DIR  = __dirname;
+const app     = express();
+const PORT    = process.env.PORT || 3000;
+const ROOT    = __dirname;
+const DATA_DIR = path.join(ROOT, 'data');
 
-// Serve all static files (dashboard HTML, CDN fallback assets, etc.)
-app.use(express.static(DIR));
+// Ensure data/ directory exists
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 
-// Find the most recently modified .xlsx in DIR (ignores temp/lock files)
+// Serve the dashboard HTML and other static files from project root
+app.use(express.static(ROOT));
+
+// Find the most recently modified .xlsx in data/ (ignores Office temp files)
 function findLatestExcel() {
-  const files = fs.readdirSync(DIR)
+  if (!fs.existsSync(DATA_DIR)) return null;
+  const files = fs.readdirSync(DATA_DIR)
     .filter(f => f.endsWith('.xlsx') && !f.startsWith('~$'))
-    .map(f => ({ name: f, mtime: fs.statSync(path.join(DIR, f)).mtime.getTime() }))
+    .map(f => ({
+      name: f,
+      mtime: fs.statSync(path.join(DATA_DIR, f)).mtime.getTime()
+    }))
     .sort((a, b) => b.mtime - a.mtime);
   return files.length ? files[0].name : null;
 }
 
-// GET /api/data  →  latest Excel file as binary
+// GET /api/data  →  latest Excel file as binary (mirrors Vercel api/data.js)
 app.get('/api/data', (req, res) => {
   const xlsxFile = findLatestExcel();
   if (!xlsxFile) {
-    return res.status(404).json({ error: 'No Excel file found in server directory.' });
+    return res.status(404).json({
+      error: 'No Excel file found.',
+      hint: 'Place your .xlsx file in the data/ folder.'
+    });
   }
-  const filePath = path.join(DIR, xlsxFile);
-  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  const filePath = path.join(DATA_DIR, xlsxFile);
+  res.setHeader('Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('X-Filename', xlsxFile);
   res.setHeader('Access-Control-Expose-Headers', 'X-Filename');
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(filePath);
 });
 
-// GET /api/info  →  metadata about what's loaded
+// GET /api/info  →  metadata (useful for debugging)
 app.get('/api/info', (req, res) => {
   const xlsxFile = findLatestExcel();
-  const mtime    = xlsxFile
-    ? fs.statSync(path.join(DIR, xlsxFile)).mtime.toISOString()
-    : null;
-  res.json({ file: xlsxFile, modified: mtime, dir: DIR });
+  res.json({
+    file:     xlsxFile || null,
+    modified: xlsxFile
+      ? fs.statSync(path.join(DATA_DIR, xlsxFile)).mtime.toISOString()
+      : null,
+    dataDir:  DATA_DIR
+  });
+});
+
+// GET /  →  serve the dashboard
+app.get('/', (req, res) => {
+  res.sendFile(path.join(ROOT, 'propbook_dashboard.html'));
 });
 
 app.listen(PORT, () => {
   const excel = findLatestExcel();
-  console.log(`Prop Book server running at http://localhost:${PORT}`);
-  console.log(`Auto-loading: ${excel || '(no Excel file found)'}`);
+  console.log(`\nProp Book — local server`);
+  console.log(`URL:  http://localhost:${PORT}`);
+  console.log(`Data: ${excel ? `data/${excel}` : '(no Excel in data/ — upload manually)'}\n`);
 });
