@@ -2521,22 +2521,24 @@ function processFile(file) {
   reader.readAsArrayBuffer(file);
 }
 
-// Push uploaded Excel to /api/upload silently — enables cross-device auto-load
+// Push uploaded Excel to /api/upload — enables cross-device auto-load
+// Silently skips if server has no upload endpoint or Blob is not configured
 function pushToServer(arrayBuffer, filename) {
   const syncEl = document.getElementById('sync-status');
-  if(syncEl) { syncEl.style.display = 'inline'; syncEl.textContent = '↑ Syncing…'; }
   fetch('/api/upload', {
     method: 'POST',
     headers: { 'Content-Type': 'application/octet-stream', 'X-Filename': filename },
     body: arrayBuffer
   }).then(r => {
+    // 404/501/503 = not configured → skip silently
+    if (r.status === 404 || r.status === 501 || r.status === 503) return;
     if(syncEl) {
-      syncEl.textContent = r.ok ? '✓ Synced' : '⚠ Sync skipped';
+      syncEl.style.display = 'inline';
+      syncEl.textContent = r.ok ? '✓ Synced to cloud' : '⚠ Sync failed (' + r.status + ')';
       setTimeout(() => { syncEl.style.display = 'none'; }, 3000);
     }
   }).catch(() => {
-    if(syncEl) { syncEl.style.display = 'none'; }
-    // Silent — server may not have upload configured
+    // Network error or no server — ignore completely
   });
 }
 

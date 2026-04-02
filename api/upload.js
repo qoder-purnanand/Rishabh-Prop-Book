@@ -9,13 +9,14 @@
  *
  * Optional security:
  *   Set UPLOAD_SECRET env var → requests must include X-Upload-Secret header
- *   (prevents random people from overwriting your data)
- *
- * The dashboard calls this automatically after every file upload,
- * so all devices see the same data at /api/data.
  */
 
 const { put } = require('@vercel/blob');
+
+// REQUIRED: disable Vercel's default body parser so we can read raw binary
+module.exports.config = {
+  api: { bodyParser: false }
+};
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -25,17 +26,15 @@ module.exports = async function handler(req, res) {
   // Optional upload password
   const secret = process.env.UPLOAD_SECRET;
   if (secret && req.headers['x-upload-secret'] !== secret) {
-    return res.status(401).json({ error: 'Unauthorized — set X-Upload-Secret header' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return res.status(503).json({
-      error: 'Vercel Blob not configured.',
-      hint: 'Enable Blob Storage in your Vercel project (Storage tab).'
-    });
+    // Not configured — return 501 so the dashboard knows to fail silently
+    return res.status(501).json({ error: 'Blob storage not configured' });
   }
 
-  // Collect request body chunks
+  // Read raw binary body
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
   const buffer = Buffer.concat(chunks);
@@ -44,14 +43,11 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Empty body — no file received' });
   }
 
-  const filename = req.headers['x-filename'] || 'propbook-data.xlsx';
-
-  // Store with a fixed key so /api/data always finds the latest
   const blob = await put('propbook-data.xlsx', buffer, {
     access: 'public',
     addRandomSuffix: false,
     contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   });
 
-  res.status(200).json({ ok: true, url: blob.url, filename });
+  res.status(200).json({ ok: true, url: blob.url });
 };
