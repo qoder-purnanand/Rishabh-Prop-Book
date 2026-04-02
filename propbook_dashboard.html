@@ -369,7 +369,8 @@ body {
 /* TABLES */
 .dt {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.78rem;
 }
 .dt th {
@@ -541,7 +542,7 @@ body {
 .sx::-webkit-scrollbar-track { background: var(--cream); }
 .sx::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 /* Inner scroll + frozen headers for panel tables */
-.panel-body0.sx { max-height: 420px; overflow-y: auto; overflow-x: auto; }
+.panel-body0.sx { max-height: 620px; overflow-y: auto; overflow-x: auto; }
 .panel-body0.sx::-webkit-scrollbar { width: 4px; height: 4px; }
 .panel-body0.sx::-webkit-scrollbar-track { background: var(--cream); }
 .panel-body0.sx::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -828,6 +829,54 @@ body {
 }
 .btn-danger:hover { background: var(--red-neg); color: var(--white); }
 .danger-zone { border: 1.5px solid rgba(139,26,26,0.3); border-radius: 8px; padding: 1rem 1.25rem; margin-top: 2rem; background: rgba(139,26,26,0.03); }
+
+/* ── RESPONSIVE / MOBILE ───────────────────────────────────── */
+@media (max-width: 900px) {
+  .c6 { grid-template-columns: repeat(3,1fr); }
+  .c5 { grid-template-columns: repeat(3,1fr); }
+  .c4 { grid-template-columns: repeat(2,1fr); }
+  .c3 { grid-template-columns: repeat(2,1fr); }
+  .col2, .col3 { grid-template-columns: 1fr; }
+  .chart-h360 { height: 280px; }
+  .chart-h300 { height: 240px; }
+  .chart-h260 { height: 220px; }
+  .chart-h240 { height: 200px; }
+}
+@media (max-width: 640px) {
+  body { font-size: 0.82rem; }
+  .app { padding: 0; }
+  .header { padding: 0.6rem 0.75rem; flex-wrap: wrap; gap: 0.4rem; }
+  .header-title { font-size: 1rem; }
+  .header-kpi { display: none; }
+  .nav { padding: 0 0.5rem; overflow-x: auto; white-space: nowrap; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-tab { font-size: 0.68rem; padding: 0.5rem 0.65rem; flex-shrink: 0; }
+  .content { padding: 0.75rem 0.6rem; }
+  .sec-title { font-size: 1.1rem; }
+  .c6, .c5 { grid-template-columns: repeat(2,1fr); }
+  .c4 { grid-template-columns: repeat(2,1fr); }
+  .c3 { grid-template-columns: 1fr; }
+  .col2, .col3 { grid-template-columns: 1fr; }
+  .panel { border-radius: 6px; }
+  .panel-hd { padding: 0.55rem 0.75rem; }
+  .panel-body, .panel-body0 { padding: 0.6rem 0.75rem; }
+  .panel-body0.sx { max-height: 400px; }
+  .kcard { padding: 0.7rem 0.85rem; }
+  .kcard-val { font-size: 1.05rem; }
+  .dt { font-size: 0.72rem; }
+  .dt th, .dt td { padding: 0.3rem 0.45rem; }
+  .chart-h360 { height: 240px; }
+  .chart-h300 { height: 220px; }
+  .chart-h260 { height: 200px; }
+  .chart-h240 { height: 180px; }
+  .chart-h180 { height: 150px; }
+  .view-toggle { transform: scale(0.88); transform-origin: left; }
+}
+@media (max-width: 400px) {
+  .c6, .c5, .c4 { grid-template-columns: 1fr 1fr; }
+  .kcard-val { font-size: 0.95rem; }
+  .header-title { font-size: 0.9rem; }
+}
 </style>
 </head>
 <body>
@@ -888,12 +937,12 @@ body {
     <div class="nav-tab" onclick="showPage('allocation',this)">Allocation</div>
     <div class="nav-tab" onclick="showPage('strategies',this)">Strategy Exposure</div>
     <div class="nav-tab" onclick="showPage('holdings',this)">Holdings</div>
-    <div class="nav-tab" onclick="showPage('risk',this)">Risk Management</div>
-    <div class="nav-tab" onclick="showPage('navperf',this)">Strategy Performance</div>
     <div class="nav-tab" onclick="showPage('balance',this)">Balance Sheet</div>
     <div class="nav-tab" onclick="showPage('brokers',this)">Accounts</div>
     <div class="nav-tab" onclick="showPage('margin',this)">Cash & Margin</div>
     <div class="nav-tab" onclick="showPage('update',this);renderUpdateStatus()">Update Data</div>
+    <div class="nav-tab" onclick="showPage('risk',this)">Risk Management <span style="opacity:0.55;font-size:0.7em">(building...)</span></div>
+    <div class="nav-tab" onclick="showPage('navperf',this)">Strategy Performance <span style="opacity:0.55;font-size:0.7em">(building...)</span></div>
     <div class="nav-tab" onclick="showPage('settings',this)">Settings</div>
   </nav>
 
@@ -996,34 +1045,6 @@ body {
       </div>
     </div>
 
-    <!-- ── SECTION 4: CASH TO DEPLOY ─────────────────────────────── -->
-    <div style="margin-bottom:1.25rem">
-      <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem">
-        <div style="width:3px;height:16px;background:var(--gold-dark,#b8901c);border-radius:2px"></div>
-        <div style="font-family:var(--font-serif);font-size:0.9rem;font-weight:600;color:var(--text-dark)">Cash Available to Deploy in Equities</div>
-        <div style="font-size:0.65rem;color:var(--text-lt);margin-left:auto" id="ov-deploy-total"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-        <div class="panel">
-          <div class="panel-hd"><div class="panel-title">Mishayan Capital</div></div>
-          <div class="panel-body0">
-            <table class="dt" id="ov-mis-deploy-table">
-              <thead><tr><th>Particulars</th><th class="r">Amount</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-hd"><div class="panel-title">Rishabh Nahar</div></div>
-          <div class="panel-body0">
-            <table class="dt" id="ov-rn-deploy-table">
-              <thead><tr><th>Particulars</th><th class="r">Amount</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- ── SECTION 5: HOLDINGS SNAPSHOT + RETURN EXPECTATION ─────── -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
@@ -1061,52 +1082,7 @@ body {
       </div>
     </div>
 
-    <!-- ── SECTION 6: DETAILED LIQUIDITY TABLE ───────────────────── -->
-    <div style="margin-bottom:1.25rem">
-      <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem">
-        <div style="width:3px;height:16px;background:var(--forest);border-radius:2px"></div>
-        <div style="font-family:var(--font-serif);font-size:0.9rem;font-weight:600;color:var(--forest)">Full Liquidity Breakdown</div>
-        <div style="font-size:0.65rem;color:var(--text-lt);margin-left:auto" id="ov-sec-liq-total"></div>
-      </div>
-      <div class="panel">
-        <div class="panel-body0 sx">
-          <table class="dt" id="ov-liquidity-table">
-            <thead><tr>
-              <th>Bucket</th><th>Particulars</th>
-              <th class="r">Rishabh</th><th class="r">Mishayan</th><th class="r">Total</th>
-              <th class="r">% of Liquidity</th><th>Type</th>
-            </tr></thead>
-            <tbody id="ov-liquidity-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
-    <!-- hidden legacy compat elements -->
-    <span id="ov-items" style="display:none"></span>
-    <span id="ov-items-sub" style="display:none"></span>
-    <span id="ov-cash" style="display:none"></span>
-    <span id="ov-cash-sub" style="display:none"></span>
-    <span id="asset-allocation-title" style="display:none"></span>
-    <span id="asset-allocation-source" style="display:none"></span>
-    <span id="entity-split-source" style="display:none"></span>
-    <span id="category-breakdown-source" style="display:none"></span>
-    <div id="entity-panel" style="display:none"></div>
-    <div id="risk-panel" style="display:none"></div>
-    <svg id="donut-svg" width="0" height="0" style="display:none"></svg>
-    <canvas id="ov-asset-donut" style="display:none"></canvas>
-    <div id="donut-legend" style="display:none"></div>
-    <div id="page-overview-source" style="display:none"></div>
-    <div id="ov-entity-tbody" style="display:none"></div>
-    <div id="ov-ratios-panel" style="display:none"></div>
-    <table style="display:none"><tbody id="cat-table"><tbody></tbody></table>
-    <div id="off-lbl" style="display:none"></div>
-    <table style="display:none"><tbody id="off-table"><tbody></tbody></table>
-    <table style="display:none"><tbody id="ov-investments-tbody"></tbody></table>
-    <span id="ov-sec-inv-total" style="display:none"></span>
-    <table style="display:none"><tbody id="ov-var-tbody"></tbody></table>
-    <span id="ov-sec-var-total" style="display:none"></span>
-    <div id="ov-nw-waterfall" style="display:none"></div>
   </div>
 
   <!-- ── BROKERS ─────────────────────────────────────────────── -->
@@ -1244,6 +1220,12 @@ body {
         <div class="kcard-sub">Hedged portfolio value</div>
         <div class="source-note"><span class="sn-c">SUM of Net Exposure for Put Protection rows (equity value being hedged)</span><br><span class="sn-d">SUM(Strategy Allocation col H, rows where col C = "Put Protection")</span></div>
       </div>
+      <div class="kcard">
+        <div class="kcard-lbl">QAW Equity Futures</div>
+        <div class="kcard-val" id="st-qaw-eq">—</div>
+        <div class="kcard-sub" id="st-qaw-eq-s">—</div>
+        <div class="source-note"><span class="sn-c">SUM of Net Exposure for QAW Futures (equity) rows</span><br><span class="sn-d">SUM(Strategy Allocation col H, rows where col C = "QAW Futures")</span></div>
+      </div>
     </div>
 
     <div class="panel">
@@ -1265,25 +1247,6 @@ body {
       <div class="source-note"><span class="sn-c">Each strategy section = all accounts running it. Base Exposure = col G, Net Exposure = col H (= Position Sizing × Base), LO Premium = col I.</span><br><span class="sn-d">Strategy Allocation sheet: col B = Account, col C = Strategy, col D = Position Sizing, col G = Exposure, col H = Net Exposure, col I = LO Premium</span></div>
     </div>
 
-    <div class="panel">
-      <div class="panel-hd"><div class="panel-title">Full Allocation — All Brokers & Strategies</div></div>
-      <div class="panel-body0 sx">
-        <table class="dt" id="full-alloc">
-          <thead><tr>
-            <th>Account</th>
-            <th>Strategy</th>
-            <th class="r">Position Sizing</th>
-            <th class="r">Base Exposure</th>
-            <th class="r">Net Exposure</th>
-            <th class="r">LO Premium</th>
-            <th class="r">Deposit</th>
-            <th class="r">Lev</th>
-          </tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="source-note"><span class="sn-c">Raw dump of every row in Strategy Allocation sheet, grouped by account.</span><br><span class="sn-d">Strategy Allocation sheet, all rows: col B = Account, col C = Strategy, col D = Position Sizing, col G = Base Exposure, col H = Net Exposure, col I = LO Premium</span></div>
-    </div>
   </div>
 
   <!-- ── HOLDINGS ────────────────────────────────────────────── -->
@@ -1291,6 +1254,7 @@ body {
     <div class="sec-hd">
       <div class="sec-title">Holdings</div>
       <div class="sec-sub">Equity Holdings + Mutual Funds · P&L from purchase price</div>
+      <div style="font-size:0.7rem;color:var(--text-lt);margin-top:0.35rem;font-style:italic">Only Zerodha and Mutual Fund holdings data is shown here — other broker holdings are yet to be connected.</div>
     </div>
 
     <div class="cards-row c4">
@@ -1326,6 +1290,7 @@ body {
         <div class="panel-hd"><div class="panel-title">Holdings by Asset Type (Value)</div></div>
         <div class="panel-body">
           <div class="chart-box chart-h180"><canvas id="hld-chart-type"></canvas></div>
+          <div class="alloc-legend" id="hld-type-legend"></div>
         </div>
       </div>
       <div class="panel">
@@ -1516,8 +1481,8 @@ body {
           <div style="margin-bottom:0.85rem">
             <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-mute);margin-bottom:0.45rem;text-transform:uppercase;letter-spacing:0.05em">When using Sheet1, which rows are included?</label>
             <select id="cfg-sheet1-filter" onchange="updateConfig('sheet1Filter',this.value);renderAll()" style="width:100%;padding:0.48rem;border:1px solid var(--border-lt);border-radius:4px;font-size:0.78rem;font-family:var(--font-body)">
-              <option value="on_only">On items only — Off rows excluded</option>
-              <option value="all">All rows — On/Off is display-only</option>
+              <option value="on_only">On items only</option>
+              <option value="all" selected>All items (On + Off)</option>
             </select>
             <div style="font-size:0.65rem;color:var(--text-lt);margin-top:0.45rem;padding:0.65rem;background:#fae8e8;border-radius:4px;display:none" id="set2-na">
               <strong style="color:#8B1A1A">Not applicable</strong> — Networth Inputs has no On/Off toggle.
@@ -1740,47 +1705,7 @@ body {
         <div class="source-note"><span class="sn-c">Sub-categories from holdings sheets. Physical view: equity stocks + MFs only. Full Exposure adds Gold Futures (QAW) synthetic row.</span><br><span class="sn-d">Equity Holdings col H "Sub Category" + Mutual Funds col I "Sub Category". Values from col K / col L "Value as of Today". P&amp;L from col L / col M.</span></div>
     </div>
 
-    <!-- Row 4: Asset class detailed table + Allocation bars -->
-    <div class="col2">
-      <div class="panel">
-        <div class="panel-hd"><div class="panel-title">Asset Class Detail</div></div>
-        <div class="panel-body0 sx">
-          <table class="dt" id="alloc-assetclass-table">
-            <thead><tr>
-              <th>Asset Class</th>
-              <th class="r">Value</th>
-              <th class="r">% Portfolio</th>
-              <th class="r">RN</th>
-              <th class="r">Mishayan</th>
-              <th>Items</th>
-            </tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-hd"><div class="panel-title">Portfolio Allocation Bars</div></div>
-        <div class="panel-body" id="alloc-bars-panel"></div>
-      </div>
-    </div>
 
-    <!-- Row 5: Category-level breakdown table -->
-    <div class="panel">
-      <div class="panel-hd"><div class="panel-title">Full Category Breakdown</div></div>
-      <div class="panel-body0 sx">
-        <table class="dt" id="alloc-full-table">
-          <thead><tr>
-            <th>Category</th>
-            <th>Asset Type</th>
-            <th class="r">Value</th>
-            <th class="r">% Total</th>
-            <th>Entity</th>
-            <th>Items</th>
-          </tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
   </div>
 
   <!-- ── RISK MANAGEMENT ──────────────────────────────────────── -->
@@ -2298,7 +2223,7 @@ const D = {
 // ═══════════════════════════════════════════════════════════════
 const CONFIG = {
   masterSource: 'sheet1_all',        // 'sheet1_on' | 'sheet1_all'
-  sheet1Filter: 'on_only',           // 'on_only' | 'all'
+  sheet1Filter: 'all',               // 'on_only' | 'all'
   strategySource: 'sheet_direct',    // 'sheet_direct' | 'recompute'
   holdingsSource: 'holdings_sheets', // 'holdings_sheets' | 'networth_inputs'
   allocationView: 'base'             // 'base' | 'exposure'
@@ -2312,7 +2237,7 @@ const cr = (v,dp=2) => {
   const a=Math.abs(v), s=v<0?'-':'';
   if(a>=1e7) return s+'₹'+(a/1e7).toFixed(dp)+' Cr';
   if(a>=1e5) return s+'₹'+(a/1e5).toFixed(dp)+' L';
-  return s+'₹'+a.toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2});
+  return s+'₹'+a.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 };
 const pct = (a,b,dp=2) => b>0?(a/b*100).toFixed(dp)+'%':'—';
 const xnw  = (a,b,dp=2) => b>0?(a/b).toFixed(dp)+'x NW':'—';
@@ -3441,7 +3366,7 @@ function renderOverviewNew(nw, liq) {
   const segments = [{label:'Equity',val:eq,color:'#02422B'},{label:'Debt',val:dbt,color:'#1a5a80'},{label:'Cash',val:csh,color:'#DABD38'},{label:'Gold',val:gld,color:'#b8a020'}].filter(s=>s.val>0);
   mkChart('ov-alloc-donut',{type:'doughnut',data:{labels:segments.map(s=>s.label),datasets:[{data:segments.map(s=>s.val),backgroundColor:segments.map(s=>s.color),borderWidth:2,borderColor:'#fff'}]},options:{cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+cr(ctx.raw,1)+' ('+pct(ctx.raw,liq)+')'}}},maintainAspectRatio:false}});
   const legEl = document.getElementById('ov-alloc-legend');
-  if(legEl) legEl.innerHTML = segments.map(s=>`<div style="display:flex;justify-content:space-between;gap:0.5rem;padding:2px 0"><span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color};margin-right:4px"></span>${s.label}</span><strong>${pct(s.val,liq)}</strong></div>`).join('');
+  if(legEl) legEl.innerHTML = segments.map(s=>`<div style="display:flex;justify-content:space-between;gap:0.5rem;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.05)"><span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color}"></span>${s.label}</span><span style="text-align:right"><strong>${cr(s.val,1)}</strong><span style="color:var(--text-lt);margin-left:4px">${pct(s.val,liq)}</span></span></div>`).join('');
 
   const rn  = sum(assetData.filter(x=>x.ent==='Rishabh'),  x=>x.val);
   const mis = sum(assetData.filter(x=>x.ent==='Mishayan'), x=>x.val);
@@ -3511,34 +3436,6 @@ function renderOverviewNew(nw, liq) {
     </tr>`;
   }
 
-  // ── Section 4: Cash to Deploy ──
-  sv('ov-deploy-total', totalDeploy>0 ? 'Total available: '+cr(totalDeploy) : '—');
-  function renderDeployMini(items, tbSel) {
-    const tb = document.querySelector(tbSel+' tbody');
-    if(!tb||!items.length) return;
-    let h='';
-    items.forEach((item,i) => {
-      const isFirst = i===0;
-      const isLast  = /cash available to deploy/i.test(item.label);
-      const isSub   = /balance cash available/i.test(item.label);
-      const isInfo  = /outstanding od/i.test(item.label);
-      if(isFirst) {
-        h+=`<tr style="background:rgba(2,66,43,0.04)"><td><strong>${item.label}</strong></td><td class="mono r pos"><strong>${cr(item.val)}</strong></td></tr>`;
-      } else if(isLast) {
-        h+=`<tr style="background:rgba(2,66,43,0.08);border-top:2px solid var(--forest)"><td><strong style="color:var(--forest)">${item.label}</strong></td><td class="mono r pos"><strong style="color:var(--forest)">${cr(item.val)}</strong></td></tr>`;
-      } else if(isSub) {
-        h+=`<tr style="background:rgba(218,189,56,0.06)"><td><strong>${item.label}</strong></td><td class="mono r gold"><strong>${cr(item.val)}</strong></td></tr>`;
-      } else if(isInfo) {
-        h+=`<tr><td style="color:var(--text-lt);font-size:0.67rem;font-style:italic">${item.label}</td><td class="mono r muted" style="font-size:0.67rem">${cr(item.val)}</td></tr>`;
-      } else {
-        h+=`<tr><td style="padding-left:0.9rem;color:var(--text-mute);font-size:0.68rem">− ${item.label}</td><td class="mono r neg" style="font-size:0.68rem">(${cr(item.val)})</td></tr>`;
-      }
-    });
-    tb.innerHTML = h;
-  }
-  renderDeployMini(D.cashMargin?.deploy?.mishayan||[], '#ov-mis-deploy-table');
-  renderDeployMini(D.cashMargin?.deploy?.rishabh||[],  '#ov-rn-deploy-table');
-
   // ── Section 5: Holdings + Return Expectation ──
   const eqTot = sum(D.eq, x=>x.curVal), mfEqTot = sum(D.mf.filter(x=>x.assetType==='Equity'),x=>x.curVal);
   const mfDbtTot = sum(D.mf.filter(x=>x.assetType==='Debt'),x=>x.curVal);
@@ -3583,34 +3480,6 @@ function renderOverviewNew(nw, liq) {
     updateReturnTable();
   }
 
-  // ── Section 6: Full Liquidity table ──
-  const liqTbody = document.getElementById('ov-liquidity-tbody');
-  if(liqTbody) {
-    const buckets = {};
-    assetData.forEach(x => {
-      const bk = x.cat || x.p1 || 'Other';
-      if(!buckets[bk]) buckets[bk]={cat:bk,typ:x.typ,rn:0,mis:0,tot:0};
-      if(x.ent==='Rishabh')  buckets[bk].rn  +=x.val;
-      else if(x.ent==='Mishayan') buckets[bk].mis+=x.val;
-      buckets[bk].tot+=x.val;
-    });
-    sv('ov-sec-liq-total', cr(liq)+' total');
-    const bRows = Object.values(buckets).sort((a,b)=>b.tot-a.tot);
-    liqTbody.innerHTML = bRows.map(b=>`<tr>
-      <td><span class="bdg bdg-cat">${b.cat}</span></td>
-      <td style="font-size:0.7rem;color:var(--text-mute)">${b.cat}</td>
-      <td class="mono r">${b.rn>0?cr(b.rn):'—'}</td>
-      <td class="mono r">${b.mis>0?cr(b.mis):'—'}</td>
-      <td class="mono r"><strong>${cr(b.tot)}</strong></td>
-      <td class="mono r">${pct(b.tot,liq)}</td>
-      <td>${abadge(b.typ)}</td>
-    </tr>`).join('') + `<tr class="trow-total">
-      <td colspan="2">Total</td>
-      <td class="r">${cr(sum(assetData.filter(x=>x.ent==='Rishabh'),x=>x.val))}</td>
-      <td class="r">${cr(sum(assetData.filter(x=>x.ent==='Mishayan'),x=>x.val))}</td>
-      <td class="r">${cr(liq)}</td><td class="r">100%</td><td></td>
-    </tr>`;
-  }
 }
 
 // Donut chart
@@ -3737,10 +3606,12 @@ function renderBrokers(nw, liq) {
 function renderStrategies(nw) {
   const liq = computeLiquidityBySource();
   const psar=psarNot(), lo=loPrem(), qaw=qawFut(), put=putNot();
+  const qawEqF = sum(D.strats.filter(r=>r.strat==='QAW Futures'), r=>r.netExp);
   sv('st-psar', cr(psar)); sv('st-psar-s', xnw(psar,nw)+' · '+xliq(psar,liq));
   sv('st-lo',   cr(lo));
   sv('st-qaw',  cr(qaw));  sv('st-qaw-s',  xnw(qaw,nw)+' · '+xliq(qaw,liq));
   sv('st-put',  cr(put));
+  sv('st-qaw-eq', cr(qawEqF)); sv('st-qaw-eq-s', xnw(qawEqF,nw)+' · '+xliq(qawEqF,liq));
 
   // Strategy breakdown by broker
   // Gold strategies are grouped into a single "GOLD FUTURES" section
@@ -3838,25 +3709,6 @@ function renderStrategies(nw) {
   }
   if(sbFt) sbFt.innerHTML = `<tr class="trow-total"><td>Grand Total</td><td></td><td></td><td class="r">${cr(grandTotal)}</td><td></td><td class="r">${xnw(grandTotal,nw)} · ${xliq(grandTotal,liq)}</td></tr>`;
 
-  // Full alloc
-  const faTb = document.querySelector('#full-alloc tbody');
-  if(faTb) {
-    let h='', lastAcc='';
-    D.strats.forEach(r=>{
-      if(r.acc!==lastAcc){ h+=`<tr class="trow-section"><td colspan="8">${r.acc}</td></tr>`; lastAcc=r.acc; }
-      h+=`<tr>
-        <td class="muted" style="padding-left:1.2rem">—</td>
-        <td><strong>${r.strat||'—'}</strong></td>
-        <td class="mono r">${r.posSize>0?r.posSize+'x':'—'}</td>
-        <td class="mono r">${r.exposure>0?cr(r.exposure):'—'}</td>
-        <td class="mono r" style="color:var(--forest);font-weight:700">${r.netExp>0?cr(r.netExp):'—'}</td>
-        <td class="mono r">${r.loPrem>0?cr(r.loPrem):'—'}</td>
-        <td class="mono r">${r.deposit>0?cr(r.deposit):'—'}</td>
-        <td class="mono r">${r.lev>0?r.lev.toFixed(1)+'x':'—'}</td>
-      </tr>`;
-    });
-    faTb.innerHTML=h;
-  }
 }
 
 // ─── HOLDINGS ─────────────────────────────────────────────────
@@ -3884,7 +3736,10 @@ function renderHoldings() {
 
   // Holdings type chart
   const byType={'Stock':{val:eqV,color:'#02422B'},'Mutual Fund':{val:mfV,color:'#1a5a80'}};
-  mkChart('hld-chart-type',{type:'doughnut',data:{labels:Object.keys(byType),datasets:[{data:Object.values(byType).map(x=>x.val),backgroundColor:Object.values(byType).map(x=>x.color),borderWidth:2,borderColor:'#fff'}]},options:{cutout:'55%',plugins:{legend:{position:'right',labels:{font:{family:CHART_FONT,size:11},color:'#4a6b5a'}},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+cr(ctx.raw,1)}}}}});
+  const hldTotal = eqV + mfV;
+  mkChart('hld-chart-type',{type:'doughnut',data:{labels:Object.keys(byType),datasets:[{data:Object.values(byType).map(x=>x.val),backgroundColor:Object.values(byType).map(x=>x.color),borderWidth:2,borderColor:'#fff'}]},options:{cutout:'55%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+cr(ctx.raw,1)+' ('+pct(ctx.raw,hldTotal)+')'}}}}});
+  const hldLeg = document.getElementById('hld-type-legend');
+  if(hldLeg) hldLeg.innerHTML = Object.entries(byType).map(([l,x])=>`<div class="alloc-leg-item"><div class="alloc-leg-dot" style="background:${x.color}"></div><span>${l}</span><strong style="margin-left:auto">${cr(x.val,1)}</strong><span style="color:var(--text-lt);margin-left:0.3rem">${pct(x.val,hldTotal)}</span></div>`).join('');
 
   // P&L by sub-category bar chart (₹ + % P&L dual axis)
   const subcMap={}, subcBuyMap={};
@@ -3892,9 +3747,8 @@ function renderHoldings() {
   const subcEntries=Object.entries(subcMap).sort((a,b)=>b[1]-a[1]);
   const subcPctArr=subcEntries.map(([k])=>subcBuyMap[k]>0?subcMap[k]/subcBuyMap[k]*100:0);
   mkChart('hld-chart-pnl',{type:'bar',data:{labels:subcEntries.map(([k])=>k),datasets:[
-    {label:'P&L (₹)',data:subcEntries.map(([,v])=>v),backgroundColor:subcEntries.map(([,v])=>v>=0?'rgba(2,66,43,0.75)':'rgba(139,26,26,0.75)'),borderRadius:3,xAxisID:'x'},
-    {label:'% Return',data:subcPctArr,type:'bar',backgroundColor:subcPctArr.map(v=>v>=0?'rgba(26,90,128,0.55)':'rgba(180,60,60,0.55)'),borderRadius:3,xAxisID:'x2'}
-  ]},options:{indexAxis:'y',plugins:{legend:{position:'top',labels:{font:{family:CHART_FONT,size:10},color:'#4a6b5a',boxWidth:12}},tooltip:{callbacks:{label:ctx=>ctx.dataset.xAxisID==='x2'?' % Return: '+(ctx.raw>=0?'+':'')+ctx.raw.toFixed(2)+'%':' P&L: '+(ctx.raw>=0?'+':'')+cr(ctx.raw)}}},scales:{x:{grid:{color:'rgba(200,201,164,0.3)'},ticks:{color:'#7a9b8a',font:{family:CHART_FONT,size:9},callback:v=>{const a=Math.abs(v);return (v<0?'-':'')+(a>=1e7?(a/1e7).toFixed(1)+'Cr':a>=1e5?(a/1e5).toFixed(0)+'L':'')}}},x2:{position:'top',grid:{display:false},ticks:{color:'#1a5a80',font:{family:CHART_FONT,size:9},callback:v=>v.toFixed(0)+'%'}},y:{grid:{display:false},ticks:{color:'#4a6b5a',font:{family:CHART_FONT,size:9}}}}}});
+    {label:'P&L (₹)',data:subcEntries.map(([,v])=>v),backgroundColor:subcEntries.map(([,v])=>v>=0?'rgba(2,66,43,0.75)':'rgba(139,26,26,0.75)'),borderRadius:3}
+  ]},options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' P&L: '+(ctx.raw>=0?'+':'')+cr(ctx.raw),afterLabel:ctx=>' Return: '+(subcPctArr[ctx.dataIndex]>=0?'+':'')+subcPctArr[ctx.dataIndex].toFixed(2)+'%'}}},scales:{x:{grid:{color:'rgba(200,201,164,0.3)'},ticks:{color:'#7a9b8a',font:{family:CHART_FONT,size:9},callback:v=>{const a=Math.abs(v);return (v<0?'-':'')+(a>=1e7?(a/1e7).toFixed(1)+'Cr':a>=1e5?(a/1e5).toFixed(0)+'L':'')}}},y:{grid:{display:false},ticks:{color:'#4a6b5a',font:{family:CHART_FONT,size:9}}}}}});
 
 }
 
@@ -4411,90 +4265,10 @@ function renderAllocation() {
     scTb.innerHTML = eqRows + eqTotRow + nonEqRows;
   }
 
-  // ── Asset class detail table (respects toggle) ───────────────
-  const types = {};
-  viewData.forEach(x=>{
-    const t = x._virtual ? x.typ + ' (Derivatives)' : x.typ;
-    if(!types[t]) types[t]={val:0,rn:0,mis:0,n:0};
-    types[t].val += x.val;
-    if(x.ent==='Rishabh')  types[t].rn  += x.val;
-    if(x.ent==='Mishayan') types[t].mis += x.val;
-    types[t].n++;
-  });
-  const acTb = document.querySelector('#alloc-assetclass-table tbody');
-  if(acTb) acTb.innerHTML = Object.entries(types).sort((a,b)=>b[1].val-a[1].val).map(([t,v])=>`<tr>
-    <td><strong>${t}</strong></td>
-    <td class="mono r">${cr(v.val)}</td>
-    <td class="mono r">${pct(v.val,viewTotal)}</td>
-    <td class="mono r muted">${v.rn>0?cr(v.rn):'—'}</td>
-    <td class="mono r muted">${v.mis>0?cr(v.mis):'—'}</td>
-    <td class="muted">${v.n}</td>
-  </tr>`).join('');
 
   // ── Allocation bars (base = physical only; exposure = physical + derivatives) ──
   const stkFutBar = sum(D.strats.filter(r=>r.strat==='Stock Futures'), r=>r.netExp);
-  const qawEqBar  = sum(D.strats.filter(r=>r.strat==='QAW Futures'),   r=>r.netExp);
-  const baseEq  = sum(assetData.filter(x=>x.typ==='Equity'), x=>x.val);
-  const baseDbt = sum(assetData.filter(x=>x.typ==='Debt'),   x=>x.val);
-  const baseCsh = sum(assetData.filter(x=>x.typ==='Cash'),   x=>x.val);
-  const baseGld = sum(assetData.filter(x=>x.typ==='Gold'),   x=>x.val);
-  const barsBase = [
-    {name:'Equity',          val:baseEq,  color:'#02422B', grp:'physical'},
-    {name:'Debt / Fixed Inc',val:baseDbt, color:'#1a5a80', grp:'physical'},
-    {name:'Cash',            val:baseCsh, color:'#DABD38', grp:'physical'},
-    {name:'Gold',            val:baseGld, color:'#b8a020', grp:'physical'},
-  ];
-  const barsExposure = [
-    ...barsBase,
-    {name:'QAW Equity Futures',  val:qawEqBar,  color:'#5a9a6a', grp:'equity-futures'},
-    {name:'Stock Futures',       val:stkFutBar, color:'#3a7a4a', grp:'equity-futures'},
-    {name:'Gold Futures (QAW)',  val:qawFut(),  color:'#d4a800', grp:'gold-futures'},
-    // PSAR, Long Options, Put Protection excluded from allocation bars
-  ];
-  const barsData = (showExp ? barsExposure : barsBase).filter(b=>b.val>0);
-  const maxBar   = Math.max(...barsData.map(b=>b.val));
-  const refTotal = showExp ? viewTotal : liq;   // denominator for % label
-  sh('alloc-bars-panel',
-    (showExp ? '<div style="font-size:0.65rem;font-weight:700;color:var(--text-mute);padding:0.3rem 0.1rem 0.5rem;text-transform:uppercase;letter-spacing:0.05em">Physical</div>' : '') +
-    barsData.filter(b=>b.grp!=='derivatives').map(b=>`
-    <div class="alloc-row">
-      <div><div class="alloc-name">${b.name}</div></div>
-      <div style="display:flex;align-items:center;gap:0.5rem;flex:1">
-        <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:${maxBar>0?b.val/maxBar*100:0}%;background:${b.color}"></div></div>
-        <span style="font-size:0.65rem;color:var(--text-lt);min-width:42px;text-align:right">${pct(b.val,refTotal)}</span>
-      </div>
-      <div style="font-family:'Courier New',monospace;font-size:0.72rem;font-weight:700;color:${b.color};text-align:right;min-width:90px">${cr(b.val)}</div>
-    </div>`).join('') +
-    (showExp ? '<div style="font-size:0.65rem;font-weight:700;color:var(--red-neg);padding:0.85rem 0.1rem 0.5rem;text-transform:uppercase;letter-spacing:0.05em;border-top:1px dashed var(--border-lt);margin-top:0.5rem">Derivatives / Futures Exposure</div>' : '') +
-    (showExp ? barsData.filter(b=>b.grp==='derivatives').map(b=>`
-    <div class="alloc-row">
-      <div><div class="alloc-name">${b.name}<span class="exposure-badge">EXP</span></div></div>
-      <div style="display:flex;align-items:center;gap:0.5rem;flex:1">
-        <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:${maxBar>0?b.val/maxBar*100:0}%;background:${b.color};opacity:0.75"></div></div>
-        <span style="font-size:0.65rem;color:var(--text-lt);min-width:42px;text-align:right">${pct(b.val,refTotal)}</span>
-      </div>
-      <div style="font-family:'Courier New',monospace;font-size:0.72rem;font-weight:700;color:${b.color};text-align:right;min-width:90px">${cr(b.val)}</div>
-    </div>`).join('') : '')
-  );
 
-  // ── Full category table (respects toggle) ─────────────────────
-  const catGroups = {};
-  viewData.forEach(x=>{
-    const catKey = x._virtual ? 'Derivatives / Futures' : (x.cat || 'Other');
-    const k = catKey+'||'+x.typ+'||'+x.ent;
-    if(!catGroups[k]) catGroups[k]={cat:catKey,typ:x.typ,ent:x.ent,val:0,n:0,virtual:!!x._virtual};
-    catGroups[k].val += x.val;
-    catGroups[k].n++;
-  });
-  const fcTb = document.querySelector('#alloc-full-table tbody');
-  if(fcTb) fcTb.innerHTML = Object.values(catGroups).sort((a,b)=>b.val-a.val).map(v=>`<tr${v.virtual?' style="opacity:0.85"':''}>
-    <td><strong>${v.cat}</strong>${v.virtual?'<span class="exposure-badge">EXP</span>':''}</td>
-    <td>${abadge(v.typ)}</td>
-    <td class="mono r">${cr(v.val)}</td>
-    <td class="mono r">${pct(v.val,viewTotal)}</td>
-    <td>${ebadge(v.ent)}</td>
-    <td class="muted">${v.n}</td>
-  </tr>`).join('');
 }
 
 // ═══════════════════════════════════════════════════════════════
