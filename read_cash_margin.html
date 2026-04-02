@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head><title>Cash & Margin Detail Reader</title>
+<style>
+body{font-family:monospace;font-size:11px;padding:10px}
+table{border-collapse:collapse;margin-bottom:20px}
+td,th{border:1px solid #ccc;padding:2px 6px;white-space:nowrap}
+th{background:#eee}
+.hi{background:#fffde7}
+.hi2{background:#e8f5e9}
+.hi3{background:#e3f2fd}
+</style>
+</head>
+<body>
+<input type="file" id="f" accept=".xlsx">
+<div id="out"></div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+document.getElementById('f').addEventListener('change', e => {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const wb = XLSX.read(ev.target.result, {type:'binary', raw:true});
+    const sn = wb.SheetNames.find(n => /cash.*margin/i.test(n));
+    if(!sn){ document.getElementById('out').textContent = 'No Cash and Margin sheet found'; return; }
+    const ws = wb.Sheets[sn];
+    const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
+
+    let html = `<h2>Sheet: ${sn} — ${rows.length} rows x max ${Math.max(...rows.map(r=>r?r.length:0))} cols</h2>`;
+
+    // Full table with column letters
+    html += '<h3>Full Sheet (cols A-Z highlighted by group)</h3><table>';
+    // Header row = col letters
+    const maxCols = 27;
+    html += '<tr><th>Row</th>';
+    for(let c=0;c<maxCols;c++){
+      const letter = c < 26 ? String.fromCharCode(65+c) : 'Z';
+      const cls = (c>=11&&c<=18)?'hi':(c>=21&&c<=22)?'hi2':(c>=24&&c<=25)?'hi3':'';
+      html += `<th class="${cls}">${letter}<br>(${c})</th>`;
+    }
+    html += '</tr>';
+
+    rows.forEach((r,i) => {
+      html += `<tr><td><b>${i+1}</b></td>`;
+      for(let c=0;c<maxCols;c++){
+        const v = r ? r[c] : null;
+        const cls = (c>=11&&c<=18)?'hi':(c>=21&&c<=22)?'hi2':(c>=24&&c<=25)?'hi3':'';
+        const disp = v===null||v===undefined ? '' : typeof v==='number' ? v.toLocaleString('en-IN',{maximumFractionDigits:2}) : String(v).substring(0,30);
+        html += `<td class="${cls}">${disp}</td>`;
+      }
+      html += '</tr>';
+    });
+    html += '</table>';
+
+    // Extract just the 3 key sections
+    html += '<h3 style="color:orange">L-S (cols 11-18): Margin Breakdown</h3><table>';
+    html += '<tr><th>Row</th><th>L(11) System</th><th>M(12) Cash Comp</th><th>N(13) Non-Cash</th><th>O(14) Liquidcase</th><th>P(15) Cash</th><th>Q(16) Total</th><th>R(17) % PV</th></tr>';
+    rows.forEach((r,i) => {
+      if(!r) return;
+      const v = r[11];
+      if(v===null||v===undefined) return;
+      html += `<tr><td>${i+1}</td>`;
+      for(let c=11;c<=18;c++){
+        const val = r[c];
+        html += `<td>${val===null||val===undefined?'':typeof val==='number'?val.toLocaleString('en-IN',{maximumFractionDigits:0}):val}</td>`;
+      }
+      html += '</tr>';
+    });
+    html += '</table>';
+
+    html += '<h3 style="color:green">V-W (cols 21-22): Mishayan Deployment</h3><table>';
+    html += '<tr><th>Row</th><th>V(21) Label</th><th>W(22) Value</th></tr>';
+    rows.forEach((r,i) => {
+      if(!r) return;
+      const lbl = r[21], val = r[22];
+      if(lbl===null&&val===null) return;
+      html += `<tr><td>${i+1}</td><td>${lbl||''}</td><td>${typeof val==='number'?val.toLocaleString('en-IN',{maximumFractionDigits:0}):val||''}</td></tr>`;
+    });
+    html += '</table>';
+
+    html += '<h3 style="color:blue">Y-Z (cols 24-25): Rishabh Deployment</h3><table>';
+    html += '<tr><th>Row</th><th>Y(24) Label</th><th>Z(25) Value</th></tr>';
+    rows.forEach((r,i) => {
+      if(!r) return;
+      const lbl = r[24], val = r[25];
+      if(lbl===null&&val===null) return;
+      html += `<tr><td>${i+1}</td><td>${lbl||''}</td><td>${typeof val==='number'?val.toLocaleString('en-IN',{maximumFractionDigits:0}):val||''}</td></tr>`;
+    });
+    html += '</table>';
+
+    document.getElementById('out').innerHTML = html;
+  };
+  reader.readAsBinaryString(file);
+});
+</script>
+</body>
+</html>

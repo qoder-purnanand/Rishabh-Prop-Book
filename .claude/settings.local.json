@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \":*)",
+      "Bash(python:*)",
+      "Bash(jupyter nbconvert:*)",
+      "Bash(cmd /c \"python \"\"c:/Users/admin/OneDrive - Qode/Research/Portfolio Review/Rishabh Prop Book/analyze_excel_full.py\"\"\")",
+      "WebFetch(domain:localhost)",
+      "WebFetch(domain:127.0.0.1)",
+      "Bash(node -e \"const XLSX=require\\(''xlsx''\\); const wb=XLSX.readFile\\(''c:/Users/admin/OneDrive - Qode/Research/Portfolio Review/Rishabh Prop Book/Rishabh Account Summary - 31.03.2026 - V2 \\(New\\).xlsx''\\); console.log\\(''SHEETS:'',wb.SheetNames\\);\")",
+      "Bash(python3 -c ':*)",
+      "Bash(dir \"c:\\\\Users\\\\admin\\\\OneDrive - Qode\\\\Research\\\\Portfolio Review\\\\Rishabh Prop Book\" /b)"
+    ]
+  }
+}

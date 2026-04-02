@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prop Book — Rishabh Nahar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* ── QODE BRAND TOKENS ─────────────────────────────────────── */
+:root {
+  --forest:    #02422B;
+  --deep:      #002017;
+  --gold:      #DABD38;
+  --gold-lt:   #e8d47a;
+  --gold-dim:  #b89e2a;
+  --cream:     #EFEDC3;
+  --cream-lt:  #F7F6E8;
+  --cream-dk:  #E0DDB0;
+  --white:     #FFFFFF;
+  --text-dark: #002017;
+  --text-mid:  #1a3a28;
+  --text-mute: #4a6b5a;
+  --text-lt:   #7a9b8a;
+  --border:    #c8c9a4;
+  --border-lt: #dddeb8;
+  --green-pos: #02422B;
+  --red-neg:   #8B1A1A;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-body:  'Lato', system-ui, sans-serif;
+  --shadow:     0 2px 12px rgba(2,66,43,0.08);
+  --shadow-lg:  0 8px 32px rgba(2,66,43,0.14);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--cream-lt);
+  color: var(--text-dark);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ── UPLOAD SCREEN ─────────────────────────────────────────── */
+#upload-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(160deg, var(--forest) 0%, var(--deep) 100%);
+}
+
+.upload-brand {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.upload-logo {
+  font-family: var(--font-serif);
+  font-size: 2.4rem;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.3rem;
+}
+.upload-logo em { color: var(--gold); font-style: italic; }
+
+.upload-tagline {
+  font-size: 0.72rem;
+  color: rgba(239,237,195,0.6);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+.upload-card {
+  background: rgba(255,255,255,0.06);
+  border: 1.5px dashed rgba(218,189,56,0.5);
+  border-radius: 12px;
+  padding: 2.5rem 3rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  max-width: 460px;
+  width: 100%;
+  backdrop-filter: blur(8px);
+}
+.upload-card:hover, .upload-card.drag-over {
+  border-color: var(--gold);
+  background: rgba(218,189,56,0.08);
+}
+
+.upload-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+
+.upload-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+  font-size: 0.72rem;
+  color: rgba(239,237,195,0.55);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.upload-btn {
+  background: var(--gold);
+  color: var(--deep);
+  border: none;
+  border-radius: 6px;
+  padding: 0.65rem 1.75rem;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.upload-btn:hover { background: var(--gold-lt); }
+
+.upload-sheets {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+.sheet-tag {
+  background: rgba(218,189,56,0.15);
+  border: 1px solid rgba(218,189,56,0.3);
+  border-radius: 20px;
+  padding: 0.18rem 0.65rem;
+  font-size: 0.62rem;
+  color: rgba(218,189,56,0.8);
+  letter-spacing: 0.04em;
+}
+
+#upload-status {
+  margin-top: 1.25rem;
+  font-size: 0.72rem;
+  color: rgba(239,237,195,0.55);
+  min-height: 1.1rem;
+  text-align: center;
+}
+
+/* ── MAIN APP ───────────────────────────────────────────────── */
+#app { display: none; }
+
+/* HEADER */
+.header {
+  background: var(--forest);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  border-bottom: 2px solid var(--gold);
+}
+
+.header-brand {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  color: var(--white);
+  letter-spacing: -0.01em;
+}
+.header-brand em { color: var(--gold); font-style: italic; }
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.header-kpi {
+  text-align: right;
+}
+.header-kpi-val {
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  color: var(--gold-lt);
+  font-weight: 500;
+}
+.header-kpi-lbl {
+  font-size: 0.58rem;
+  color: rgba(239,237,195,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.header-date {
+  font-size: 0.65rem;
+  color: rgba(239,237,195,0.45);
+  padding-left: 1.5rem;
+  border-left: 1px solid rgba(255,255,255,0.12);
+}
+
+.btn-update {
+  background: rgba(218,189,56,0.15);
+  border: 1px solid rgba(218,189,56,0.4);
+  color: var(--gold);
+  border-radius: 5px;
+  padding: 0.32rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-update:hover { background: rgba(218,189,56,0.25); }
+
+/* NAV */
+.nav {
+  background: var(--deep);
+  display: flex;
+  padding: 0 2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid rgba(218,189,56,0.2);
+}
+.nav::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  padding: 0 1.25rem;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(239,237,195,0.45);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.15s;
+  user-select: none;
+}
+.nav-tab:hover { color: rgba(239,237,195,0.8); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* MAIN */
+.page { display: none; padding: 1.75rem 2rem 5rem; max-width: 1440px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* SECTION HEADER */
+.sec-hd {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--border-lt);
+}
+.sec-title {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--forest);
+  letter-spacing: -0.01em;
+}
+.sec-sub {
+  font-size: 0.68rem;
+  color: var(--text-lt);
+  font-weight: 300;
+}
+
+/* METRIC CARDS */
+.cards-row {
+  display: grid;
+  gap: 1px;
+  background: var(--border-lt);
+  border: 1px solid var(--border-lt);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+.c5 { grid-template-columns: repeat(5,1fr); }
+.c4 { grid-template-columns: repeat(4,1fr); }
+.c3 { grid-template-columns: repeat(3,1fr); }
+.c6 { grid-template-columns: repeat(6,1fr); }
+
+.kcard {
+  background: var(--white);
+  padding: 1.1rem 1.3rem;
+}
+.kcard.forest { background: var(--forest); }
+.kcard.deep { background: var(--deep); }
+.kcard.cream { background: var(--cream); }
+
+.kcard-lbl {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-lt);
+  margin-bottom: 0.4rem;
+}
+.kcard.forest .kcard-lbl,
+.kcard.deep .kcard-lbl { color: rgba(239,237,195,0.55); }
+
+.kcard-val {
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  line-height: 1;
+  color: var(--forest);
+}
+.kcard.forest .kcard-val { color: var(--gold); }
+.kcard.deep .kcard-val { color: var(--gold); }
+.kcard-val.gold { color: var(--gold-dim); }
+.kcard-val.neg { color: var(--red-neg); }
+.kcard-val.pos { color: var(--green-pos); }
+
+.kcard-sub {
+  font-size: 0.63rem;
+  color: var(--text-lt);
+  margin-top: 0.3rem;
+  font-weight: 300;
+}
+.kcard.forest .kcard-sub,
+.kcard.deep .kcard-sub { color: rgba(239,237,195,0.4); }
+.kcard-sub.pos { color: var(--green-pos); font-weight: 700; }
+.kcard-sub.neg { color: var(--red-neg); font-weight: 700; }
+.kcard-sub.gold { color: var(--gold-dim); }
+
+/* PANELS */
+.panel {
+  background: var(--white);
+  border: 1px solid var(--border-lt);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.1rem;
+  box-shadow: var(--shadow);
+}
+.panel-hd {
+  padding: 0.65rem 1.1rem;
+  border-bottom: 1px solid var(--border-lt);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--cream-lt);
+}
+.panel-title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.panel-body { padding: 1.1rem; }
+.panel-body0 { padding: 0; }
+
+/* TWO / THREE COLUMN */
+.col2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+.col3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; }
+
+/* TABLES */
+.dt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+.dt th {
+  padding: 0.42rem 0.85rem;
+  text-align: left;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-lt);
+  background: var(--cream-lt);
+  border-bottom: 1px solid var(--border-lt);
+  white-space: nowrap;
+}
+.dt th.r { text-align: right; }
+.dt td {
+  padding: 0.4rem 0.85rem;
+  border-bottom: 1px solid rgba(200,201,164,0.3);
+  color: var(--text-dark);
+}
+.dt td.r { text-align: right; }
+.dt td.mono { font-family: 'Courier New', monospace; font-size: 0.75rem; }
+.dt td.muted { color: var(--text-lt); }
+.dt td.pos { color: var(--green-pos); font-weight: 700; }
+.dt td.neg { color: var(--red-neg); font-weight: 700; }
+.dt td.gold { color: var(--gold-dim); font-weight: 700; }
+.dt tr:last-child td { border-bottom: none; }
+.dt tr:hover td { background: var(--cream-lt); }
+.dt .trow-total td {
+  background: var(--cream);
+  font-weight: 700;
+  border-top: 1.5px solid var(--border);
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+}
+.dt .trow-section td {
+  background: var(--forest);
+  color: var(--gold);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.32rem 0.85rem;
+}
+
+/* BADGES */
+.bdg {
+  display: inline-block;
+  padding: 0.12rem 0.48rem;
+  border-radius: 3px;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.bdg-eq  { background: #e8f5ee; color: #02422B; border: 1px solid #b8d9c8; }
+.bdg-debt { background: #e8eff8; color: #1a3a6e; border: 1px solid #b8cce0; }
+.bdg-cash { background: #fdf8e8; color: #7a6010; border: 1px solid #e0d088; }
+.bdg-gold { background: #fef9e0; color: #8a6a00; border: 1px solid #dac840; }
+.bdg-on  { background: #e8f5ee; color: #02422B; border: 1px solid #b8d9c8; }
+.bdg-off { background: #fae8e8; color: #8B1A1A; border: 1px solid #d9b8b8; }
+.bdg-rn  { background: #f0eaf8; color: #4a2080; border: 1px solid #c8b8e8; }
+.bdg-mis { background: #e8eef8; color: #1a3080; border: 1px solid #b8c8e8; }
+.bdg-cat { background: var(--cream); color: var(--text-mute); border: 1px solid var(--border); }
+.bdg-ok  { background: #e8f5ee; color: #02422B; border: 1px solid #b8d9c8; }
+.bdg-chk { background: #fae8e8; color: #8B1A1A; border: 1px solid #d9b8b8; }
+.bdg-mf  { background: #e8f0f8; color: #1a3a6e; border: 1px solid #b8cce0; }
+.bdg-stk { background: #eef5e8; color: #1a4a1a; border: 1px solid #b8d8b8; }
+
+/* ALLOCATION BARS */
+.alloc-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 90px;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border-lt);
+}
+.alloc-row:last-child { border-bottom: none; }
+.alloc-name { font-size: 0.75rem; font-weight: 700; color: var(--text-dark); }
+.alloc-sub { font-size: 0.62rem; color: var(--text-lt); }
+.bar-bg { flex: 1; height: 5px; background: var(--cream); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; }
+.bar-pct { font-family: 'Courier New', monospace; font-size: 0.68rem; color: var(--text-mute); text-align: right; }
+
+/* DONUT */
+.donut-wrap { display: flex; align-items: center; gap: 1.75rem; }
+.donut-legend { display: flex; flex-direction: column; gap: 0.6rem; flex: 1; }
+.leg-item { display: flex; align-items: center; gap: 0.55rem; }
+.leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.leg-lbl { font-size: 0.72rem; color: var(--text-mid); flex: 1; }
+.leg-val { font-family: 'Courier New', monospace; font-size: 0.7rem; color: var(--text-dark); font-weight: 700; }
+.leg-pct { font-size: 0.65rem; color: var(--text-lt); margin-left: 0.35rem; }
+
+/* RISK ROWS */
+.risk-row {
+  display: grid;
+  grid-template-columns: 175px 1fr 75px 55px;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 1.1rem;
+  border-bottom: 1px solid rgba(200,201,164,0.3);
+}
+.risk-row:last-child { border-bottom: none; }
+.risk-row:hover { background: var(--cream-lt); }
+.risk-lbl { font-size: 0.72rem; color: var(--text-mid); }
+
+/* FILTERS */
+.filter-bar {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0.65rem 1.1rem;
+  background: var(--cream-lt);
+  border-bottom: 1px solid var(--border-lt);
+}
+.fpill {
+  padding: 0.22rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  color: var(--text-lt);
+  background: var(--white);
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.fpill:hover { border-color: var(--forest); color: var(--forest); }
+.fpill.active { background: var(--forest); border-color: var(--forest); color: var(--gold); }
+.fsep { width: 1px; height: 16px; background: var(--border); }
+
+/* SCROLL */
+.sx { overflow-x: auto; }
+.sx::-webkit-scrollbar { height: 4px; }
+.sx::-webkit-scrollbar-track { background: var(--cream); }
+.sx::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* DATA-AS-OF */
+.dao { font-size: 0.62rem; color: var(--text-lt); display: flex; align-items: center; gap: 0.3rem; }
+.dao::before { content: '●'; color: var(--forest); font-size: 0.48rem; }
+
+/* OFF ITEMS */
+.off-val { color: var(--text-lt); font-style: italic; }
+
+/* RESPONSIVE */
+@media (max-width: 960px) {
+  .col2, .col3 { grid-template-columns: 1fr; }
+  .c5, .c4, .c6 { grid-template-columns: repeat(2,1fr); }
+  .page { padding: 1rem 1rem 4rem; }
+  .header, .nav { padding-left: 1rem; padding-right: 1rem; }
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+.page.active .kcard { animation: fadeIn 0.22s ease both; }
+.page.active .kcard:nth-child(2) { animation-delay:0.04s; }
+.page.active .kcard:nth-child(3) { animation-delay:0.08s; }
+.page.active .kcard:nth-child(4) { animation-delay:0.12s; }
+.page.active .kcard:nth-child(5) { animation-delay:0.16s; }
+</style>
+</head>
+<body>
+
+<!-- UPLOAD -->
+<div id="upload-screen">
+  <div class="upload-brand">
+    <div class="upload-logo">Prop Book — <em>Rishabh Nahar</em></div>
+    <div class="upload-tagline">Qode · Portfolio Intelligence Dashboard</div>
+  </div>
+
+  <div class="upload-card" id="upload-box"
+    onclick="document.getElementById('file-in').click()"
+    ondragover="event.preventDefault();this.classList.add('drag-over')"
+    ondragleave="this.classList.remove('drag-over')"
+    ondrop="event.preventDefault();this.classList.remove('drag-over');handleDrop(event)">
+    <div class="upload-icon">📊</div>
+    <div class="upload-title">Upload Account Summary Excel</div>
+    <div class="upload-hint">Drag & drop or click to browse<br>Your .xlsx file — Rishabh_Account_Summary</div>
+    <button class="upload-btn" onclick="event.stopPropagation();document.getElementById('file-in').click()">Choose File</button>
+    <div class="upload-sheets">
+      <span class="sheet-tag">Sheet1 (Master)</span>
+      <span class="sheet-tag">Strategy Allocation</span>
+      <span class="sheet-tag">Equity Holdings</span>
+      <span class="sheet-tag">Mutual Funds</span>
+    </div>
+  </div>
+  <div id="upload-status"></div>
+  <input type="file" id="file-in" accept=".xlsx,.xls" style="display:none" onchange="handleFile(event)">
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="header">
+    <div class="header-brand">Prop Book — <em>Rishabh Nahar</em></div>
+    <div class="header-meta">
+      <div class="header-kpi">
+        <div class="header-kpi-val" id="h-nw">—</div>
+        <div class="header-kpi-lbl">Net Worth</div>
+      </div>
+      <div class="header-kpi">
+        <div class="header-kpi-val" id="h-psar">—</div>
+        <div class="header-kpi-lbl">PSAR Notional</div>
+      </div>
+      <div class="header-kpi">
+        <div class="header-kpi-val" id="h-liq">—</div>
+        <div class="header-kpi-lbl">Liquidity</div>
+      </div>
+      <div class="header-date" id="h-date">—</div>
+      <button class="btn-update" onclick="document.getElementById('file-in2').click()">↑ Update Data</button>
+      <input type="file" id="file-in2" accept=".xlsx,.xls" style="display:none" onchange="handleFile(event)">
+    </div>
+  </header>
+
+  <nav class="nav">
+    <div class="nav-tab active" onclick="showPage('overview',this)">Overview</div>
+    <div class="nav-tab" onclick="showPage('brokers',this)">Brokers & Accounts</div>
+    <div class="nav-tab" onclick="showPage('strategies',this)">Strategy Exposure</div>
+    <div class="nav-tab" onclick="showPage('holdings',this)">Holdings</div>
+    <div class="nav-tab" onclick="showPage('balance',this)">Balance Sheet</div>
+    <div class="nav-tab" onclick="showPage('settings',this)">Settings</div>
+  </nav>
+
+  <!-- ── OVERVIEW ───────────────────────────────────────────── -->
+  <div class="page active" id="page-overview">
+    <div class="sec-hd">
+      <div class="sec-title">Portfolio Overview</div>
+      <div class="sec-sub" id="ov-date">—</div>
+    </div>
+    <div id="page-overview-source" style="font-size:0.65rem;color:var(--text-lt);margin-bottom:0.85rem"></div>
+
+    <div class="cards-row c5">
+      <div class="kcard forest">
+        <div class="kcard-lbl">Net Worth</div>
+        <div class="kcard-val" id="ov-nw">—</div>
+        <div class="kcard-sub" id="ov-nw-sub">Liquidity − Liabilities</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Liquidity (Active Assets)</div>
+        <div class="kcard-val" id="ov-liq">—</div>
+        <div class="kcard-sub" id="ov-liq-sub">—</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Total Liabilities</div>
+        <div class="kcard-val neg" id="ov-debt">—</div>
+        <div class="kcard-sub" id="ov-debt-sub">—</div>
+      </div>
+      <div class="kcard cream">
+        <div class="kcard-lbl">PSAR Notional</div>
+        <div class="kcard-val gold" id="ov-psar">—</div>
+        <div class="kcard-sub gold" id="ov-psar-sub">—</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Active Line Items</div>
+        <div class="kcard-val" id="ov-items">—</div>
+        <div class="kcard-sub" id="ov-items-sub">—</div>
+      </div>
+    </div>
+    <div style="font-size:0.63rem;color:var(--text-lt);margin-bottom:1.25rem;line-height:1.6">
+      <strong>Formula:</strong> Net Worth = Liquidity − Liabilities; Liquidity = sum of configured assets; Liabilities = sum of debt rows; PSAR = Strategy Net Exposure; Active Items = count of on-status rows<br/>
+      <strong>Source:</strong> Networth Inputs sheet (Col E assets minus Col M debts) OR Sheet1 rows 3+ (Col F values where Col H = "On") OR Sheet1 all rows (Col F); Strategy Allocation sheet rows 4+, Col F (Net Exposure)<br/>
+      <strong>Details:</strong> CONFIG-driven: masterSource chooses data set; sheet1Filter controls On/Off inclusion; values computed from current CONFIG state
+    </div>
+
+    <div class="col2">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title" id="asset-allocation-title">Asset Allocation — On Items Only</div></div>
+        <div class="panel-body">
+          <div class="donut-wrap">
+            <svg id="donut-svg" width="130" height="130" viewBox="0 0 130 130" style="flex-shrink:0"></svg>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+        <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+          <strong>Formula:</strong> Sum of values, grouped by asset type category<br/>
+          <strong>Source:</strong> 
+          <span id="asset-allocation-source">
+            Networth Inputs sheet Col E (assets, rows 3+) for asset types OR Sheet1 rows 3+ Col F values where Col H = "On" OR Sheet1 all rows Col F values, grouped by Col D (asset type)
+          </span><br/>
+          <strong>Details:</strong> Categories: Equity, Debt, Cash, Gold; dynamically filtered based on Setting 1 master source selection
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Entity Split — Liquidity by Owner</div></div>
+        <div class="panel-body" id="entity-panel"></div>
+        <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+          <strong>Formula:</strong> Sum of values, grouped by entity owner<br/>
+          <strong>Source:</strong> 
+          <span id="entity-split-source">
+            Networth Inputs sheet Col E (assets, rows 3+) filtered by entity OR Sheet1 rows 3+ Col F values where Col H = "On" OR Sheet1 all rows Col F values, grouped by Col G (entity owner)
+          </span><br/>
+          <strong>Details:</strong> Owners: Mishayan, Rishabh; dynamically filtered based on Setting 1 master source selection
+        </div>
+      </div>
+    </div>
+
+    <div class="col2">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Category Breakdown</div></div>
+        <div class="panel-body0 sx">
+          <table class="dt" id="cat-table">
+            <thead><tr>
+              <th>Category</th>
+              <th class="r">Value</th>
+              <th class="r">% of Liquidity</th>
+              <th>Items</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+          <strong>Formula:</strong> Sum of values per category; Count of items per category; % = category total ÷ liquidity sum<br/>
+          <strong>Source:</strong> 
+          <span id="category-breakdown-source">
+            Networth Inputs sheet Col E (assets, rows 3+) grouped by category OR Sheet1 rows 3+ where Col H = "On" OR Sheet1 all rows, Columns B (category) & F (value)
+          </span><br/>
+          <strong>Details:</strong> Groups all items by business category; % of Liquidity shows relative weight; dynamically filtered based on Setting 1 master source selection
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Risk Monitor</div></div>
+        <div id="risk-panel" style="padding:0.25rem 0;"></div>
+        <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+          <strong>Formula:</strong> PSAR Notional = Position Sizing × Base; LO Premium = total LO; Equity = sum of equity items Col F; Cash = sum of cash items; Debt = sum of debt rows<br/>
+          <strong>Source:</strong> Strategy Allocation (rows 4+, Col F net exposure / Col G LO premium) + Sheet1 (Col D types, Col F values, debt rows)<br/>
+          <strong>Details:</strong> Monitors strategy allocation, leverage, and margin positions; compares against portfolio composition
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd">
+        <div class="panel-title">Excluded Items (Off)</div>
+        <span class="dao" id="off-lbl">—</span>
+      </div>
+      <div class="panel-body0 sx">
+        <table class="dt" id="off-table">
+          <thead><tr>
+            <th>Particulars</th>
+            <th>Category</th>
+            <th class="r">Value</th>
+            <th>Asset Type</th>
+            <th>Entity</th>
+            <th>Reason</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+        <strong>Formula:</strong> Show all rows where Col H ≠ "On"; sum values Col F; group by reason code (Status)<br/>
+        <strong>Source:</strong> Sheet1, rows 3+ where Col H = "Off" / not active, Columns B (Category), C-D (Particulars), F (Value), G (Entity)<br/>
+        <strong>Details:</strong> Excluded items may include locked deposits, pending confirmations, or entries marked for review
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BROKERS ─────────────────────────────────────────────── -->
+  <div class="page" id="page-brokers">
+    <div class="sec-hd">
+      <div class="sec-title">Brokers & Accounts</div>
+      <div class="sec-sub" id="brokers-subtitle">All values from Sheet1 · On items only</div>
+    </div>
+    <div id="page-brokers-source" style="font-size:0.65rem;color:var(--text-lt);margin-bottom:0.85rem"></div>
+
+    <div class="cards-row c4">
+      <div class="kcard forest">
+        <div class="kcard-lbl">Zerodha RN Total</div>
+        <div class="kcard-val" id="zrn-v">—</div>
+        <div class="kcard-sub">Rishabh Personal</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Zerodha Mishayan Total</div>
+        <div class="kcard-val" id="zmis-v">—</div>
+        <div class="kcard-sub">Mishayan Capital</div>
+      </div>
+      <div class="kcard cream">
+        <div class="kcard-lbl">Prop Desk</div>
+        <div class="kcard-val gold" id="prop-v">—</div>
+        <div class="kcard-sub gold" id="prop-s">—</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Other / FD / Bank</div>
+        <div class="kcard-val" id="other-v">—</div>
+        <div class="kcard-sub">—</div>
+      </div>
+    </div>
+    <div style="font-size:0.63rem;color:var(--text-lt);margin-bottom:1.25rem;line-height:1.6">
+      <strong>Formula:</strong> Sum of Col F values, filtered by broker name (Col C) and status (Col H); separate totals per broker account<br/>
+      <strong>Source:</strong> Sheet1, rows 3+, Columns C (Broker), B (Category), F (Value), H (Status)<br/>
+      <strong>Details:</strong> Broker groups: Zerodha RN (personal account), Zerodha Mishayan (capital account), Prop (proprietary), Other (FDs, bank, misc)
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd">
+        <div class="panel-title">Zerodha Broking RN — Rishabh Nahar Personal</div>
+        <span class="dao" id="zrn-date">—</span>
+      </div>
+      <div class="panel-body0 sx">
+        <table class="dt" id="zrn-table">
+          <thead><tr>
+            <th>Sub-Account</th>
+            <th class="r">Value (₹)</th>
+            <th>Asset Type</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+        <strong>Formula:</strong> Sum of Col F per sub-account; group by Col D account designation; show count and asset types<br/>
+        <strong>Source:</strong> Sheet1, rows 3+, Columns C (broker = 'Zerodha Broking RN'), D (sub-account), F (value), H (status)<br/>
+        <strong>Details:</strong> Shows breakdown of personal account holdings by sub-account; On/Off status visible
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd">
+        <div class="panel-title">Zerodha Broking Mishayan — Mishayan Capital Pvt Ltd</div>
+        <span class="dao" id="zmis-date">—</span>
+      </div>
+      <div class="panel-body0 sx">
+        <table class="dt" id="zmis-table">
+          <thead><tr>
+            <th>Sub-Account</th>
+            <th class="r">Value (₹)</th>
+            <th>Asset Type</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+        <strong>Formula:</strong> Sum of Col F per sub-account; group by Col D account designation; show count and asset types<br/>
+        <strong>Source:</strong> Sheet1, rows 3+, Columns C (broker = 'Zerodha Broking Mishayan'), D (sub-account), F (value), H (status)<br/>
+        <strong>Details:</strong> Shows breakdown of capital account holdings by sub-account; On/Off status visible
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><div class="panel-title">Prop Desk — All Brokers</div></div>
+      <div class="panel-body0 sx">
+        <table class="dt" id="prop-table">
+          <thead><tr>
+            <th>Broker</th>
+            <th>Line Item</th>
+            <th class="r">Value (₹)</th>
+            <th>Entity</th>
+            <th>Status</th>
+            <th>Data As Of</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot id="prop-foot"></tfoot>
+        </table>
+      </div>
+      <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+        <strong>Formula:</strong> Sum of Col F per broker; group by Col C; filter and aggregate by row count of category<br/>
+        <strong>Source:</strong> Sheet1, rows 3+, Columns B (category = 'Prop'), C (broker), D (item name), F (value), G (entity), H (status), I (date)<br/>
+        <strong>Details:</strong> Shows all proprietary desk allocations across brokers; includes On/Off status tracking
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><div class="panel-title">Other Investments · FDs · Bank Balances</div></div>
+      <div class="panel-body0 sx">
+        <table class="dt" id="other-table">
+          <thead><tr>
+            <th>Particulars</th>
+            <th>Category</th>
+            <th class="r">Value (₹)</th>
+            <th>Asset Type</th>
+            <th>Entity</th>
+            <th>Status</th>
+            <th>Data As Of</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+        <strong>Formula:</strong> Sum of Col F; filter by Col B category = 'Other Investments' or 'FD'; group by item and type<br/>
+        <strong>Source:</strong> Sheet1, rows 3+, Columns B (category), C-D (particulars), F (value), G (entity), H (status), I (date)<br/>
+        <strong>Details:</strong> Fixed deposits, bank balances, and miscellaneous other investments; shows status and date as of
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STRATEGIES ──────────────────────────────────────────── -->
+  <div class="page" id="page-strategies">
+    <div class="sec-hd">
+      <div class="sec-title">Strategy Exposure</div>
+      <div class="sec-sub">From Strategy Allocation sheet · Net Exposure = Position Sizing × Base</div>
+    </div>
+    <div id="page-strategies-source" style="font-size:0.65rem;color:var(--text-lt);margin-bottom:0.85rem"></div>
+
+    <div class="cards-row c5">
+      <div class="kcard forest">
+        <div class="kcard-lbl">Total PSAR Notional</div>
+        <div class="kcard-val" id="st-psar">—</div>
+        <div class="kcard-sub" id="st-psar-s">—</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Long Options Premium</div>
+        <div class="kcard-val" id="st-lo">—</div>
+        <div class="kcard-sub">Max loss on LO positions</div>
+      </div>
+      <div class="kcard cream">
+        <div class="kcard-lbl">QAW / Gold Futures</div>
+        <div class="kcard-val gold" id="st-qaw">—</div>
+        <div class="kcard-sub gold" id="st-qaw-s">—</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Put Protection Notional</div>
+        <div class="kcard-val" id="st-put">—</div>
+        <div class="kcard-sub">Hedged portfolio value</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Risk-Adjusted Exposure</div>
+        <div class="kcard-val neg" id="st-risk">—</div>
+        <div class="kcard-sub" id="st-risk-s">PSAR + QAW + LO premium</div>
+      </div>
+    </div>
+    <div style="font-size:0.63rem;color:var(--text-lt);margin-bottom:1.25rem;line-height:1.6">
+      <strong>Formula:</strong> PSAR Total = sum of Net Exposure (Col F) where strategy = 'PSAR'; LO Premium = sum of Col G; QAW/Gold = sum where strategy contains 'QAW' or 'Gold'; Put Protection = sum where strategy = 'Put'; Risk-Adjusted = sum of all leveraged positions<br/>
+      <strong>Source:</strong> Strategy Allocation sheet, rows 4+, Columns B (account), C (strategy name), D (position sizing), E (base), F (net exposure), G (LO premium)<br/>
+      <strong>Details:</strong> Aggregates across all strategy types and brokers; shows gross and net leverage metrics
+    </div>
+
+    <div class="col2">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">PSAR by Broker</div></div>
+        <div class="panel-body0 sx">
+          <table class="dt" id="psar-table">
+            <thead><tr>
+              <th>Broker / Account</th>
+              <th class="r">Base</th>
+              <th class="r">Multiplier</th>
+              <th class="r">PSAR Notional</th>
+              <th class="r">% of NW</th>
+            </tr></thead>
+            <tbody></tbody>
+            <tfoot id="psar-foot"></tfoot>
+          </table>
+        </div>
+        <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+          <strong>Formula:</strong> Filter rows where strategy = 'PSAR'; sum Col F (net exposure); group by broker; calculate % = notional ÷ net worth<br/>
+          <strong>Source:</strong> Strategy Allocation sheet, rows 4+ where Col C = 'PSAR', Columns B (account), E (base exposure), D (multiplier), F (net exposure)<br/>
+          <strong>Details:</strong> Shows per-broker PSAR leverage; multiplier applied to base exposure; footers show totals
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Strategy Summary</div></div>
+        <div class="panel-body0 sx">
+          <table class="dt" id="strat-summary">
+            <thead><tr>
+              <th>Strategy</th>
+              <th class="r">Total Notional</th>
+              <th class="r">× NW</th>
+              <th>Active Brokers</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+          <strong>Formula:</strong> Group by Col C (strategy name); sum Col F (net exposure) per strategy; count unique values in Col B (brokers) per strategy<br/>
+          <strong>Source:</strong> Strategy Allocation sheet, rows 4+, Columns B (broker), C (strategy), F (net exposure)<br/>
+          <strong>Details:</strong> Aggregated view across all brokers; shows strategy concentration and number of active accounts
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><div class="panel-title">Full Allocation — All Brokers & Strategies</div></div>
+      <div class="panel-body0 sx">
+        <table class="dt" id="full-alloc">
+          <thead><tr>
+            <th>Account</th>
+            <th>Strategy</th>
+            <th class="r">Position Sizing</th>
+            <th class="r">Base Exposure</th>
+            <th class="r">Net Exposure</th>
+            <th class="r">LO Premium</th>
+            <th class="r">Deposit</th>
+            <th class="r">Lev</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+        <strong>Formula:</strong> Direct table mapping with calculated fields per row: notional = position sizing × base; leverage derived from formula<br/>
+        <strong>Source:</strong> Strategy Allocation sheet, rows 4+, Columns B (account), C (strategy), D (position sizing), E (base exposure), F (net exposure), G (LO premium), H (deposit), I (leverage)<br/>
+        <strong>Details:</strong> Complete allocation detail across all strategy accounts; shows constituent calculations
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HOLDINGS ────────────────────────────────────────────── -->
+  <div class="page" id="page-holdings">
+    <div class="sec-hd">
+      <div class="sec-title">Holdings</div>
+      <div class="sec-sub">Equity Holdings + Mutual Funds · P&L from purchase price</div>
+    </div>
+    <div id="page-holdings-source" style="font-size:0.65rem;color:var(--text-lt);margin-bottom:0.85rem"></div>
+
+    <div class="cards-row c4">
+      <div class="kcard forest">
+        <div class="kcard-lbl">Total Holdings Value</div>
+        <div class="kcard-val" id="hld-total">—</div>
+        <div class="kcard-sub" id="hld-total-s">—</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Total P&L</div>
+        <div class="kcard-val" id="hld-pnl">—</div>
+        <div class="kcard-sub" id="hld-pnl-s">—</div>
+      </div>
+      <div class="kcard cream">
+        <div class="kcard-lbl">Equity Holdings</div>
+        <div class="kcard-val gold" id="hld-eq">—</div>
+        <div class="kcard-sub" id="hld-eq-s">—</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Mutual Funds</div>
+        <div class="kcard-val" id="hld-mf">—</div>
+        <div class="kcard-sub" id="hld-mf-s">—</div>
+      </div>
+    </div>
+    <div style="font-size:0.63rem;color:var(--text-lt);margin-bottom:1.25rem;line-height:1.6">
+      <strong>Formula:</strong> Total Value = sum of Col K (Equity) + Col L (Mutual Funds); Total P&L = sum of P&L cols; breakouts by holding type<br/>
+      <strong>Source:</strong> Equity Holdings sheet rows 4+, Columns D-M (qty, avg price, LTP, buy value, current value, P&L); Mutual Funds sheet rows 4+, Columns D-N (same fields)<br/>
+      <strong>Details:</strong> P&L = current value minus buy value; includes market-to-market revaluation; applies LTP/NAV pricing
+    </div>
+
+    <div class="panel" style="border-radius:10px 10px 0 0;margin-bottom:0">
+      <div class="filter-bar">
+        <span style="font-size:0.6rem;color:var(--text-lt);font-weight:700;letter-spacing:0.08em;text-transform:uppercase">Filter:</span>
+        <div class="fpill active" onclick="filterH('all',this)">All</div>
+        <div class="fpill" onclick="filterH('Stock',this)">Stocks</div>
+        <div class="fpill" onclick="filterH('MF',this)">Mutual Funds</div>
+        <div class="fsep"></div>
+        <div class="fpill" onclick="filterH('Personal Stock Holdings Zerodha',this)">RN Personal</div>
+        <div class="fpill" onclick="filterH('Stock Holdings',this)">Mishayan</div>
+        <div class="fpill" onclick="filterH('Mutual Funds',this)">Loaned to Mishayan</div>
+        <div class="fsep"></div>
+        <div class="fpill" onclick="filterH('QMF',this)">QMF</div>
+        <div class="fpill" onclick="filterH('Momentum',this)">Momentum</div>
+        <div class="fpill" onclick="filterH('Low Vol',this)">Low Vol</div>
+        <div class="fpill" onclick="filterH('Discretionary Stock',this)">Discretionary</div>
+        <div class="fpill" onclick="filterH('Sumesh',this)">Sumesh</div>
+      </div>
+    </div>
+    <div class="panel" style="border-radius:0 0 10px 10px;border-top:none;margin-top:0">
+      <div class="panel-body0 sx">
+        <table class="dt" id="hld-table">
+          <thead><tr>
+            <th>Symbol / Name</th>
+            <th>Type</th>
+            <th>Account</th>
+            <th>Strategy</th>
+            <th class="r">Qty</th>
+            <th class="r">Avg Price</th>
+            <th class="r">LTP / NAV</th>
+            <th class="r">Buy Value (₹)</th>
+            <th class="r">Current Value (₹)</th>
+            <th class="r">P&L (₹)</th>
+            <th class="r">P&L %</th>
+            <th>Notes</th>
+          </tr></thead>
+          <tbody id="hld-tbody"></tbody>
+          <tfoot id="hld-foot"></tfoot>
+        </table>
+      </div>
+      <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+        <strong>Formula:</strong> Symbol lookup; quantity from Col D; pricing from Col I (LTP) or Col J (NAV); current value = qty × price; P&L = current minus buy value; %P&L = P&L / buy value<br/>
+        <strong>Source:</strong> Equity Holdings & Mutual Funds sheets, rows 4+, Columns A (symbol), D (qty), E (avg price), I/J (LTP/NAV), J/K (buy value), K/L (current value), L/M (P&L), M/N (P&L %)<br/>
+        <strong>Details:</strong> Per-position detail; filterable by asset type and account; shows unrealized gains/losses; includes account and strategy tag
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BALANCE SHEET ──────────────────────────────────────── -->
+  <div class="page" id="page-balance">
+    <div class="sec-hd">
+      <div class="sec-title">Balance Sheet</div>
+      <div class="sec-sub">Net Worth by entity · Assets from Sheet1 On items · Liabilities from Debt section</div>
+    </div>
+    <div id="page-balance-source" style="font-size:0.65rem;color:var(--text-lt);margin-bottom:0.85rem"></div>
+
+    <div class="cards-row c3">
+      <div class="kcard forest">
+        <div class="kcard-lbl">Combined Net Worth</div>
+        <div class="kcard-val" id="bs-nw">—</div>
+        <div class="kcard-sub">Assets − Total Liabilities</div>
+      </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Rishabh Nahar</div>
+        <div class="kcard-val" id="bs-rn">—</div>
+        <div class="kcard-sub">Personal Net Worth</div>
+      </div>
+      <div class="kcard cream">
+        <div class="kcard-lbl">Mishayan Capital</div>
+        <div class="kcard-val gold" id="bs-mis">—</div>
+        <div class="kcard-sub">Company Net Worth</div>
+      </div>
+    </div>
+    <div style="font-size:0.63rem;color:var(--text-lt);margin-bottom:1.25rem;line-height:1.6">
+      <strong>Formula:</strong> Combined NW = sum of active assets (Col F where Col H = 'On') minus sum of all liabilities (debt rows Col 12); Per-entity NW = filtered assets (Col G = entity name) minus entity's liabilities (debt rows Col 13)<br/>
+      <strong>Source:</strong> Sheet1 rows 3+ for assets (Col H = 'On', Col F values, Col G entity); Sheet1 debt section rows 3+ (Col 12 values, Col 13 entity)<br/>
+      <strong>Details:</strong> Combines personal and company net worth; shows entity-level profit/loss if tracked separately
+    </div>
+
+    <div class="col2">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Assets — Active (On) Items</div></div>
+        <div class="panel-body0 sx">
+          <table class="dt" id="bs-assets">
+            <thead><tr>
+              <th>Particulars</th>
+              <th>Category</th>
+              <th class="r">RN (₹)</th>
+              <th class="r">Mishayan (₹)</th>
+              <th class="r">Total (₹)</th>
+              <th>Type</th>
+            </tr></thead>
+            <tbody></tbody>
+            <tfoot id="bs-assets-foot"></tfoot>
+          </table>
+        </div>
+        <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+          <strong>Formula:</strong> Item name from Cols C-D; category from Col B; sum Col F per entity (split into RN and Mishayan); total = RN + Mishayan<br/>
+          <strong>Source:</strong> Sheet1, rows 3+ where Col H = 'On', Columns B (category), C-D (item name), D (asset type), F (value), G (entity Split)<br/>
+          <strong>Details:</strong> Shows active asset base segregated by entity owner; footers show subtotals per entity and grand total
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-title">Liabilities</div></div>
+          <div class="panel-body0 sx">
+            <table class="dt" id="bs-liab">
+              <thead><tr>
+                <th>Particulars</th>
+                <th class="r">Value (₹)</th>
+                <th>Entity</th>
+              </tr></thead>
+              <tbody></tbody>
+              <tfoot id="bs-liab-foot"></tfoot>
+            </table>
+          </div>
+          <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+            <strong>Formula:</strong> Item name from Col 11; sum Col 12 values; entity from Col 13; total = sum of all debt rows<br/>
+            <strong>Source:</strong> Sheet1 debt section (cols 9-13, rows 3+), Columns 11 (particulars), 12 (value), 13 (entity)<br/>
+            <strong>Details:</strong> Shows total liabilities outstanding; footers show subtotals and grand total by entity
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-title">Net Worth Summary by Entity</div></div>
+          <div class="panel-body0 sx">
+            <table class="dt" id="bs-summary">
+              <thead><tr>
+                <th>Entity</th>
+                <th class="r">Assets (₹)</th>
+                <th class="r">Net Worth (₹)</th>
+                <th class="r">% of Total NW</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+            <strong>Formula:</strong> Assets per entity from sum of Col F where Col H = 'On' and Col G = entity; Net Worth = entity assets minus entity liabilities (sum Col 12 where Col 13 = entity); % of Total NW = entity NW ÷ combined NW<br/>
+            <strong>Source:</strong> Sheet1 assets (rows 3+, Col G entity, Col F value, Col H status filter) + Sheet1 debt section (rows 3+, Col 13 entity, Col 12 value)<br/>
+            <strong>Details:</strong> Summary balance sheet by entity; shows relative wealth distribution; total row shows combined position
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-title">Asset Type Breakdown</div></div>
+          <div class="panel-body" id="bs-type-bars"></div>
+          <div style="font-size:0.63rem;color:var(--text-lt);padding:0.85rem;border-top:1px solid var(--border-lt);line-height:1.5">
+            <strong>Formula:</strong> Group active items by Col D (type); sum Col F per type; show as both value bar and percentage of total liquidity<br/>
+            <strong>Source:</strong> Sheet1, rows 3+ where Col H = 'On', Columns D (asset type: Equity, Debt, Cash, Gold), F (value)<br/>
+            <strong>Details:</strong> Shows portfolio composition by asset class; value bars scale to total; % indicates asset class concentration
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS ───────────────────────────────────────────── -->
+  <div class="page" id="page-settings">
+    <div class="sec-hd">
+      <div class="sec-title">Settings & Configuration</div>
+      <div class="sec-sub">Master data source configuration · All calculations update in real-time</div>
+    </div>
+
+    <div class="col2">
+      <!-- SETTING 1: Master Data Source -->
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Setting 1 — Master Data Source</div></div>
+        <div class="panel-body">
+          <div style="margin-bottom:0.85rem">
+            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-mute);margin-bottom:0.45rem;text-transform:uppercase;letter-spacing:0.05em">Which sheet drives Net Worth & Liquidity?</label>
+            <select id="cfg-master-source" onchange="updateConfig('masterSource',this.value);renderAll()" style="width:100%;padding:0.48rem;border:1px solid var(--border-lt);border-radius:4px;font-size:0.78rem;font-family:var(--font-body)">
+              <option value="sheet1_on">Sheet1 — On items only</option>
+              <option value="sheet1_all">Sheet1 — All items (On + Off)</option>
+            </select>
+          </div>
+          <div style="padding:0.85rem;background:var(--cream-lt);border-radius:6px;margin-bottom:1rem">
+            <div style="font-size:0.65rem;color:var(--text-lt);margin-bottom:0.35rem">Net Worth:</div>
+            <div style="font-family:var(--font-serif);font-size:1.5rem;color:var(--forest);font-weight:500;line-height:1" id="set1-result">—</div>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-lt);line-height:1.5">
+            <strong style="color:var(--text-mute)">ℹ Helper:</strong> Networth Inputs is the established working sheet. Sheet1 is a newer format with an On/Off toggle. These two sheets currently have different values for the same line items.
+          </div>
+          <div style="font-size:0.63rem;color:var(--text-lt);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-lt);line-height:1.5">
+            <strong>Excel Source:</strong> Networth Inputs sheet Col E (assets, rows 3+) minus Col M (debt, rows 3+). OR Sheet1 rows 3+ Col F (values) filtered by Col H (status).
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTING 2: Sheet1 On/Off Toggle -->
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Setting 2 — Sheet1 On/Off Toggle</div></div>
+        <div class="panel-body">
+          <div style="margin-bottom:0.85rem">
+            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-mute);margin-bottom:0.45rem;text-transform:uppercase;letter-spacing:0.05em">When using Sheet1, which rows are included?</label>
+            <select id="cfg-sheet1-filter" onchange="updateConfig('sheet1Filter',this.value);renderAll()" style="width:100%;padding:0.48rem;border:1px solid var(--border-lt);border-radius:4px;font-size:0.78rem;font-family:var(--font-body)">
+              <option value="on_only">On items only — Off rows excluded</option>
+              <option value="all">All rows — On/Off is display-only</option>
+            </select>
+            <div style="font-size:0.65rem;color:var(--text-lt);margin-top:0.45rem;padding:0.65rem;background:#fae8e8;border-radius:4px;display:none" id="set2-na">
+              <strong style="color:#8B1A1A">Not applicable</strong> — Networth Inputs has no On/Off toggle.
+            </div>
+          </div>
+          <div style="padding:0.85rem;background:var(--cream-lt);border-radius:6px;margin-bottom:1rem">
+            <div style="font-size:0.65rem;color:var(--text-lt);margin-bottom:0.35rem">Active / Included Items:</div>
+            <div style="font-family:var(--font-serif);font-size:1.5rem;color:var(--forest);font-weight:500;line-height:1" id="set2-result">—</div>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-lt);line-height:1.5">
+            <strong style="color:var(--text-mute)">ℹ Helper:</strong> Off rows in Sheet1 include locked FDs, unrealised P&L not yet confirmed, and deposits marked as excluded.
+          </div>
+          <div style="font-size:0.63rem;color:var(--text-lt);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-lt);line-height:1.5">
+            <strong>Excel Source:</strong> Sheet1 Col H ("On/Off" status). When "On items only": filter for rows where Col H = "On". When "All rows": include all rows.
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTING 3: Strategy Exposure Source -->
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Setting 3 — Strategy Exposure Source</div></div>
+        <div class="panel-body">
+          <div style="margin-bottom:0.85rem">
+            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-mute);margin-bottom:0.45rem;text-transform:uppercase;letter-spacing:0.05em">Where do Strategy Exposure numbers come from?</label>
+            <select id="cfg-strategy-source" onchange="updateConfig('strategySource',this.value);renderAll()" style="width:100%;padding:0.48rem;border:1px solid var(--border-lt);border-radius:4px;font-size:0.78rem;font-family:var(--font-body)">
+              <option value="sheet_direct">Strategy Allocation sheet — Net Exposure column directly</option>
+              <option value="recompute">Recompute from master source — Position Sizing × Base</option>
+            </select>
+          </div>
+          <div style="padding:0.85rem;background:var(--cream-lt);border-radius:6px;margin-bottom:1rem">
+            <div style="font-size:0.65rem;color:var(--text-lt);margin-bottom:0.35rem">Total PSAR Notional:</div>
+            <div style="font-family:var(--font-serif);font-size:1.5rem;color:var(--forest);font-weight:500;line-height:1" id="set3-result">—</div>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-lt);line-height:1.5">
+            <strong style="color:var(--text-mute)">ℹ Helper:</strong> The Strategy Allocation sheet has its own internal formulas that reference Networth Inputs. If your master source (Setting 1) is Sheet1, pulling directly from Strategy Allocation may create inconsistency.
+          </div>
+          <div style="font-size:0.63rem;color:var(--text-lt);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-lt);line-height:1.5">
+            <strong>Excel Source:</strong> Strategy Allocation sheet rows 4+ Col F (Net Exposure) for direct use. OR recompute using Col D (Position Sizing) × master liquidity from Setting 1.
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTING 4: Holdings P&L Source -->
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Setting 4 — Holdings P&L Source</div></div>
+        <div class="panel-body">
+          <div style="margin-bottom:0.85rem">
+            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-mute);margin-bottom:0.45rem;text-transform:uppercase;letter-spacing:0.05em">Where do Holdings values and P&L come from?</label>
+            <select id="cfg-holdings-source" onchange="updateConfig('holdingsSource',this.value);renderAll()" style="width:100%;padding:0.48rem;border:1px solid var(--border-lt);border-radius:4px;font-size:0.78rem;font-family:var(--font-body)">
+              <option value="holdings_sheets">Equity Holdings + Mutual Funds sheets — market values</option>
+              <option value="networth_inputs">Networth Inputs sheet — aggregated values only</option>
+            </select>
+          </div>
+          <div style="padding:0.85rem;background:var(--cream-lt);border-radius:6px;margin-bottom:1rem">
+            <div style="font-size:0.65rem;color:var(--text-lt);margin-bottom:0.35rem">Total Holdings Value:</div>
+            <div style="font-family:var(--font-serif);font-size:1.5rem;color:var(--forest);font-weight:500;line-height:1" id="set4-result">—</div>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-lt);line-height:1.5">
+            <strong style="color:var(--text-mute)">ℹ Helper:</strong> Equity Holdings and Mutual Funds sheets have stock-level detail including LTP, quantity, buy price, and P&L per position. Networth Inputs only has category-level totals.
+          </div>
+          <div style="font-size:0.63rem;color:var(--text-lt);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-lt);line-height:1.5">
+            <strong>Excel Source:</strong> Equity Holdings sheet rows 4+ Col K (Current Value) and Col L (P&L). Mutual Funds sheet rows 4+ Col L (Current Value) and Col M (P&L). OR Networth Inputs sheet filtered categories for aggregated totals.
+          </div>
+        </div>
+      </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:1.1rem">
+      <div class="panel-hd"><div class="panel-title">Configuration Summary</div></div>
+      <div class="panel-body0 sx">
+        <table class="dt" id="cfg-summary">
+          <thead><tr>
+            <th>Setting</th>
+            <th>Current Configuration</th>
+            <th class="r">Impact on NW</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════════════════════════════
+const D = { 
+  s1:[], strats:[], eq:[], mf:[], debts:[], dataDate:null,
+  nwInputs: { assets:[], debts:[], dataDate:null }  // Networth Inputs sheet data
+};
+
+// ═══════════════════════════════════════════════════════════════
+// CONFIG — Master Settings
+// ═══════════════════════════════════════════════════════════════
+const CONFIG = {
+  masterSource: 'sheet1_on',   // 'sheet1_on' | 'sheet1_all'
+  sheet1Filter: 'on_only',           // 'on_only' | 'all'
+  strategySource: 'sheet_direct',    // 'sheet_direct' | 'recompute'
+  holdingsSource: 'holdings_sheets'  // 'holdings_sheets' | 'networth_inputs'
+};
+
+// ═══════════════════════════════════════════════════════════════
+// FORMAT HELPERS
+// ═══════════════════════════════════════════════════════════════
+const cr = (v,dp=2) => {
+  if(v===null||v===undefined||isNaN(v)) return '—';
+  const a=Math.abs(v), s=v<0?'-':'';
+  if(a>=1e7) return s+'₹'+(a/1e7).toFixed(dp)+' Cr';
+  if(a>=1e5) return s+'₹'+(a/1e5).toFixed(dp)+' L';
+  return s+'₹'+a.toLocaleString('en-IN',{maximumFractionDigits:0});
+};
+const pct = (a,b,dp=1) => b>0?(a/b*100).toFixed(dp)+'%':'—';
+const xnw = (a,b,dp=2) => b>0?(a/b).toFixed(dp)+'x NW':'—';
+const fd = d => {
+  if(!d) return '—';
+  if(d instanceof Date) return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  return String(d);
+};
+const sv = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+const sh = (id,h) => { const e=document.getElementById(id); if(e) e.innerHTML=h; };
+const sum = (arr,fn) => arr.reduce((s,x)=>s+(fn(x)||0),0);
+
+// ═══════════════════════════════════════════════════════════════
+// FILE HANDLING
+// ═══════════════════════════════════════════════════════════════
+const handleDrop = e => { const f=e.dataTransfer.files[0]; if(f) processFile(f); };
+const handleFile = e => { const f=e.target.files[0]; if(f) processFile(f); e.target.value=''; };
+
+function processFile(file) {
+  const st = document.getElementById('upload-status');
+  if(st) st.textContent = '⏳ Parsing ' + file.name + ' …';
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      // Use raw:true so numbers stay as numbers, not strings
+      const wb = XLSX.read(new Uint8Array(ev.target.result), { type:'array', cellDates:true, raw:true });
+      parseAll(wb);
+      renderAll();
+      document.getElementById('upload-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      showPage('overview', document.querySelector('.nav-tab'));
+    } catch(err) {
+      if(st) st.textContent = '✗ Error: ' + err.message;
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PARSING — FIXED for exact sheet structure
+// ═══════════════════════════════════════════════════════════════
+function parseAll(wb) {
+  parseNetWorthInputs(wb);
+  parseSheet1(wb);
+  parseStrategies(wb);
+  parseEquity(wb);
+  parseMF(wb);
+}
+
+function parseNetWorthInputs(wb) {
+  // Parse Networth Inputs sheet: Col E (index 4) = Assets, Col M (index 12) = Debts
+  const sn = wb.SheetNames.find(n => n === 'Networth Inputs');
+  if(!sn || !wb.Sheets[sn]) {
+    D.nwInputs = { assets:[], debts:[], dataDate:null };
+    return;
+  }
+  
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
+  D.nwInputs.assets = [];
+  D.nwInputs.debts = [];
+  
+  // Parse asset section (left side): columns 0-6
+  // Row 2 = headers, Row 3+ = data
+  // Col 0: Sr.No, Col 1: Category, Col 2: Particulars, Col 3: Equity/Debt, Col 4: Value, Col 5: Mishayan/Rishabh
+  for(let i=3; i<rows.length; i++) {
+    const r = rows[i];
+    if(!r || r.length < 5) continue;
+    const sno = r[0];
+    if(sno===null || sno===undefined || String(sno).trim()==='') break; // Stop at empty row
+    const cat = String(r[1]||'').trim();
+    const part = String(r[2]||'').trim();
+    const eqDebt = String(r[3]||'').trim();
+    const val = Number(r[4]) || 0;
+    const ent = String(r[5]||'').trim();
+    if(!part) continue;
+    D.nwInputs.assets.push({ cat, part, eqDebt, val, ent });
+  }
+  
+  // Parse debt section (right side, after gap): columns 9-12
+  // Col 9: Sr.No, Col 10: Category, Col 11: Particulars, Col 12: Value
+  for(let i=3; i<rows.length; i++) {
+    const r = rows[i];
+    if(!r || r.length < 13) continue;
+    const sno = r[9];
+    if(sno===null || sno===undefined || String(sno).trim()==='') continue;
+    const cat = String(r[10]||'').trim();
+    const part = String(r[11]||'').trim();
+    const val = Number(r[12]) || 0;
+    if(!part) continue;
+    D.nwInputs.debts.push({ cat, part, val });
+  }
+  
+  // Get most recent date from assets
+  D.nwInputs.dataDate = null;
+}
+
+function parseSheet1(wb) {
+  // Find Sheet1
+  const sn = wb.SheetNames.find(n => n === 'Sheet1') || wb.SheetNames[0];
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
+  // Row 0: "Liquidity" header  Row 1: blank  Row 2: column headers  Row 3+: data
+  // Col indices: 0=sno, 1=cat, 2=p1, 3=p2, 4=assetType, 5=value, 6=entity, 7=status, 8=date, 9=attach
+  // Debt cols: 12=sno, 13=cat, 14=particulars, 15=value, 16=entity
+  D.s1 = []; D.debts = [];
+  for(let i=3; i<rows.length; i++) {
+    const r = rows[i];
+    if(!r) continue;
+    const sno = r[0];
+    if(sno===null || sno===undefined || String(sno).trim()==='') continue;
+    const cat = String(r[1]||'').trim();
+    const p1  = String(r[2]||'').trim();
+    const p2  = String(r[3]||'').trim();
+    const typ = String(r[4]||'').trim();
+    const val = Number(r[5]) || 0;
+    const ent = String(r[6]||'').trim();
+    const sta = String(r[7]||'').trim();
+    let   dat = null;
+    if(r[8] instanceof Date) dat = r[8];
+    else if(r[8]!==null && r[8]!==undefined) {
+      const d = new Date(r[8]); if(!isNaN(d)) dat = d;
+    }
+    if(!p1 && !p2) continue;
+    D.s1.push({ cat, p1, p2, typ, val, ent, sta, dat });
+  }
+  // Debt section (cols 12-16), starting row index 3
+  for(let i=3; i<rows.length; i++) {
+    const r = rows[i];
+    if(!r || r.length < 16) continue;
+    const sno = r[12]; if(sno===null||sno===undefined) continue;
+    const cat = String(r[13]||'').trim();
+    const par = String(r[14]||'').trim();
+    const val = Number(r[15]) || 0;
+    const ent = String(r[16]||'').trim();
+    if(!par) continue;
+    D.debts.push({ cat, par, val, ent });
+  }
+  // Most recent data date
+  const dates = D.s1.filter(x=>x.dat).map(x=>x.dat.getTime());
+  D.dataDate = dates.length ? new Date(Math.max(...dates)) : null;
+}
+
+function parseStrategies(wb) {
+  // Strategy Allocation: header at row index 3, data from row 4
+  const sn = wb.SheetNames.find(n => n.toLowerCase().includes('strategy'));
+  if(!sn || !wb.Sheets[sn]) return;
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
+  D.strats = [];
+  // Header row is index 3 (row 4 in Excel). Start data from index 4.
+  for(let i=4; i<rows.length; i++) {
+    const r = rows[i];
+    if(!r) continue;
+    const sno = r[0]; if(sno===null||sno===undefined) continue;
+    const acc  = String(r[1]||'').trim();
+    const strat= String(r[2]||'').trim();
+    if(!acc && !strat) continue;
+    D.strats.push({
+      acc, strat,
+      posSize: Number(r[3])||0,
+      exposure: Number(r[4])||0,
+      netExp:   Number(r[5])||0,
+      loPrem:   Number(r[6])||0,
+      deposit:  Number(r[7])||0,
+      lev:      Number(r[8])||0
+    });
+  }
+}
+
+function parseEquity(wb) {
+  // Equity Holdings: header at row index 2, data from row 3
+  // cols: 0=symbol, 1=tag, 2=exchange, 3=qty, 4=avgPrice, 5=broker, 6=assetType, 7=subCat, 8=ltp, 9=buyVal, 10=curVal, 11=pnl, 12=pnlPct, 13=notes
+  const sn = wb.SheetNames.find(n => n.toLowerCase().includes('equity holding'));
+  if(!sn || !wb.Sheets[sn]) return;
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
+  D.eq = [];
+  for(let i=3; i<rows.length; i++) {
+    const r = rows[i];
+    if(!r || !r[0]) continue;
+    D.eq.push({
+      sym: String(r[0]||'').trim(),
+      tag: String(r[1]||'').trim(),
+      qty: Number(r[3])||0,
+      avg: Number(r[4])||0,
+      assetType: String(r[6]||'').trim(),
+      subCat: String(r[7]||'').trim(),
+      ltp: Number(r[8])||0,
+      buyVal: Number(r[9])||0,
+      curVal: Number(r[10])||0,
+      pnl:    Number(r[11])||0,
+      pnlPct: Number(r[12])||0,
+      notes:  String(r[13]||'').trim(),
+      type: 'Stock'
+    });
+  }
+}
+
+function parseMF(wb) {
+  // Mutual Funds: header at row index 2, data from row 3
+  // cols: 0=symbol, 1=isin, 2=schemeCode, 3=qty, 4=avgPrice, 5=broker, 6=assetType, 7=tag, 8=subCat, 9=nav, 10=buyVal, 11=curVal, 12=pnl, 13=pnlPct, 14=notes
+  const sn = wb.SheetNames.find(n => n.toLowerCase().includes('mutual fund'));
+  if(!sn || !wb.Sheets[sn]) return;
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
+  D.mf = [];
+  for(let i=3; i<rows.length; i++) {
+    const r = rows[i];
+    if(!r || !r[0]) continue;
+    D.mf.push({
+      sym: String(r[0]||'').trim(),
+      qty: Number(r[3])||0,
+      avg: Number(r[4])||0,
+      assetType: String(r[6]||'').trim(),
+      tag: String(r[7]||'').trim(),
+      subCat: String(r[8]||'').trim(),
+      nav: Number(r[9])||0,
+      buyVal: Number(r[10])||0,
+      curVal: Number(r[11])||0,
+      pnl:    Number(r[12])||0,
+      pnlPct: Number(r[13])||0,
+      notes:  String(r[14]||'').trim(),
+      type: 'MF'
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COMPUTED
+// ═══════════════════════════════════════════════════════════════
+const onItems  = () => {
+  if(CONFIG.masterSource === 'networth_inputs') return D.nwInputs.assets;
+  if(CONFIG.masterSource === 'sheet1_all') return D.s1;
+  return D.s1.filter(x=>x.sta==='On');
+};
+const offItems = () => {
+  if(CONFIG.masterSource === 'networth_inputs') return [];
+  if(CONFIG.masterSource === 'sheet1_all') return [];
+  return D.s1.filter(x=>x.sta!=='On');
+};
+const liquidity= () => sum(onItems(), x=>x.val);
+const totalDebt= () => sum(D.debts, x=>x.val);
+const netWorth = () => liquidity() - totalDebt();
+const psarNot  = () => sum(D.strats.filter(r=>r.strat==='PSAR'), r=>r.netExp);
+const loPrem   = () => sum(D.strats.filter(r=>r.strat==='Long Options'), r=>r.loPrem);
+const qawFut   = () => sum(D.strats.filter(r=>['QAW Futures','Gold Futures','Gold','Gold PRCS'].includes(r.strat)), r=>r.netExp);
+const putNot   = () => sum(D.strats.filter(r=>r.strat==='Put Protection'), r=>r.netExp);
+
+// ═══════════════════════════════════════════════════════════════
+// BADGE HELPERS
+// ═══════════════════════════════════════════════════════════════
+const abadge = t => {
+  const m = {Equity:'bdg-eq',Debt:'bdg-debt',Cash:'bdg-cash',Gold:'bdg-gold'};
+  return `<span class="bdg ${m[t]||'bdg-cat'}">${t||'—'}</span>`;
+};
+const ebadge = e => {
+  const m = {Rishabh:'bdg-rn',Mishayan:'bdg-mis'};
+  return `<span class="bdg ${m[e]||'bdg-cat'}">${e||'—'}</span>`;
+};
+const stbadge = s => `<span class="bdg ${s==='On'?'bdg-on':'bdg-off'}">${s}</span>`;
+
+// ═══════════════════════════════════════════════════════════════
+// CONFIG HELPERS
+// ═══════════════════════════════════════════════════════════════
+function updateConfig(key, val) {
+  CONFIG[key] = val;
+  // Update UI to reflect disabled settings
+  const set2 = document.getElementById('cfg-sheet1-filter');
+  const set2Na = document.getElementById('set2-na');
+  if(set2 && set2Na) {
+    if(CONFIG.masterSource === 'networth_inputs') {
+      set2.disabled = true;
+      set2Na.style.display = 'block';
+    } else {
+      set2.disabled = false;
+      set2Na.style.display = 'none';
+    }
+  }
+}
+
+// Master data source computation functions
+function computeNetWorthBySource() {
+  if(CONFIG.masterSource === 'networth_inputs') {
+    const assets = sum(D.nwInputs.assets, x=>x.val);
+    const debts = sum(D.nwInputs.debts, x=>x.val);
+    return assets - debts;
+  } else if(CONFIG.masterSource === 'sheet1_on') {
+    return sum(onItems(), x=>x.val) - totalDebt();
+  } else if(CONFIG.masterSource === 'sheet1_all') {
+    return sum(D.s1, x=>x.val) - totalDebt();
+  }
+  return netWorth();
+}
+
+function computeLiquidityBySource() {
+  if(CONFIG.masterSource === 'networth_inputs') {
+    return sum(D.nwInputs.assets, x=>x.val);
+  } else if(CONFIG.masterSource === 'sheet1_on') {
+    return sum(onItems(), x=>x.val);
+  } else if(CONFIG.masterSource === 'sheet1_all') {
+    return sum(D.s1, x=>x.val);
+  }
+  return liquidity();
+}
+
+function computeActiveItems() {
+  if(CONFIG.masterSource === 'networth_inputs') {
+    return D.nwInputs.assets.length;
+  } else if(CONFIG.masterSource === 'sheet1_on') {
+    return onItems().length;
+  } else if(CONFIG.masterSource === 'sheet1_all') {
+    return D.s1.length;
+  }
+  return onItems().length;
+}
+
+function computeDebtBySource() {
+  if(CONFIG.masterSource === 'networth_inputs') {
+    return sum(D.nwInputs.debts, x=>x.val);
+  } else {
+    return totalDebt();
+  }
+}
+
+function getAssetAllocationData() {
+  if(CONFIG.masterSource === 'networth_inputs') {
+    return D.nwInputs.assets;
+  } else if(CONFIG.masterSource === 'sheet1_on') {
+    return onItems();
+  } else if(CONFIG.masterSource === 'sheet1_all') {
+    return D.s1;
+  }
+  return onItems();
+}
+
+function computePSARNotional() {
+  if(CONFIG.strategySource === 'sheet_direct') {
+    return psarNot();
+  } else if(CONFIG.strategySource === 'recompute') {
+    // Recompute: use base from master source × position sizing
+    const baseLiq = computeLiquidityBySource();
+    return sum(D.strats.filter(r=>r.strat==='PSAR'), r=>r.posSize * baseLiq);
+  }
+  return psarNot();
+}
+
+function computeHoldingsTotal() {
+  if(CONFIG.holdingsSource === 'holdings_sheets') {
+    return sum(D.eq, x=>x.curVal) + sum(D.mf, x=>x.curVal);
+  } else if(CONFIG.holdingsSource === 'networth_inputs') {
+    // Get holdings value from Networth Inputs - categories like Stocks, Equity
+    return sum(D.nwInputs.assets.filter(x=>['Client Account','Stocks','Mutual Funds','Equity'].includes(x.cat)), x=>x.val);
+  }
+  return sum(D.eq, x=>x.curVal) + sum(D.mf, x=>x.curVal);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+function renderAll() {
+  const nw = computeNetWorthBySource(), liq = computeLiquidityBySource();
+  // Header
+  sv('h-nw',   cr(nw));
+  sv('h-psar', cr(computePSARNotional()));
+  sv('h-liq',  cr(liq));
+  sv('h-date', D.dataDate ? 'As of ' + fd(D.dataDate) : '—');
+  renderOverview(nw, liq);
+  renderBrokers(nw, liq);
+  renderStrategies(nw);
+  renderHoldings();
+  renderBalance(nw, liq);
+  renderSettings(nw, liq);
+}
+
+// ─── OVERVIEW ─────────────────────────────────────────────────
+function renderOverview(nw, liq) {
+  const assetData = getAssetAllocationData();
+  const on = onItems(), off = offItems();
+  const debt = totalDebt(), psar = psarNot();
+  sv('ov-date', D.dataDate ? 'Data as of ' + fd(D.dataDate) : '—');
+  sv('ov-nw', cr(nw));
+  sv('ov-liq', cr(liq));
+  sv('ov-liq-sub', assetData.length + ' active items');
+  sv('ov-debt', cr(debt));
+  sv('ov-debt-sub', D.debts.length + ' liabilities');
+  sv('ov-psar', cr(psar));
+  sv('ov-psar-sub', xnw(psar, nw));
+  sv('ov-items', on.length);
+  const offText = CONFIG.masterSource === 'sheet1_on' ? off.length + ' items excluded (Off)' :
+    CONFIG.masterSource === 'sheet1_all' ? 'All items included' :
+    'Networth Inputs mode (no On/Off)';
+  sv('ov-items-sub', offText);
+
+  // Donut
+  const eq  = sum(assetData.filter(x=>x.typ==='Equity'), x=>x.val);
+  const dbt = sum(assetData.filter(x=>x.typ==='Debt'),   x=>x.val);
+  const csh = sum(assetData.filter(x=>x.typ==='Cash'),   x=>x.val);
+  const gld = sum(assetData.filter(x=>x.typ==='Gold'),   x=>x.val);
+  drawDonut([
+    {label:'Equity',    val:eq,  color:'#02422B'},
+    {label:'Debt/Prop', val:dbt, color:'#1a5a80'},
+    {label:'Cash',      val:csh, color:'#DABD38'},
+    {label:'Gold',      val:gld, color:'#b8a020'},
+  ], liq);
+
+  // Update dynamic title
+  const titleText = CONFIG.masterSource === 'networth_inputs' ? 'Asset Allocation — Networth Inputs' :
+                   CONFIG.masterSource === 'sheet1_on' ? 'Asset Allocation — On Items Only' :
+                   'Asset Allocation — All Items (On + Off)';
+  sv('asset-allocation-title', titleText);
+
+  // Update dynamic source attribution
+  const sourceText = CONFIG.masterSource === 'networth_inputs' ?
+    'Networth Inputs sheet Col E (assets, rows 3+) for asset types' :
+    CONFIG.masterSource === 'sheet1_on' ?
+    'Sheet1, rows 3+ where Col H = "On", Columns D (asset type) & F (value)' :
+    'Sheet1, rows 3+ (all items), Columns D (asset type) & F (value)';
+  sv('asset-allocation-source', sourceText);
+
+  // Update Entity Split source attribution
+  const entitySourceText = CONFIG.masterSource === 'networth_inputs' ?
+    'Networth Inputs sheet Col E (assets, rows 3+) filtered by entity' :
+    CONFIG.masterSource === 'sheet1_on' ?
+    'Sheet1, rows 3+ where Col H = "On", Columns G (entity owner) & F (value)' :
+    'Sheet1, rows 3+ (all items), Columns G (entity owner) & F (value)';
+  sv('entity-split-source', entitySourceText);
+
+  // Update Category Breakdown source attribution
+  const categorySourceText = CONFIG.masterSource === 'networth_inputs' ?
+    'Networth Inputs sheet Col E (assets, rows 3+) grouped by category' :
+    CONFIG.masterSource === 'sheet1_on' ?
+    'Sheet1, rows 3+ where Col H = "On", Columns B (category) & F (value)' :
+    'Sheet1, rows 3+ (all items), Columns B (category) & F (value)';
+  sv('category-breakdown-source', categorySourceText);
+
+  // Entity split
+  const rn  = sum(assetData.filter(x=>x.ent==='Rishabh'),  x=>x.val);
+  const mis = sum(assetData.filter(x=>x.ent==='Mishayan'), x=>x.val);
+  const oth = sum(assetData.filter(x=>!['Rishabh','Mishayan'].includes(x.ent)), x=>x.val);
+  const bars = [
+    {name:'Rishabh Nahar', sub:'Personal', val:rn, color:'#02422B'},
+    {name:'Mishayan Capital', sub:'Company', val:mis, color:'#1a5a80'},
+    ...(oth>0?[{name:'Other', sub:'', val:oth, color:'#DABD38'}]:[])
+  ];
+  sh('entity-panel', bars.map(b=>`
+    <div class="alloc-row">
+      <div><div class="alloc-name">${b.name}</div><div class="alloc-sub">${b.sub}</div></div>
+      <div style="display:flex;align-items:center;gap:0.5rem;flex:1">
+        <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:${liq>0?b.val/liq*100:0}%;background:${b.color}"></div></div>
+        <span style="font-size:0.65rem;color:var(--text-lt);min-width:38px;text-align:right">${pct(b.val,liq)}</span>
+      </div>
+      <div style="font-family:'Courier New',monospace;font-size:0.73rem;font-weight:700;color:${b.color};text-align:right">${cr(b.val)}</div>
+    </div>
+  `).join('') + `
+    <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border-lt);display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;font-size:0.69rem">
+      <div><span style="color:var(--text-lt)">RN assets:</span> <strong>${cr(rn)}</strong></div>
+      <div><span style="color:var(--text-lt)">Mishayan assets:</span> <strong>${cr(mis)}</strong></div>
+    </div>
+  `);
+
+  // Category table
+  const cats = {};
+  assetData.forEach(x => { if(!cats[x.cat]) cats[x.cat]={v:0,n:0}; cats[x.cat].v+=x.val; cats[x.cat].n++; });
+  const catTb = document.querySelector('#cat-table tbody');
+  if(catTb) catTb.innerHTML = Object.entries(cats).sort((a,b)=>b[1].v-a[1].v).map(([c,d])=>`<tr>
+    <td><strong>${c}</strong></td>
+    <td class="mono r">${cr(d.v)}</td>
+    <td class="mono r">${pct(d.v,liq)}</td>
+    <td class="muted">${d.n}</td>
+  </tr>`).join('')+`<tr class="trow-total"><td>Total</td><td class="r">${cr(liq)}</td><td class="r">100.0%</td><td></td></tr>`;
+
+  // Risk monitor
+  const riskRows = [
+    {lbl:'PSAR / Net Worth', val:xnw(psar,nw), bar:Math.min(psar/nw/8,1), ok:psar/nw<6},
+    {lbl:'PSAR Notional', val:cr(psar), bar:Math.min(psar/liq,1), ok:true},
+    {lbl:'LO Premium', val:cr(loPrem()), bar:Math.min(loPrem()/nw/0.03,1), ok:loPrem()/nw<0.03},
+    {lbl:'Equity %', val:pct(eq,liq), bar:eq/liq, ok:true},
+    {lbl:'Cash %', val:pct(csh,liq), bar:csh/liq, ok:true},
+    {lbl:'Total Liabilities', val:cr(debt), bar:Math.min(debt/liq,1), ok:debt/liq<0.15},
+  ];
+  sh('risk-panel', riskRows.map(r=>`
+    <div class="risk-row">
+      <div class="risk-lbl">${r.lbl}</div>
+      <div style="display:flex;align-items:center"><div class="bar-bg" style="width:100%"><div class="bar-fill" style="width:${r.bar*100}%;background:${r.ok?'#02422B':'#8B1A1A'}"></div></div></div>
+      <div style="font-family:'Courier New',monospace;font-size:0.68rem;text-align:right;color:${r.ok?'var(--text-dark)':'var(--red-neg)'}">${r.val}</div>
+      <div style="text-align:right"><span class="bdg ${r.ok?'bdg-ok':'bdg-chk'}">${r.ok?'OK':'CHK'}</span></div>
+    </div>
+  `).join(''));
+
+  // Off items
+  const offTotal = sum(off, x=>x.val);
+  sv('off-lbl', `${off.length} items · ${cr(offTotal)} excluded`);
+  const offTb = document.querySelector('#off-table tbody');
+  if(offTb) offTb.innerHTML = off.map(x=>`<tr>
+    <td><strong>${x.p2||x.p1}</strong>${x.p2&&x.p1!==x.p2?`<div style="font-size:0.63rem;color:var(--text-lt)">${x.p1}</div>`:''}</td>
+    <td><span class="bdg bdg-cat">${x.cat}</span></td>
+    <td class="mono r off-val">${cr(x.val)}</td>
+    <td>${abadge(x.typ)}</td>
+    <td>${ebadge(x.ent)}</td>
+    <td style="font-size:0.65rem;color:var(--text-lt)">Status = Off in Sheet1</td>
+  </tr>`).join('');
+
+  sv('page-overview-source', 'Overview values: Net Worth/Liquidity in use = master source from SETTINGS (Networth Inputs / Sheet1 On / Sheet1 All). Data elements: On items from Sheet1 as parsed in parseSheet1(), debts from Balance section in parseSheet1().');
+}
+
+// Donut chart
+function drawDonut(segs, total) {
+  const svg = document.getElementById('donut-svg');
+  const leg = document.getElementById('donut-legend');
+  if(!svg||!leg) return;
+  const cx=65, cy=65, R=50, ri=30;
+
+  const cleanSegs = segs.filter(s => typeof s.val === 'number' && isFinite(s.val) && s.val > 0);
+  const cleanTotal = cleanSegs.reduce((sum,s)=>sum+s.val,0);
+
+  if(!cleanSegs.length || cleanTotal <= 0) {
+    svg.innerHTML = `<circle cx="${cx}" cy="${cy}" r="${R}" fill="#f0f0f0"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" fill="#7a9b8a" font-size="12">No positive data</text>`;
+    leg.innerHTML = '<div style="font-size:0.7rem;color:var(--text-lt);margin-top:0.25rem">No segments with positive values available.</div>';
+    return;
+  }
+
+  let angle = -Math.PI/2;
+  let paths = '';
+  cleanSegs.forEach(s => {
+    const a = (s.val / cleanTotal) * Math.PI * 2;
+    const ea = angle + a;
+    const x1 = cx + R * Math.cos(angle), y1 = cy + R * Math.sin(angle);
+    const x2 = cx + R * Math.cos(ea), y2 = cy + R * Math.sin(ea);
+    const ix1 = cx + ri * Math.cos(ea), iy1 = cy + ri * Math.sin(ea);
+    const ix2 = cx + ri * Math.cos(angle), iy2 = cy + ri * Math.sin(angle);
+    const lg = a > Math.PI ? 1 : 0;
+    paths += `<path d="M${x1},${y1} A${R},${R} 0 ${lg},1 ${x2},${y2} L${ix1},${iy1} A${ri},${ri} 0 ${lg},0 ${ix2},${iy2}Z" fill="${s.color}"/>`;
+    angle = ea;
+  });
+
+  svg.innerHTML = paths + `<circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="white"/>`;
+  leg.innerHTML = cleanSegs.map(s => `<div class="leg-item">
+    <div class="leg-dot" style="background:${s.color}"></div>
+    <div class="leg-lbl">${s.label}</div>
+    <div class="leg-val">${cr(s.val,1)}</div>
+    <div class="leg-pct">${pct(s.val, cleanTotal)}</div>
+  </div>`).join('');
+}
+
+
+// ─── BROKERS ─────────────────────────────────────────────────
+function renderBrokers(nw, liq) {
+  const assetData = getAssetAllocationData();
+
+  // Update dynamic subtitle
+  const subtitleText = CONFIG.masterSource === 'networth_inputs' ? 'Values from Networth Inputs sheet' :
+                      CONFIG.masterSource === 'sheet1_on' ? 'All values from Sheet1 · On items only' :
+                      'All values from Sheet1 · All items (On + Off)';
+  sv('brokers-subtitle', subtitleText);
+  // Zerodha RN
+  const zrn = assetData.filter(x=>x.p1==='Zerodha Broking RN');
+  const zrnV = sum(zrn, x=>x.val);
+  sv('zrn-v', cr(zrnV));
+  sv('zrn-date', zrn[0]?.dat ? fd(zrn[0].dat) : '—');
+  const zrnTb = document.querySelector('#zrn-table tbody');
+  if(zrnTb) zrnTb.innerHTML = zrn.map(x=>`<tr>
+    <td><strong>${x.p2}</strong></td>
+    <td class="mono r">${cr(x.val)}</td>
+    <td>${abadge(x.typ)}</td>
+    <td>${stbadge(x.sta)}</td>
+  </tr>`).join('')+`<tr class="trow-total"><td>Total RN</td><td class="r">${cr(zrnV)}</td><td></td><td></td></tr>`;
+
+  // Zerodha Mishayan
+  const zmis = assetData.filter(x=>x.p1==='Zerodha Broking Mishayan');
+  const zmisV = sum(zmis, x=>x.val);
+  sv('zmis-v', cr(zmisV));
+  sv('zmis-date', zmis[0]?.dat ? fd(zmis[0].dat) : '—');
+  const zmisTb = document.querySelector('#zmis-table tbody');
+  if(zmisTb) zmisTb.innerHTML = zmis.map(x=>`<tr>
+    <td><strong>${x.p2}</strong></td>
+    <td class="mono r">${cr(x.val)}</td>
+    <td>${abadge(x.typ)}</td>
+    <td>${stbadge(x.sta)}</td>
+  </tr>`).join('')+`<tr class="trow-total"><td>Total Mishayan</td><td class="r">${cr(zmisV)}</td><td></td><td></td></tr>`;
+
+  // Prop
+  const props = assetData.filter(x=>x.cat==='Prop');
+  const propBrokers = [...new Set(props.map(x=>x.p1).filter(Boolean))];
+  const propOnV = CONFIG.masterSource === 'sheet1_on' ? sum(props.filter(x=>x.sta==='On'), x=>x.val) : sum(props, x=>x.val);
+  sv('prop-v', cr(propOnV));
+  sv('prop-s', propBrokers.length + ' prop brokers');
+  const propTb = document.querySelector('#prop-table tbody');
+  const propFt = document.getElementById('prop-foot');
+  if(propTb) {
+    let h='';
+    propBrokers.forEach(b=>{
+      const items = props.filter(x=>x.p1===b);
+      const onV = sum(items.filter(x=>x.sta==='On'), x=>x.val);
+      h+=`<tr class="trow-section"><td colspan="6">${b} — Active: ${cr(onV)}</td></tr>`;
+      h+=items.map(x=>`<tr>
+        <td style="padding-left:1.2rem">${x.p1}</td>
+        <td>${x.p2}</td>
+        <td class="mono r ${x.sta!=='On'?'off-val':''}">${cr(x.val)}</td>
+        <td>${ebadge(x.ent)}</td>
+        <td>${stbadge(x.sta)}</td>
+        <td class="muted" style="font-size:0.65rem">${fd(x.dat)}</td>
+      </tr>`).join('');
+    });
+    propTb.innerHTML=h;
+    if(propFt) propFt.innerHTML=`<tr class="trow-total"><td colspan="2">Total Prop (On)</td><td class="r">${cr(propOnV)}</td><td colspan="3"></td></tr>`;
+  }
+
+  // Other
+  const others = assetData.filter(x=>['Other Investments','FD'].includes(x.cat));
+  const otherOnV = CONFIG.masterSource === 'sheet1_on' ? sum(others.filter(x=>x.sta==='On'), x=>x.val) : sum(others, x=>x.val);
+  sv('other-v', cr(otherOnV));
+  const otherTb = document.querySelector('#other-table tbody');
+  if(otherTb) otherTb.innerHTML = others.map(x=>`<tr>
+    <td><strong>${x.p2||x.p1}</strong></td>
+    <td><span class="bdg bdg-cat">${x.cat}</span></td>
+    <td class="mono r ${x.sta!=='On'?'off-val':''}">${cr(x.val)}</td>
+    <td>${abadge(x.typ)}</td>
+    <td>${ebadge(x.ent)}</td>
+    <td>${stbadge(x.sta)}</td>
+    <td class="muted" style="font-size:0.65rem">${fd(x.dat)}</td>
+  </tr>`).join('');
+
+  const brokersSourceText = CONFIG.masterSource === 'networth_inputs' ?
+      'Broker tables: not available for Networth Inputs (uses Sheet1-style structure), totals shown as 0.' :
+      CONFIG.masterSource === 'sheet1_on' ?
+      'Broker tables: Sheet1 rows 3+ On items only.' :
+      'Broker tables: Sheet1 rows 3+ All items (On + Off).';
+  sv('page-brokers-source', brokersSourceText);
+}
+
+// ─── STRATEGIES ───────────────────────────────────────────────
+function renderStrategies(nw) {
+  const psar=psarNot(), lo=loPrem(), qaw=qawFut(), put=putNot();
+  const risk=psar+qaw+lo;
+  sv('st-psar', cr(psar)); sv('st-psar-s', xnw(psar,nw));
+  sv('st-lo',   cr(lo));
+  sv('st-qaw',  cr(qaw));  sv('st-qaw-s',  xnw(qaw,nw));
+  sv('st-put',  cr(put));
+  sv('st-risk', cr(risk)); sv('st-risk-s', xnw(risk,nw));
+
+  // PSAR table
+  const psarRows = D.strats.filter(r=>r.strat==='PSAR');
+  const psarTb = document.querySelector('#psar-table tbody');
+  const psarFt = document.getElementById('psar-foot');
+  if(psarTb) {
+    psarTb.innerHTML = psarRows.map(r=>`<tr>
+      <td><strong>${r.acc}</strong></td>
+      <td class="mono r">${cr(r.exposure)}</td>
+      <td class="mono r">${r.posSize}x</td>
+      <td class="mono r gold">${cr(r.netExp)}</td>
+      <td class="mono r">${pct(r.netExp,nw)}</td>
+    </tr>`).join('');
+    if(psarFt) psarFt.innerHTML=`<tr class="trow-total"><td>Total PSAR</td><td></td><td></td><td class="r">${cr(psar)}</td><td class="r">${xnw(psar,nw)}</td></tr>`;
+  }
+
+  // Strategy summary
+  const sm={};
+  D.strats.forEach(r=>{
+    if(!r.strat) return;
+    if(!sm[r.strat]) sm[r.strat]={n:0,bk:new Set()};
+    sm[r.strat].n+=r.netExp;
+    if(r.acc) sm[r.strat].bk.add(r.acc.split(' ')[0]);
+  });
+  const ssTb = document.querySelector('#strat-summary tbody');
+  if(ssTb) ssTb.innerHTML = Object.entries(sm).sort((a,b)=>b[1].n-a[1].n).map(([s,d])=>`<tr>
+    <td><strong>${s}</strong></td>
+    <td class="mono r">${cr(d.n)}</td>
+    <td class="mono r">${xnw(d.n,nw)}</td>
+    <td class="muted" style="font-size:0.65rem">${[...d.bk].join(', ')}</td>
+  </tr>`).join('');
+
+  // Full alloc
+  const faTb = document.querySelector('#full-alloc tbody');
+  if(faTb) {
+    let h='', lastAcc='';
+    D.strats.forEach(r=>{
+      if(r.acc!==lastAcc){ h+=`<tr class="trow-section"><td colspan="8">${r.acc}</td></tr>`; lastAcc=r.acc; }
+      h+=`<tr>
+        <td class="muted" style="padding-left:1.2rem">—</td>
+        <td><strong>${r.strat||'—'}</strong></td>
+        <td class="mono r">${r.posSize>0?r.posSize+'x':'—'}</td>
+        <td class="mono r">${r.exposure>0?cr(r.exposure):'—'}</td>
+        <td class="mono r" style="color:var(--forest);font-weight:700">${r.netExp>0?cr(r.netExp):'—'}</td>
+        <td class="mono r">${r.loPrem>0?cr(r.loPrem):'—'}</td>
+        <td class="mono r">${r.deposit>0?cr(r.deposit):'—'}</td>
+        <td class="mono r">${r.lev>0?r.lev.toFixed(1)+'x':'—'}</td>
+      </tr>`;
+    });
+    faTb.innerHTML=h;
+  }
+  sv('page-strategies-source', 'Strategy tables: Source is Strategy Allocation sheet parsed in parseStrategies(). PSAR uses psarNot() from that parsed data, with optional recompute using position sizing ≥ master liquidity.');
+}
+
+// ─── HOLDINGS ─────────────────────────────────────────────────
+let hFilter = 'all';
+const filterH = (f,el) => {
+  hFilter=f;
+  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderHoldingsTable();
+};
+
+function renderHoldings() {
+  const all = [...D.eq, ...D.mf];
+  const eqV = sum(D.eq, x=>x.curVal), mfV = sum(D.mf, x=>x.curVal);
+  const totV = eqV+mfV, totPnl = sum(all, x=>x.pnl), totBuy = sum(all, x=>x.buyVal);
+  sv('hld-total', cr(totV));
+  sv('hld-total-s', all.length+' positions');
+  sv('hld-pnl', (totPnl>=0?'+':'')+cr(totPnl));
+  const pnlEl = document.getElementById('hld-pnl');
+  if(pnlEl) pnlEl.className='kcard-val '+(totPnl>=0?'pos':'neg');
+  sv('hld-pnl-s', totBuy>0?(totPnl/totBuy*100).toFixed(2)+'% overall':'—');
+  sv('hld-eq', cr(eqV)); sv('hld-eq-s', D.eq.length+' stocks');
+  sv('hld-mf', cr(mfV)); sv('hld-mf-s', D.mf.length+' funds');
+  renderHoldingsTable();
+  sv('page-holdings-source', 'Holdings values: Equity Holdings and Mutual Funds sheets parsed by parseEquity() and parseMF(). P&L per security from these sheets.');
+}
+
+function renderHoldingsTable() {
+  const all = [...D.eq, ...D.mf];
+  const flt = all.filter(x=>{
+    if(hFilter==='all') return true;
+    if(hFilter==='Stock') return x.type==='Stock';
+    if(hFilter==='MF')    return x.type==='MF';
+    return x.tag===hFilter||x.subCat===hFilter;
+  }).sort((a,b)=>b.curVal-a.curVal);
+
+  const totV=sum(flt,x=>x.curVal), totPnl=sum(flt,x=>x.pnl), totBuy=sum(flt,x=>x.buyVal);
+  const tb=document.getElementById('hld-tbody'), ft=document.getElementById('hld-foot');
+  if(!tb) return;
+
+  tb.innerHTML = flt.map(x=>{
+    const isMis = x.tag==='Stock Holdings';
+    const isLoaned = x.notes?.toLowerCase().includes('loaned');
+    const pos = x.pnl>=0;
+    return `<tr>
+      <td>
+        <strong style="font-family:'Courier New',monospace;font-size:0.73rem">${x.sym}</strong>
+        ${isLoaned?'<span class="bdg bdg-cash" style="margin-left:4px;font-size:0.52rem">LOANED</span>':''}
+      </td>
+      <td><span class="bdg ${x.type==='MF'?'bdg-mf':'bdg-stk'}">${x.type}</span></td>
+      <td>${isMis?'<span class="bdg bdg-mis">Mishayan</span>':'<span class="bdg bdg-rn">RN</span>'}</td>
+      <td style="font-size:0.67rem;color:var(--text-mute)">${x.subCat||'—'}</td>
+      <td class="mono r muted">${x.qty>0?x.qty.toLocaleString('en-IN'):'—'}</td>
+      <td class="mono r muted">${x.avg>0?'₹'+x.avg.toFixed(2):'—'}</td>
+      <td class="mono r">${x.ltp>0?'₹'+x.ltp.toFixed(2):x.nav>0?'₹'+x.nav.toFixed(4):'—'}</td>
+      <td class="mono r muted">${cr(x.buyVal)}</td>
+      <td class="mono r">${cr(x.curVal)}</td>
+      <td class="mono r ${pos?'pos':'neg'}">${pos?'+':''}${cr(x.pnl)}</td>
+      <td class="mono r ${pos?'pos':'neg'}">${pos?'+':''}${x.pnlPct.toFixed(2)}%</td>
+      <td style="font-size:0.62rem;color:var(--text-lt);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.notes||'—'}</td>
+    </tr>`;
+  }).join('');
+
+  if(ft) ft.innerHTML=`<tr class="trow-total">
+    <td colspan="7">Total (${flt.length} positions)</td>
+    <td class="r">${cr(totBuy)}</td>
+    <td class="r">${cr(totV)}</td>
+    <td class="r ${totPnl>=0?'pos':'neg'}">${totPnl>=0?'+':''}${cr(totPnl)}</td>
+    <td class="r ${totPnl>=0?'pos':'neg'}">${totBuy>0?(totPnl/totBuy*100).toFixed(2)+'%':'—'}</td>
+    <td></td>
+  </tr>`;
+}
+
+// ─── BALANCE SHEET ────────────────────────────────────────────
+function renderBalance(nw, liq) {
+  const on = onItems(), debt = totalDebt();
+  sv('bs-nw', cr(nw));
+  const rnItems  = on.filter(x=>x.ent==='Rishabh');
+  const misItems = on.filter(x=>x.ent==='Mishayan');
+  const othItems = on.filter(x=>!['Rishabh','Mishayan'].includes(x.ent));
+  const rnA  = sum(rnItems,  x=>x.val);
+  const misA = sum(misItems, x=>x.val);
+  const othA = sum(othItems, x=>x.val);
+  const rnDebt  = sum(D.debts.filter(d=>d.ent==='Rishabh'),  d=>d.val);
+  const misDebt = sum(D.debts.filter(d=>d.ent==='Mishayan'), d=>d.val);
+  const rnNW  = rnA  - rnDebt;
+  const misNW = misA - misDebt;
+  sv('bs-rn',  cr(rnNW));
+  sv('bs-mis', cr(misNW));
+
+  // Assets table
+  const cats = [...new Set(on.map(x=>x.cat))];
+  const aTb = document.querySelector('#bs-assets tbody'), aFt = document.getElementById('bs-assets-foot');
+  if(aTb) {
+    let h='';
+    cats.forEach(cat=>{
+      const items = on.filter(x=>x.cat===cat);
+      h+=`<tr class="trow-section"><td colspan="6">${cat}</td></tr>`;
+      items.forEach(x=>{
+        const rnV  = x.ent==='Rishabh'  ? x.val : 0;
+        const misV = x.ent==='Mishayan' ? x.val : 0;
+        h+=`<tr>
+          <td style="padding-left:1rem"><strong>${x.p2||x.p1}</strong></td>
+          <td class="muted">${x.cat}</td>
+          <td class="mono r">${rnV>0?cr(rnV):'—'}</td>
+          <td class="mono r">${misV>0?cr(misV):'—'}</td>
+          <td class="mono r">${cr(x.val)}</td>
+          <td>${abadge(x.typ)}</td>
+        </tr>`;
+      });
+    });
+    aTb.innerHTML=h;
+    if(aFt) aFt.innerHTML=`<tr class="trow-total">
+      <td colspan="2">Total Assets (On)</td>
+      <td class="r">${cr(rnA)}</td><td class="r">${cr(misA)}</td><td class="r">${cr(liq)}</td><td></td>
+    </tr>`;
+  }
+
+  // Liabilities
+  const lTb=document.querySelector('#bs-liab tbody'), lFt=document.getElementById('bs-liab-foot');
+  if(lTb) {
+    lTb.innerHTML=D.debts.map(d=>`<tr>
+      <td><strong>${d.par}</strong></td>
+      <td class="mono r neg">${cr(d.val)}</td>
+      <td>${ebadge(d.ent)}</td>
+    </tr>`).join('');
+    if(lFt) lFt.innerHTML=`<tr class="trow-total"><td>Total Liabilities</td><td class="r neg">${cr(debt)}</td><td></td></tr>`;
+  }
+
+  // Summary
+  const sTb=document.querySelector('#bs-summary tbody');
+  if(sTb) {
+    const rows=[
+      {lbl:'Rishabh Nahar', assets:rnA, nwv:rnNW},
+      {lbl:'Mishayan Capital', assets:misA, nwv:misNW},
+      ...(othA>0?[{lbl:'Other Entities', assets:othA, nwv:othA}]:[])
+    ];
+    sTb.innerHTML=rows.map(r=>`<tr>
+      <td><strong>${r.lbl}</strong></td>
+      <td class="mono r">${cr(r.assets)}</td>
+      <td class="mono r ${r.nwv>=0?'pos':'neg'}">${cr(r.nwv)}</td>
+      <td class="mono r">${pct(r.nwv,nw)}</td>
+    </tr>`).join('')+`<tr class="trow-total">
+      <td>Combined</td><td class="r">${cr(liq)}</td><td class="r">${cr(nw)}</td><td class="r">100%</td>
+    </tr>`;
+  }
+
+  // Type bars
+  const types={};
+  on.forEach(x=>{if(!types[x.typ])types[x.typ]=0;types[x.typ]+=x.val;});
+  const tColors={Equity:'#02422B',Debt:'#1a5a80',Cash:'#DABD38',Gold:'#b8a020'};
+  sh('bs-type-bars', Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([t,v])=>`
+    <div class="alloc-row">
+      <div class="alloc-name">${t}</div>
+      <div style="display:flex;align-items:center;gap:0.5rem;flex:1">
+        <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:${liq>0?v/liq*100:0}%;background:${tColors[t]||'#888'}"></div></div>
+        <span style="font-size:0.65rem;color:var(--text-lt);min-width:38px;text-align:right">${pct(v,liq)}</span>
+      </div>
+      <div style="font-family:'Courier New',monospace;font-size:0.73rem;font-weight:700;color:${tColors[t]||'#888'};text-align:right">${cr(v)}</div>
+    </div>
+  `).join(''));
+  const balanceSourceText = CONFIG.masterSource === 'networth_inputs' ?
+    'Balance sheet: Using Networth Inputs assets and debts (entity may not be present).' :
+    CONFIG.masterSource === 'sheet1_on' ?
+    'Balance sheet: Sheet1 rows 3+ On items for assets, debt section rows for liabilities.' :
+    'Balance sheet: Sheet1 rows 3+ (all items) for assets, debt section rows for liabilities.';
+  sv('page-balance-source', balanceSourceText);
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────
+function renderSettings(nw, liq) {
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────
+function renderSettings(nw, liq) {
+  // Sync dropdowns with CONFIG
+  const masterSel = document.getElementById('cfg-master-source');
+  const sheet1Sel = document.getElementById('cfg-sheet1-filter');
+  const stratSel = document.getElementById('cfg-strategy-source');
+  const hldSel = document.getElementById('cfg-holdings-source');
+  
+  if(masterSel) masterSel.value = CONFIG.masterSource;
+  if(sheet1Sel) sheet1Sel.value = CONFIG.sheet1Filter;
+  if(stratSel) stratSel.value = CONFIG.strategySource;
+  if(hldSel) hldSel.value = CONFIG.holdingsSource;
+  
+  // Update setting 1 result
+  const nwResult = computeNetWorthBySource();
+  sv('set1-result', cr(nwResult));
+  
+  // Update setting 2 result and disable if not applicable
+  const activeItems = computeActiveItems();
+  sv('set2-result', activeItems.toString());
+  const set2Na = document.getElementById('set2-na');
+  if(set2Na) {
+    if(CONFIG.masterSource === 'networth_inputs') {
+      set2Na.style.display = 'block';
+      if(sheet1Sel) sheet1Sel.disabled = true;
+    } else {
+      set2Na.style.display = 'none';
+      if(sheet1Sel) sheet1Sel.disabled = false;
+    }
+  }
+  
+  // Update setting 3 result
+  const psarVal = computePSARNotional();
+  sv('set3-result', cr(psarVal));
+  
+  // Update setting 4 result
+  const hldVal = computeHoldingsTotal();
+  sv('set4-result', cr(hldVal));
+  
+  // Configuration summary table
+  const cfgMap = {
+    'masterSource': {
+      'networth_inputs': 'Networth Inputs (established)',
+      'sheet1_on': 'Sheet1 — On items only',
+      'sheet1_all': 'Sheet1 — All items'
+    },
+    'sheet1Filter': {
+      'on_only': 'On items only',
+      'all': 'All rows (display-only)'
+    },
+    'strategySource': {
+      'sheet_direct': 'Strategy Allocation sheet (direct)',
+      'recompute': 'Recompute from master source'
+    },
+    'holdingsSource': {
+      'holdings_sheets': 'Equity Holdings + Mutual Funds sheets',
+      'networth_inputs': 'Networth Inputs sheet'
+    }
+  };
+  
+  const summaryTb = document.querySelector('#cfg-summary tbody');
+  if(summaryTb) {
+    const rows = [
+      {
+        setting: 'Master Data Source',
+        current: cfgMap.masterSource[CONFIG.masterSource],
+        impact: cr(nwResult)
+      },
+      {
+        setting: 'Sheet1 On/Off Toggle',
+        current: CONFIG.masterSource === 'networth_inputs' ? '(N/A)' : cfgMap.sheet1Filter[CONFIG.sheet1Filter],
+        impact: CONFIG.masterSource === 'networth_inputs' ? '—' : activeItems.toString() + ' active'
+      },
+      {
+        setting: 'Strategy Exposure Source',
+        current: cfgMap.strategySource[CONFIG.strategySource],
+        impact: cr(psarVal)
+      },
+      {
+        setting: 'Holdings P&L Source',
+        current: cfgMap.holdingsSource[CONFIG.holdingsSource],
+        impact: cr(hldVal)
+      }
+    ];
+    summaryTb.innerHTML = rows.map(r => `<tr>
+      <td><strong>${r.setting}</strong></td>
+      <td style="font-size:0.72rem;color:var(--text-mid)">${r.current}</td>
+      <td class="mono r" style="font-weight:700;color:var(--forest)">${r.impact}</td>
+    </tr>`).join('');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+}
+</script>
+</body>
+</html>

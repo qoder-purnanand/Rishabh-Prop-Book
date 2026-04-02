@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head><title>Excel Reader</title></head>
+<body>
+<input type="file" id="f" accept=".xlsx">
+<pre id="out" style="font-size:11px;white-space:pre-wrap;max-height:90vh;overflow:auto"></pre>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+document.getElementById('f').addEventListener('change', e => {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const wb = XLSX.read(ev.target.result, {type:'binary', cellDates:true, raw:true});
+    let out = 'SHEETS: ' + wb.SheetNames.join(', ') + '\n\n';
+    wb.SheetNames.forEach(sn => {
+      const ws = wb.Sheets[sn];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
+      const ref = ws['!ref'] || '';
+      out += `\n${'='.repeat(60)}\nSHEET: ${sn}  (${rows.length} rows, ref: ${ref})\n${'='.repeat(60)}\n`;
+      rows.slice(0,20).forEach((r,i) => {
+        out += `  R${i+1}: ${JSON.stringify(r)}\n`;
+      });
+      if(rows.length > 20) out += `  ... (${rows.length-20} more rows)\n`;
+    });
+    document.getElementById('out').textContent = out;
+  };
+  reader.readAsBinaryString(file);
+});
+</script>
+</body>
+</html>
