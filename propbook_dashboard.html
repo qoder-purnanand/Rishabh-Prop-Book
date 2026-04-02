@@ -830,6 +830,69 @@ body {
 .btn-danger:hover { background: var(--red-neg); color: var(--white); }
 .danger-zone { border: 1.5px solid rgba(139,26,26,0.3); border-radius: 8px; padding: 1rem 1.25rem; margin-top: 2rem; background: rgba(139,26,26,0.03); }
 
+/* ── LOGIN SCREEN ──────────────────────────────────────────── */
+#login-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(135deg, #01291a 0%, #02422B 60%, #02311f 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-body);
+}
+.login-card {
+  background: #fff; border-radius: 14px; padding: 2.5rem 2.2rem 2rem;
+  width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+.login-logo {
+  text-align: center; margin-bottom: 1.6rem;
+}
+.login-logo-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 14px;
+  background: var(--forest); color: var(--gold);
+  font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+.login-logo-title {
+  font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600;
+  color: var(--forest); letter-spacing: 0.01em;
+}
+.login-logo-sub {
+  font-size: 0.68rem; color: var(--text-lt); margin-top: 0.15rem;
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.login-field { margin-bottom: 1rem; }
+.login-field label {
+  display: block; font-size: 0.7rem; font-weight: 700; color: var(--text-mute);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem;
+}
+.login-field input {
+  width: 100%; padding: 0.58rem 0.75rem; border: 1.5px solid var(--border);
+  border-radius: 6px; font-size: 0.85rem; font-family: var(--font-body);
+  color: var(--text); background: var(--cream-lt); box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.login-field input:focus {
+  outline: none; border-color: var(--forest); background: #fff;
+}
+.login-btn {
+  width: 100%; padding: 0.65rem; background: var(--forest); color: var(--gold);
+  border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 700;
+  font-family: var(--font-body); cursor: pointer; margin-top: 0.5rem;
+  letter-spacing: 0.03em; transition: opacity 0.15s;
+}
+.login-btn:hover { opacity: 0.88; }
+.login-btn:disabled { opacity: 0.55; cursor: default; }
+.login-error {
+  font-size: 0.72rem; color: var(--red-neg); margin-top: 0.65rem;
+  text-align: center; min-height: 1rem; font-weight: 600;
+}
+.login-footer {
+  font-size: 0.6rem; color: var(--text-lt); text-align: center;
+  margin-top: 1.4rem; line-height: 1.5;
+}
+@media (max-width: 440px) {
+  .login-card { margin: 1rem; padding: 1.8rem 1.4rem 1.5rem; }
+}
+
 /* ── RESPONSIVE / MOBILE ───────────────────────────────────── */
 @media (max-width: 900px) {
   .c6 { grid-template-columns: repeat(3,1fr); }
@@ -880,6 +943,30 @@ body {
 </style>
 </head>
 <body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark">Q</div>
+      <div class="login-logo-title">Prop Book</div>
+      <div class="login-logo-sub">Rishabh Nahar · Qode Invest</div>
+    </div>
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="login-field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@qodeinvest.com" autocomplete="username" required>
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="login-btn" id="login-submit">Sign In</button>
+      <div class="login-error" id="login-error"></div>
+    </form>
+    <div class="login-footer">Private &amp; Confidential · Qode Investment Solutions</div>
+  </div>
+</div>
 
 <!-- UPLOAD -->
 <div id="upload-screen">
@@ -2207,6 +2294,55 @@ body {
 </div><!-- /app -->
 
 <script>
+// ═══════════════════════════════════════════════════════════════
+// LOGIN
+// Credentials are verified via SHA-256 (Web Crypto) at runtime.
+// Plain text is not stored anywhere in the bundle.
+// ═══════════════════════════════════════════════════════════════
+(function() {
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+
+  // Compute expected hashes once on load and hold in closure
+  let _eH = null, _pH = null;
+  (async () => {
+    _eH = await sha256('rishabh.nahar@qodeinvest.com');
+    _pH = await sha256('Nahar@123');
+  })();
+
+  // Already authenticated in this tab? Skip login screen.
+  if (sessionStorage.getItem('pb_auth') === '1') {
+    document.getElementById('login-screen').style.display = 'none';
+  }
+
+  window.handleLogin = async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('login-submit');
+    const err = document.getElementById('login-error');
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    err.textContent = '';
+
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const pass  = document.getElementById('login-pass').value;
+
+    const [eHash, pHash] = await Promise.all([sha256(email), sha256(pass)]);
+
+    if (eHash === _eH && pHash === _pH) {
+      sessionStorage.setItem('pb_auth', '1');
+      document.getElementById('login-screen').style.display = 'none';
+    } else {
+      err.textContent = 'Incorrect email or password.';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      document.getElementById('login-pass').value = '';
+      document.getElementById('login-pass').focus();
+    }
+  };
+})();
+
 // ═══════════════════════════════════════════════════════════════
 // DATA STORE
 // ═══════════════════════════════════════════════════════════════
