@@ -2510,18 +2510,20 @@ function refreshDtTotals(tableId) {
   const tbody = table.querySelector('tbody');
   if(!thead || !tbody) return;
   const tfoot = table.querySelector('tfoot');
-  if(tfoot && tfoot.querySelector('.trow-total')) return;
-  // Also skip if tbody has an inline custom total row
-  if(tbody.querySelector('.trow-total')) return;
+
   // Use only first header row for column metadata
   const ths = Array.from(thead.querySelectorAll('tr:first-child th'));
   const numCols = ths.reduce((acc, th, ci) => { if(th.classList.contains('r')) acc.push(ci); return acc; }, []);
   if(!numCols.length) return;
+
+  // Sum only visible, non-total, non-section, non-child rows
   const totals = {};
   numCols.forEach(ci => totals[ci] = 0);
   let anyData = false;
   tbody.querySelectorAll('tr').forEach(row => {
     if(row.style.display === 'none') return;
+    if(row.classList.contains('trow-total') || row.classList.contains('trow-section')) return;
+    if(row.classList.contains('sc-child')) return;
     numCols.forEach(ci => {
       const cell = row.cells[ci];
       if(!cell) return;
@@ -2530,8 +2532,21 @@ function refreshDtTotals(tableId) {
     });
   });
   if(!anyData) return;
+
+  // Update inline trow-total in tbody if present
+  const inlineTotRow = tbody.querySelector('tr.trow-total');
+  if(inlineTotRow) {
+    const tds = inlineTotRow.querySelectorAll('td');
+    numCols.forEach(ci => { if(tds[ci]) tds[ci].textContent = cr(totals[ci]); });
+    return;
+  }
+
+  // Otherwise create/update tfoot total row
   let tf = tfoot || document.createElement('tfoot');
   if(!tfoot) table.appendChild(tf);
+  // Remove any legacy static trow-total in tfoot (replace with dynamic dt-totals)
+  const legacyTot = tf.querySelector('.trow-total');
+  if(legacyTot) legacyTot.remove();
   let tfRow = tf.querySelector('tr.dt-totals');
   if(!tfRow) {
     tfRow = document.createElement('tr');
