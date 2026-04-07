@@ -151,7 +151,7 @@ body {
 }
 
 /* ── MAIN APP ───────────────────────────────────────────────── */
-#app { display: none; }
+#app { display: none; padding-top: 100px; }
 
 /* HEADER */
 .header {
@@ -161,8 +161,10 @@ body {
   align-items: center;
   justify-content: space-between;
   height: 58px;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 200;
   border-bottom: 2px solid var(--gold);
 }
@@ -226,6 +228,11 @@ body {
   padding: 0 2rem;
   overflow-x: auto;
   scrollbar-width: none;
+  position: fixed;
+  top: 58px;
+  left: 0;
+  right: 0;
+  z-index: 199;
   border-bottom: 1px solid rgba(218,189,56,0.2);
 }
 .nav::-webkit-scrollbar { display: none; }
@@ -328,7 +335,34 @@ body {
   font-weight: 300;
 }
 
-.source-note { display: none !important; }
+/* Source notes — hidden by default, shown when body.show-sources is active */
+.source-note {
+  display: none;
+  margin-top: 0.55rem;
+  padding: 0.55rem 0.7rem;
+  background: rgba(2,66,43,0.05);
+  border-left: 2px solid var(--forest);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.67rem;
+  line-height: 1.55;
+}
+.source-note .sn-c {
+  color: var(--text-mute);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.source-note .sn-d {
+  color: var(--text-lt);
+  font-family: 'Courier New', monospace;
+  font-size: 0.64rem;
+  display: block;
+}
+body.show-sources .source-note { display: block; }
+/* Source notes inside panel headers sit below the header */
+.panel-hd .source-note { margin-top: 0.4rem; }
+/* Source notes inside kcards */
+.kcard .source-note { margin-top: 0.45rem; }
 .kcard.forest .kcard-sub,
 .kcard.deep .kcard-sub { color: rgba(239,237,195,0.4); }
 .kcard-sub.pos { color: var(--green-pos); font-weight: 700; }
@@ -908,7 +942,8 @@ body {
 @media (max-width: 640px) {
   body { font-size: 0.82rem; }
   .app { padding: 0; }
-  .header { padding: 0.6rem 0.75rem; flex-wrap: wrap; gap: 0.4rem; }
+  .header { padding: 0.6rem 0.75rem; flex-wrap: wrap; gap: 0.4rem; height: auto; }
+  #app { padding-top: 90px; }
   .header-title { font-size: 1rem; }
   .header-kpi { display: none; }
   .nav { padding: 0 0.5rem; overflow-x: auto; white-space: nowrap; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -1014,6 +1049,7 @@ body {
       </div>
       <div class="header-date" id="h-date">—</div>
       <span id="sync-status" style="display:none;font-size:0.68rem;color:var(--text-mute);margin-right:0.5rem"></span>
+      <button class="btn-update" id="btn-sources" onclick="toggleSources()" style="background:transparent;border:1px solid rgba(239,237,195,0.3);color:rgba(239,237,195,0.7)" title="Show/hide data source formulas">⚙ Sources</button>
       <button class="btn-update" onclick="document.getElementById('file-in2').click()">↑ Update Data</button>
       <input type="file" id="file-in2" accept=".xlsx,.xls" style="display:none" onchange="handleFile(event)">
     </div>
@@ -2364,6 +2400,20 @@ const CONFIG = {
   holdingsSource: 'holdings_sheets', // 'holdings_sheets' | 'networth_inputs'
   allocationView: 'base'             // 'base' | 'exposure'
 };
+
+// ═══════════════════════════════════════════════════════════════
+// SOURCE NOTES TOGGLE
+// ═══════════════════════════════════════════════════════════════
+function toggleSources() {
+  const on = document.body.classList.toggle('show-sources');
+  const btn = document.getElementById('btn-sources');
+  if(btn) {
+    btn.textContent = on ? '⚙ Hide Sources' : '⚙ Sources';
+    btn.style.background    = on ? 'rgba(239,237,195,0.15)' : 'transparent';
+    btn.style.color         = on ? 'rgba(239,237,195,1)'    : 'rgba(239,237,195,0.7)';
+    btn.style.borderColor   = on ? 'rgba(239,237,195,0.6)'  : 'rgba(239,237,195,0.3)';
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════
 // FORMAT HELPERS
