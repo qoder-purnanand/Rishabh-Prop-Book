@@ -975,6 +975,101 @@ body.show-sources .source-note { display: block; }
   .kcard-val { font-size: 0.95rem; }
   .header-title { font-size: 0.9rem; }
 }
+/* ── NOTES PAGE ─────────────────────────────────────────────── */
+.note-card {
+  background: var(--white);
+  border: 1px solid var(--border-lt);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 0.85rem;
+}
+.note-card:hover { border-color: var(--border); }
+.note-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.65rem;
+  color: var(--text-lt);
+  flex-wrap: wrap;
+}
+.note-card-actions { display: flex; gap: 0.4rem; margin-left: auto; }
+.note-content {
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--text-dark);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.note-textarea {
+  width: 100%;
+  min-height: 130px;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text-dark);
+  background: var(--cream-lt);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.note-textarea:focus { border-color: var(--forest); background: var(--white); }
+.note-form-actions { display: flex; gap: 0.6rem; margin-top: 0.75rem; align-items: center; }
+.btn-note-save {
+  padding: 0.38rem 1rem;
+  background: var(--forest);
+  color: var(--cream);
+  border: none;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.btn-note-save:hover { background: var(--deep); }
+.btn-note-save:disabled { opacity: 0.6; cursor: default; }
+.btn-note-cancel {
+  padding: 0.38rem 0.85rem;
+  background: transparent;
+  color: var(--text-mute);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.btn-note-cancel:hover { border-color: var(--text-mute); color: var(--text-dark); }
+.btn-note-edit, .btn-note-del {
+  padding: 0.18rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border-lt);
+  border-radius: 4px;
+  font-size: 0.6rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.btn-note-edit { color: var(--text-mute); }
+.btn-note-edit:hover { color: var(--forest); border-color: var(--forest); }
+.btn-note-del { color: var(--text-lt); }
+.btn-note-del:hover { color: var(--red-neg); border-color: var(--red-neg); }
+.notes-empty { text-align:center; padding:3rem; color:var(--text-lt); font-size:0.82rem; }
+#notes-loading { text-align:center; padding:2rem; color:var(--text-lt); font-size:0.78rem; }
+#notes-add-btn {
+  padding: 0.42rem 1.05rem;
+  background: var(--forest);
+  color: var(--cream);
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+}
+#notes-add-btn:hover { background: var(--deep); }
 </style>
 </head>
 <body>
@@ -1066,6 +1161,7 @@ body.show-sources .source-note { display: block; }
     <div class="nav-tab" onclick="showPage('update',this);renderUpdateStatus()">Update Data</div>
     <div class="nav-tab" onclick="showPage('risk',this)">Risk Management <span style="opacity:0.55;font-size:0.7em">(building...)</span></div>
     <div class="nav-tab" onclick="showPage('navperf',this)">Strategy Performance <span style="opacity:0.55;font-size:0.7em">(building...)</span></div>
+    <div class="nav-tab" onclick="showPage('notes',this);loadNotes()">Notes</div>
     <div class="nav-tab" onclick="showPage('settings',this)">Settings</div>
   </nav>
 
@@ -1802,13 +1898,13 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Row 3: Equity sub-category breakdown -->
-    <div class="panel">
-      <div class="panel-hd"><div class="panel-title">Equity Sub-Category Breakdown — Holdings</div></div>
-      <div class="panel-body">
-        <div class="col2">
-          <div class="chart-box chart-h300"><canvas id="chart-alloc-subcat"></canvas></div>
-          <div class="panel-body0 sx" style="margin-top:0">
+    <!-- Row 3: Equity breakdown — Holdings sub-cats (left) + NW Inputs line items (right) -->
+    <div class="col2">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Equity Sub-Category Breakdown — Holdings</div></div>
+        <div class="panel-body">
+          <div class="chart-box chart-h240"><canvas id="chart-alloc-subcat"></canvas></div>
+          <div class="panel-body0 sx" style="margin-top:0.75rem">
             <table class="dt" id="alloc-subcat-table">
               <thead><tr>
                 <th>Sub-Category</th>
@@ -1822,10 +1918,25 @@ body.show-sources .source-note { display: block; }
             </table>
           </div>
         </div>
+        <div class="source-note"><span class="sn-c">Sub-categories from holdings sheets. Physical view: equity stocks + MFs only. Full Exposure adds Gold Futures (QAW) synthetic row.</span><br><span class="sn-d">Equity Holdings col H "Sub Category" + Mutual Funds col I "Sub Category". Values from col K / col L "Value as of Today". P&amp;L from col L / col M.</span></div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-title">Equity — Balance Sheet Line Items</div></div>
+        <div class="panel-body0 sx">
+          <table class="dt" id="alloc-nw-equity-table">
+            <thead><tr>
+              <th>Particulars</th>
+              <th>Category</th>
+              <th class="r">RN (₹)</th>
+              <th class="r">Mishayan (₹)</th>
+              <th class="r">Total (₹)</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="source-note"><span class="sn-c">All Equity-type On items from Networth Inputs — the high-level buckets that the Holdings sub-categories roll up into.</span><br><span class="sn-d">Networth Inputs col F (value), rows where col E = "Equity" and col H = "On". Grouped by col G (entity).</span></div>
       </div>
     </div>
-
-        <div class="source-note"><span class="sn-c">Sub-categories from holdings sheets. Physical view: equity stocks + MFs only. Full Exposure adds Gold Futures (QAW) synthetic row.</span><br><span class="sn-d">Equity Holdings col H "Sub Category" + Mutual Funds col I "Sub Category". Values from col K / col L "Value as of Today". P&amp;L from col L / col M.</span></div>
     </div>
 
 
@@ -2324,6 +2435,38 @@ body.show-sources .source-note { display: block; }
         </div>
         <button class="btn-danger" onclick="confirmClearData()">Clear Data</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ── NOTES ──────────────────────────────────────────────── -->
+  <div class="page" id="page-notes">
+    <div class="sec-hd">
+      <div>
+        <div class="sec-title">Notes</div>
+        <div class="sec-sub">Plan of action · Observations · Follow-ups</div>
+      </div>
+      <button id="notes-add-btn" onclick="openNewNote()">+ New Note</button>
+    </div>
+
+    <!-- Compose / edit form (hidden until triggered) -->
+    <div id="notes-form" class="panel" style="display:none;margin-bottom:1.25rem">
+      <div class="panel-hd">
+        <div class="panel-title" id="notes-form-title">New Note</div>
+      </div>
+      <div class="panel-body">
+        <textarea id="notes-textarea" class="note-textarea" placeholder="Write your note here…"></textarea>
+        <div class="note-form-actions">
+          <button class="btn-note-save" onclick="submitNote()">Save</button>
+          <button class="btn-note-cancel" onclick="cancelNote()">Cancel</button>
+          <span id="notes-save-status" style="font-size:0.68rem;color:var(--text-mute);margin-left:0.25rem"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="notes-loading" style="display:none">Loading notes…</div>
+    <div id="notes-list"></div>
+    <div id="notes-empty" class="notes-empty" style="display:none">
+      No notes yet — click <strong>+ New Note</strong> to add your first one.
     </div>
   </div>
 
@@ -3919,6 +4062,8 @@ const filterH = (f,el) => {
   document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   renderHoldingsTable();
+  _dtFilter('hld-table');
+  refreshDtTotals('hld-table');
 };
 
 function renderHoldings() {
@@ -4466,6 +4611,24 @@ function renderAllocation() {
     scTb.innerHTML = eqRows + eqTotRow + nonEqRows;
   }
 
+  // ── NW Inputs equity line items (Balance Sheet perspective) ──
+  const nwEqItems = onItems().filter(x => x.typ === 'Equity');
+  const nwEqTb = document.querySelector('#alloc-nw-equity-table tbody');
+  if(nwEqTb) {
+    nwEqTb.innerHTML = nwEqItems.map(x => {
+      const rnV  = x.ent === 'Rishabh'  ? x.val : 0;
+      const misV = x.ent === 'Mishayan' ? x.val : 0;
+      const label = x.p2 && x.p2 !== x.p1 ? x.p2 : x.p1;
+      const sub   = x.p2 && x.p2 !== x.p1 ? `<div style="font-size:0.6rem;color:var(--text-lt)">${x.p1}</div>` : '';
+      return `<tr>
+        <td><strong>${label}</strong>${sub}</td>
+        <td class="muted" style="font-size:0.7rem">${x.cat}</td>
+        <td class="mono r">${rnV  > 0 ? cr(rnV)  : '—'}</td>
+        <td class="mono r">${misV > 0 ? cr(misV) : '—'}</td>
+        <td class="mono r"><strong>${cr(x.val)}</strong></td>
+      </tr>`;
+    }).join('');
+  }
 
   // ── Allocation bars (base = physical only; exposure = physical + derivatives) ──
   const stkFutBar = sum(D.strats.filter(r=>r.strat==='Stock Futures'), r=>r.netExp);
@@ -5405,6 +5568,161 @@ renderAll = function() {
   }
   renderCashMargin();
 };
+
+// ═══════════════════════════════════════════════════════════════
+// NOTES
+// ═══════════════════════════════════════════════════════════════
+let _notesData = [];
+let _notesEditingId = null;
+let _notesLoaded = false;
+
+async function loadNotes() {
+  if(_notesLoaded) return; // already loaded; re-fetch only on explicit user action via re-open
+  const loading = document.getElementById('notes-loading');
+  const list    = document.getElementById('notes-list');
+  const empty   = document.getElementById('notes-empty');
+  if(loading) loading.style.display = '';
+  if(list)    list.innerHTML = '';
+  if(empty)   empty.style.display = 'none';
+  try {
+    const res = await fetch('/api/notes');
+    if(res.status === 501) throw new Error('Notes require the hosted Vercel deployment');
+    if(!res.ok) throw new Error('Server error ' + res.status);
+    _notesData = await res.json();
+    _notesLoaded = true;
+  } catch(e) {
+    if(loading) { loading.style.display = ''; loading.textContent = '⚠ ' + e.message; }
+    return;
+  }
+  if(loading) loading.style.display = 'none';
+  renderNotesList();
+}
+
+// Call this after create/update/delete to force a re-fetch next time
+function _notesInvalidate() { _notesLoaded = false; }
+
+function renderNotesList() {
+  const listEl = document.getElementById('notes-list');
+  const empty  = document.getElementById('notes-empty');
+  if(!listEl) return;
+  if(!_notesData.length) {
+    listEl.innerHTML = '';
+    if(empty) empty.style.display = '';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  listEl.innerHTML = _notesData.map(n => {
+    const fmt = d => new Date(d).toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const editedLine = n.updatedAt !== n.createdAt
+      ? `<span>· Edited ${fmt(n.updatedAt)}</span>`
+      : '';
+    return `<div class="note-card" id="note-card-${n.id}">
+      <div class="note-card-meta">
+        <span>Added ${fmt(n.createdAt)}</span>
+        ${editedLine}
+        <div class="note-card-actions">
+          <button class="btn-note-edit" onclick="openEditNote('${n.id}')">Edit</button>
+          <button class="btn-note-del"  onclick="deleteNote('${n.id}')">Delete</button>
+        </div>
+      </div>
+      <div class="note-content">${escapeHtml(n.content)}</div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openNewNote() {
+  _notesEditingId = null;
+  const form   = document.getElementById('notes-form');
+  const title  = document.getElementById('notes-form-title');
+  const ta     = document.getElementById('notes-textarea');
+  const status = document.getElementById('notes-save-status');
+  if(title)  title.textContent  = 'New Note';
+  if(ta)     ta.value           = '';
+  if(status) status.textContent = '';
+  if(form)   form.style.display = '';
+  if(ta)     ta.focus();
+}
+
+function openEditNote(id) {
+  const note = _notesData.find(n => n.id === id);
+  if(!note) return;
+  _notesEditingId = id;
+  const form   = document.getElementById('notes-form');
+  const title  = document.getElementById('notes-form-title');
+  const ta     = document.getElementById('notes-textarea');
+  const status = document.getElementById('notes-save-status');
+  if(title)  title.textContent  = 'Edit Note';
+  if(ta)     ta.value           = note.content;
+  if(status) status.textContent = '';
+  if(form)   form.style.display = '';
+  if(ta)     { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+  if(form)   form.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function cancelNote() {
+  _notesEditingId = null;
+  const form = document.getElementById('notes-form');
+  if(form) form.style.display = 'none';
+}
+
+async function submitNote() {
+  const ta      = document.getElementById('notes-textarea');
+  const status  = document.getElementById('notes-save-status');
+  const saveBtn = document.querySelector('#notes-form .btn-note-save');
+  const content = ta ? ta.value.trim() : '';
+  if(!content) {
+    if(status) { status.textContent = 'Note cannot be empty.'; status.style.color = 'var(--red-neg)'; }
+    return;
+  }
+  if(saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+  if(status)  { status.textContent = ''; status.style.color = 'var(--text-mute)'; }
+  try {
+    const body = _notesEditingId
+      ? { action:'update', id:_notesEditingId, content }
+      : { action:'create', content };
+    const res = await fetch('/api/notes', {
+      method:  'POST',
+      headers: {'Content-Type':'application/json'},
+      body:    JSON.stringify(body)
+    });
+    if(!res.ok) throw new Error('Server error ' + res.status);
+    const saved = await res.json();
+    if(_notesEditingId) {
+      const idx = _notesData.findIndex(n => n.id === _notesEditingId);
+      if(idx !== -1) _notesData[idx] = saved;
+    } else {
+      _notesData.unshift(saved);
+    }
+    _notesEditingId = null;
+    cancelNote();
+    renderNotesList();
+  } catch(e) {
+    if(status) { status.textContent = 'Failed to save: ' + e.message; status.style.color = 'var(--red-neg)'; }
+  } finally {
+    if(saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+  }
+}
+
+async function deleteNote(id) {
+  if(!confirm('Delete this note? This cannot be undone.')) return;
+  try {
+    const res = await fetch('/api/notes', {
+      method:  'POST',
+      headers: {'Content-Type':'application/json'},
+      body:    JSON.stringify({ action:'delete', id })
+    });
+    if(!res.ok) throw new Error('Server error ' + res.status);
+    _notesData = _notesData.filter(n => n.id !== id);
+    if(_notesEditingId === id) cancelNote();
+    renderNotesList();
+  } catch(e) {
+    alert('Failed to delete note: ' + e.message);
+  }
+}
 
 // ── Auto-save on page unload ────────────────────────────────────
 let _skipSaveOnUnload = false;
