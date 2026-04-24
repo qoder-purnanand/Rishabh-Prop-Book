@@ -63,6 +63,8 @@ module.exports = async function handler(req, res) {
       const note = {
         id: crypto.randomUUID(),
         content: body.content.trim(),
+        author: body.author ? String(body.author).trim() : '',
+        parentId: body.parentId || null,
         createdAt: now,
         updatedAt: now,
       };
@@ -76,7 +78,8 @@ module.exports = async function handler(req, res) {
       if (!body.content || !body.content.trim()) return res.status(400).json({ error: 'Content is required' });
       const idx = notes.findIndex(n => n.id === body.id);
       if (idx === -1) return res.status(404).json({ error: 'Note not found' });
-      notes[idx].content = body.content.trim();
+      notes[idx].content   = body.content.trim();
+      notes[idx].author    = body.author !== undefined ? String(body.author).trim() : notes[idx].author;
       notes[idx].updatedAt = now;
       await writeNotes(notes);
       return res.status(200).json(notes[idx]);
@@ -84,11 +87,12 @@ module.exports = async function handler(req, res) {
 
     if (body.action === 'delete') {
       if (!body.id) return res.status(400).json({ error: 'Missing id' });
-      const idx = notes.findIndex(n => n.id === body.id);
-      if (idx === -1) return res.status(404).json({ error: 'Note not found' });
-      const [deleted] = notes.splice(idx, 1);
-      await writeNotes(notes);
-      return res.status(200).json(deleted);
+      const exists = notes.some(n => n.id === body.id);
+      if (!exists) return res.status(404).json({ error: 'Note not found' });
+      // Cascade: remove the note and all its replies
+      const remaining = notes.filter(n => n.id !== body.id && n.parentId !== body.id);
+      await writeNotes(remaining);
+      return res.status(200).json({ ok: true });
     }
 
     return res.status(400).json({ error: 'Unknown action' });

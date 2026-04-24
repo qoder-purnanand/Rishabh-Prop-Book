@@ -1070,6 +1070,40 @@ body.show-sources .source-note { display: block; }
   letter-spacing: 0.02em;
 }
 #notes-add-btn:hover { background: var(--deep); }
+.note-author-inp {
+  flex: 1;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 0.78rem;
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  background: var(--cream-lt);
+  outline: none;
+  min-width: 0;
+}
+.note-author-inp:focus { border-color: var(--forest); background: var(--white); }
+.note-author-badge { font-weight: 700; color: var(--text-dark); }
+.note-card-reply { background: var(--cream-lt) !important; border-color: var(--border-lt) !important; }
+.note-replies {
+  margin-left: 1.4rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--border-lt);
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+.note-replies .note-card { margin-bottom: 0.4rem; }
+.btn-note-reply {
+  padding: 0.18rem 0.5rem;
+  background: transparent;
+  color: var(--text-lt);
+  border: 1px solid var(--border-lt);
+  border-radius: 4px;
+  font-size: 0.6rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.btn-note-reply:hover { color: var(--forest); border-color: var(--forest); }
 </style>
 </head>
 <body>
@@ -2454,6 +2488,14 @@ body.show-sources .source-note { display: block; }
         <div class="panel-title" id="notes-form-title">New Note</div>
       </div>
       <div class="panel-body">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.65rem">
+          <label style="font-size:0.68rem;font-weight:700;color:var(--text-mute);letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap">Your Name</label>
+          <input id="notes-author" type="text" class="note-author-inp" placeholder="Enter your name…">
+        </div>
+        <div id="notes-reply-context" style="display:none;font-size:0.7rem;color:var(--text-mute);margin-bottom:0.65rem;padding:0.45rem 0.7rem;background:var(--cream);border-radius:5px;border-left:3px solid var(--forest)">
+          <div style="font-weight:700;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.2rem">Replying to:</div>
+          <div id="notes-reply-preview" style="color:var(--text-dark);opacity:0.75;white-space:pre-wrap;max-height:55px;overflow:hidden;font-size:0.72rem"></div>
+        </div>
         <textarea id="notes-textarea" class="note-textarea" placeholder="Write your note here…"></textarea>
         <div class="note-form-actions">
           <button class="btn-note-save" onclick="submitNote()">Save</button>
@@ -5573,16 +5615,23 @@ renderAll = function() {
 // NOTES
 // ═══════════════════════════════════════════════════════════════
 let _notesData = [];
-let _notesEditingId = null;
+let _notesEditingId   = null;
+let _notesReplyingToId = null;
 let _notesLoaded = false;
 
+function initNotesAuthor() {
+  const saved = localStorage.getItem('pb_note_author') || '';
+  const inp = document.getElementById('notes-author');
+  if(inp && saved) inp.value = saved;
+}
+
 async function loadNotes() {
-  if(_notesLoaded) return; // already loaded; re-fetch only on explicit user action via re-open
+  if(_notesLoaded) return;
   const loading = document.getElementById('notes-loading');
-  const list    = document.getElementById('notes-list');
+  const listEl  = document.getElementById('notes-list');
   const empty   = document.getElementById('notes-empty');
   if(loading) loading.style.display = '';
-  if(list)    list.innerHTML = '';
+  if(listEl)  listEl.innerHTML = '';
   if(empty)   empty.style.display = 'none';
   try {
     const res = await fetch('/api/notes');
@@ -5595,95 +5644,132 @@ async function loadNotes() {
     return;
   }
   if(loading) loading.style.display = 'none';
+  initNotesAuthor();
   renderNotesList();
-}
-
-// Call this after create/update/delete to force a re-fetch next time
-function _notesInvalidate() { _notesLoaded = false; }
-
-function renderNotesList() {
-  const listEl = document.getElementById('notes-list');
-  const empty  = document.getElementById('notes-empty');
-  if(!listEl) return;
-  if(!_notesData.length) {
-    listEl.innerHTML = '';
-    if(empty) empty.style.display = '';
-    return;
-  }
-  if(empty) empty.style.display = 'none';
-  listEl.innerHTML = _notesData.map(n => {
-    const fmt = d => new Date(d).toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    const editedLine = n.updatedAt !== n.createdAt
-      ? `<span>· Edited ${fmt(n.updatedAt)}</span>`
-      : '';
-    return `<div class="note-card" id="note-card-${n.id}">
-      <div class="note-card-meta">
-        <span>Added ${fmt(n.createdAt)}</span>
-        ${editedLine}
-        <div class="note-card-actions">
-          <button class="btn-note-edit" onclick="openEditNote('${n.id}')">Edit</button>
-          <button class="btn-note-del"  onclick="deleteNote('${n.id}')">Delete</button>
-        </div>
-      </div>
-      <div class="note-content">${escapeHtml(n.content)}</div>
-    </div>`;
-  }).join('');
 }
 
 function escapeHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function openNewNote() {
-  _notesEditingId = null;
-  const form   = document.getElementById('notes-form');
-  const title  = document.getElementById('notes-form-title');
-  const ta     = document.getElementById('notes-textarea');
-  const status = document.getElementById('notes-save-status');
-  if(title)  title.textContent  = 'New Note';
-  if(ta)     ta.value           = '';
+function renderNoteCard(n, isReply) {
+  const fmt = d => new Date(d).toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const authorBadge = n.author
+    ? `<span class="note-author-badge">${escapeHtml(n.author)}</span><span style="opacity:0.3;margin:0 0.35rem">·</span>`
+    : '';
+  const editedLine = n.updatedAt !== n.createdAt
+    ? `<span style="opacity:0.3;margin:0 0.35rem">·</span><span>Edited ${fmt(n.updatedAt)}</span>`
+    : '';
+  const replyBtn = !isReply
+    ? `<button class="btn-note-reply" onclick="openReplyNote('${n.id}')">↩ Reply</button>`
+    : '';
+  return `<div class="note-card${isReply?' note-card-reply':''}" id="note-card-${n.id}">
+    <div class="note-card-meta">
+      ${authorBadge}<span>Added ${fmt(n.createdAt)}</span>${editedLine}
+      <div class="note-card-actions">
+        ${replyBtn}
+        <button class="btn-note-edit" onclick="openEditNote('${n.id}')">Edit</button>
+        <button class="btn-note-del"  onclick="deleteNote('${n.id}')">Delete</button>
+      </div>
+    </div>
+    <div class="note-content">${escapeHtml(n.content)}</div>
+  </div>`;
+}
+
+function renderNotesList() {
+  const listEl = document.getElementById('notes-list');
+  const empty  = document.getElementById('notes-empty');
+  if(!listEl) return;
+  const topLevel = _notesData.filter(n => !n.parentId)
+    .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if(!topLevel.length) {
+    listEl.innerHTML = '';
+    if(empty) empty.style.display = '';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  listEl.innerHTML = topLevel.map(n => {
+    const replies = _notesData.filter(r => r.parentId === n.id)
+      .sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const repliesHtml = replies.length
+      ? `<div class="note-replies">${replies.map(r => renderNoteCard(r, true)).join('')}</div>`
+      : '';
+    return renderNoteCard(n, false) + repliesHtml;
+  }).join('');
+}
+
+function _showNoteForm(titleText, content, replyParent) {
+  const form    = document.getElementById('notes-form');
+  const title   = document.getElementById('notes-form-title');
+  const ta      = document.getElementById('notes-textarea');
+  const status  = document.getElementById('notes-save-status');
+  const ctx     = document.getElementById('notes-reply-context');
+  const preview = document.getElementById('notes-reply-preview');
+  if(title)  title.textContent  = titleText;
+  if(ta)     ta.value           = content;
   if(status) status.textContent = '';
-  if(form)   form.style.display = '';
-  if(ta)     ta.focus();
+  if(replyParent) {
+    const pText = replyParent.author
+      ? `${replyParent.author}: ${replyParent.content}`
+      : replyParent.content;
+    if(preview) preview.textContent = pText.length > 130 ? pText.slice(0, 130) + '…' : pText;
+    if(ctx) ctx.style.display = '';
+  } else {
+    if(ctx) ctx.style.display = 'none';
+  }
+  if(form) form.style.display = '';
+  if(ta)   { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+  if(form) form.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function openNewNote() {
+  _notesEditingId    = null;
+  _notesReplyingToId = null;
+  _showNoteForm('New Note', '', null);
+}
+
+function openReplyNote(parentId) {
+  _notesEditingId    = null;
+  _notesReplyingToId = parentId;
+  const parent = _notesData.find(n => n.id === parentId);
+  _showNoteForm('New Reply', '', parent || null);
 }
 
 function openEditNote(id) {
   const note = _notesData.find(n => n.id === id);
   if(!note) return;
-  _notesEditingId = id;
-  const form   = document.getElementById('notes-form');
-  const title  = document.getElementById('notes-form-title');
-  const ta     = document.getElementById('notes-textarea');
-  const status = document.getElementById('notes-save-status');
-  if(title)  title.textContent  = 'Edit Note';
-  if(ta)     ta.value           = note.content;
-  if(status) status.textContent = '';
-  if(form)   form.style.display = '';
-  if(ta)     { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
-  if(form)   form.scrollIntoView({ behavior:'smooth', block:'start' });
+  _notesEditingId    = id;
+  _notesReplyingToId = null;
+  const authorInp = document.getElementById('notes-author');
+  if(authorInp && note.author) authorInp.value = note.author;
+  _showNoteForm('Edit Note', note.content, null);
 }
 
 function cancelNote() {
-  _notesEditingId = null;
+  _notesEditingId    = null;
+  _notesReplyingToId = null;
   const form = document.getElementById('notes-form');
   if(form) form.style.display = 'none';
 }
 
 async function submitNote() {
-  const ta      = document.getElementById('notes-textarea');
-  const status  = document.getElementById('notes-save-status');
-  const saveBtn = document.querySelector('#notes-form .btn-note-save');
-  const content = ta ? ta.value.trim() : '';
+  const ta        = document.getElementById('notes-textarea');
+  const authorInp = document.getElementById('notes-author');
+  const status    = document.getElementById('notes-save-status');
+  const saveBtn   = document.querySelector('#notes-form .btn-note-save');
+  const content   = ta        ? ta.value.trim()        : '';
+  const author    = authorInp ? authorInp.value.trim() : '';
   if(!content) {
     if(status) { status.textContent = 'Note cannot be empty.'; status.style.color = 'var(--red-neg)'; }
     return;
   }
+  if(author) localStorage.setItem('pb_note_author', author);
   if(saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
   if(status)  { status.textContent = ''; status.style.color = 'var(--text-mute)'; }
   try {
     const body = _notesEditingId
-      ? { action:'update', id:_notesEditingId, content }
-      : { action:'create', content };
+      ? { action:'update', id:_notesEditingId, content, author }
+      : { action:'create', content, author, parentId: _notesReplyingToId };
     const res = await fetch('/api/notes', {
       method:  'POST',
       headers: {'Content-Type':'application/json'},
@@ -5697,7 +5783,8 @@ async function submitNote() {
     } else {
       _notesData.unshift(saved);
     }
-    _notesEditingId = null;
+    _notesEditingId    = null;
+    _notesReplyingToId = null;
     cancelNote();
     renderNotesList();
   } catch(e) {
@@ -5708,7 +5795,11 @@ async function submitNote() {
 }
 
 async function deleteNote(id) {
-  if(!confirm('Delete this note? This cannot be undone.')) return;
+  const hasReplies = _notesData.some(n => n.parentId === id);
+  const msg = hasReplies
+    ? 'Delete this note and all its replies? This cannot be undone.'
+    : 'Delete this note? This cannot be undone.';
+  if(!confirm(msg)) return;
   try {
     const res = await fetch('/api/notes', {
       method:  'POST',
@@ -5716,8 +5807,8 @@ async function deleteNote(id) {
       body:    JSON.stringify({ action:'delete', id })
     });
     if(!res.ok) throw new Error('Server error ' + res.status);
-    _notesData = _notesData.filter(n => n.id !== id);
-    if(_notesEditingId === id) cancelNote();
+    _notesData = _notesData.filter(n => n.id !== id && n.parentId !== id);
+    if(_notesEditingId === id || _notesReplyingToId === id) cancelNote();
     renderNotesList();
   } catch(e) {
     alert('Failed to delete note: ' + e.message);
