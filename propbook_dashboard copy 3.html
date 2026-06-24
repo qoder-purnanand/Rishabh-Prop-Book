@@ -2244,55 +2244,49 @@ body.show-sources .source-note { display: block; }
     </div>
 
     <!-- KPI strip -->
-    <div class="cards-row c5" style="margin-bottom:1.5rem">
+    <div class="cards-row c4" style="margin-bottom:1.5rem">
       <div class="kcard forest">
-        <div class="kcard-lbl">Total Portfolio Value</div>
+        <div class="kcard-lbl">Total Cash (Mishayan)</div>
         <div class="kcard-val" id="mg-mis-cash">—</div>
-        <div class="kcard-sub">Grand total across all accounts</div>
-        <div class="source-note"><span class="sn-c">Sum of all exposure accounts (Grand Total row of the pivot table)</span><br><span class="sn-d">Cash &amp; Margin sheet, col C "Grand Total" row</span></div>
+        <div class="kcard-sub">Current cash in Mishayan</div>
+        <div class="source-note"><span class="sn-c">Current total cash sitting in Mishayan account before any allocation</span><br><span class="sn-d">Cash &amp; Margin sheet, col W, row where col V = "Current Cash in Mishayan"</span></div>
       </div>
       <div class="kcard">
-        <div class="kcard-lbl">Available on Zerodha</div>
+        <div class="kcard-lbl">Available to Deploy — Mishayan</div>
         <div class="kcard-val pos" id="mg-mis-deploy">—</div>
-        <div class="kcard-sub">Cash + Non-Cash + Liquidcase + Cash margin</div>
-        <div class="source-note"><span class="sn-c">Total margin available on Zerodha across all components</span><br><span class="sn-d">Cash &amp; Margin sheet, margin table row "Available on Zerodha", Total column</span></div>
+        <div class="kcard-sub">After allocations &amp; OD repayment</div>
+        <div class="source-note"><span class="sn-c">Current Cash − Debt MF − Liquidcase − Keep Cash − Reverse Loan − OD Repayment − Expenses</span><br><span class="sn-d">Cash &amp; Margin sheet, col W, row where col V = "Cash Available to deploy in Equity"</span></div>
       </div>
       <div class="kcard cream">
-        <div class="kcard-lbl">Margin Excess / Shortfall</div>
-        <div class="kcard-val" id="mg-rn-deploy">—</div>
-        <div class="kcard-sub">Available minus Total Required</div>
-        <div class="source-note"><span class="sn-c">Positive = surplus margin; Negative = shortfall requiring attention</span><br><span class="sn-d">Cash &amp; Margin sheet, margin table row "Margin Excess/Shortfall", Total column</span></div>
+        <div class="kcard-lbl">Available to Deploy — Rishabh</div>
+        <div class="kcard-val gold" id="mg-rn-deploy">—</div>
+        <div class="kcard-sub">Zerodha + Bank + Jainam</div>
+        <div class="source-note"><span class="sn-c">Zerodha Cash + Bank + Jainam Deposit − Mishayan Loan Repayment</span><br><span class="sn-d">Cash &amp; Margin sheet, col Z, row where col Y = "Cash Available to deploy in Equity"</span></div>
       </div>
       <div class="kcard">
-        <div class="kcard-lbl">Total Capital Required</div>
+        <div class="kcard-lbl">Total Available to Deploy</div>
         <div class="kcard-val" id="mg-total-deploy">—</div>
-        <div class="kcard-sub">Sum across all strategies</div>
-        <div class="source-note"><span class="sn-c">Total margin capital required for all active strategies (LO + PSAR + DMA + Gold Fut)</span><br><span class="sn-d">Cash &amp; Margin sheet, margin table row "Total Capital Required", Total column</span></div>
-      </div>
-      <div class="kcard">
-        <div class="kcard-lbl">Cash to Deploy — Rishabh</div>
-        <div class="kcard-val pos" id="mg-rn-cash-deploy">—</div>
-        <div class="kcard-sub">Cash available for equity deployment</div>
-        <div class="source-note"><span class="sn-c">Cash available to deploy in equities in Rishabh Nahar's account</span><br><span class="sn-d">Cash &amp; Margin sheet, col AA (last row)</span></div>
+        <div class="kcard-sub">Combined equity deployment capacity</div>
+        <div class="source-note"><span class="sn-c">Mishayan deployable + Rishabh deployable</span><br><span class="sn-d">col W "Cash Available to deploy" + col Z "Cash Available to deploy" (Cash &amp; Margin sheet)</span></div>
       </div>
     </div>
 
-    <!-- Exposure + Margin waterfalls -->
+    <!-- Deployment waterfalls -->
     <div class="col2" style="margin-bottom:1.5rem">
       <div class="panel">
-        <div class="panel-hd"><div class="panel-title">Exposure by Account</div></div>
+        <div class="panel-hd"><div class="panel-title">Mishayan — Cash Deployment Plan</div></div>
         <div class="panel-body0">
           <table class="dt" id="mg-mis-waterfall">
-            <thead><tr><th>Account</th><th class="r">Value</th></tr></thead>
+            <thead><tr><th>Particulars</th><th class="r">Amount</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
       </div>
       <div class="panel">
-        <div class="panel-hd"><div class="panel-title">Margin by Strategy</div></div>
+        <div class="panel-hd"><div class="panel-title">Rishabh — Cash Deployment Plan</div></div>
         <div class="panel-body0">
           <table class="dt" id="mg-rn-waterfall">
-            <thead><tr><th>Strategy</th><th class="r">Total</th></tr></thead>
+            <thead><tr><th>Particulars</th><th class="r">Amount</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
@@ -3052,23 +3046,17 @@ function parseCashMargin(wb) {
   const sn = wb.SheetNames.find(n => /^cash and margin$/i.test(n))
           || wb.SheetNames.find(n => /cash.*margin|margin.*cash/i.test(n));
   D.cashMargin = { headers:[], rows:[], marginTable:[], deploy:{ mishayan:[], rishabh:[] },
-                   totalExp:[], goldExp:[], inputs:[], rawRows:[], grandTotal:0 };
+                   totalExp:[], goldExp:[], inputs:[], rawRows:[] };
   if(!sn || !wb.Sheets[sn]) return;
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
-  D.cashMargin.rawRows = rows;
+  D.cashMargin.rawRows = rows;   // keep raw for full-sheet display
 
-  // ── Table 1 (cols 0-2): Total Exposure by Account ────────────
-  // New format: pivot-grouped table. Sub-total rows have "Account Total" at col 0.
-  // Grand Total row has "Grand Total" at col 0.
-  for(let i=4; i<rows.length; i++) {
+  // ── Table 1 (cols 0-2): Total Exposure list ──────────────────
+  for(let i=2; i<rows.length; i++) {
     const r = rows[i]; if(!r) continue;
-    const grp = r[0], val = r[2];
-    if(!grp || typeof grp !== 'string' || typeof val !== 'number') continue;
-    const g = grp.trim();
-    if(g.toLowerCase() === 'grand total') {
-      D.cashMargin.grandTotal = Number(val)||0;
-    } else if(/\s+total$/i.test(g)) {
-      D.cashMargin.totalExp.push({ name: g.replace(/\s+total$/i, '').trim(), val: Number(val)||0 });
+    const sno = r[0], name = r[1], val = r[2];
+    if(typeof sno === 'number' && name && typeof name === 'string' && name.trim()) {
+      D.cashMargin.totalExp.push({ sno, name: name.trim(), val: Number(val)||0 });
     }
   }
 
@@ -3114,13 +3102,26 @@ function parseCashMargin(wb) {
   }
   D.cashMargin.marginTable = marginRows;
 
-  // ── Cols Z–AA (25-26): Cash available to deploy — Rishabh ────
-  // Row 1 is the header (Particulars / Amount); last numeric value in col 26 is the figure.
-  D.cashMargin.rnCashDeploy = null;
-  for(let i=1; i<rows.length; i++) {
+  // ── Table 5 (cols 25-26): Mishayan deployment ─────────────────
+  for(let i=0; i<rows.length; i++) {
     const r = rows[i]; if(!r) continue;
-    const v = r[26];
-    if(typeof v === 'number') D.cashMargin.rnCashDeploy = v;
+    const lbl = r[25], val = r[26];
+    if(lbl && typeof lbl === 'string' && lbl.trim()
+       && !lbl.toLowerCase().includes('mishayan') && !lbl.toLowerCase().includes('note:')) {
+      const v = Number(val);
+      if(!isNaN(v)) D.cashMargin.deploy.mishayan.push({ label: lbl.trim(), val: v });
+    }
+  }
+
+  // ── Table 6 (cols 28-29): Rishabh deployment ─────────────────
+  for(let i=0; i<rows.length; i++) {
+    const r = rows[i]; if(!r) continue;
+    const lbl = r[28], val = r[29];
+    if(lbl && typeof lbl === 'string' && lbl.trim()
+       && !lbl.toLowerCase().includes('rishabh')) {
+      const v = Number(val);
+      if(!isNaN(v)) D.cashMargin.deploy.rishabh.push({ label: lbl.trim(), val: v });
+    }
   }
 
   // Also populate legacy .rows for broker chart
@@ -5505,52 +5506,31 @@ function confirmClearData() {
 function renderCashMargin() {
   const cm = D.cashMargin;
 
-  // ── KPI cards (new format: margin table + grand total) ──
-  const availRow    = cm.marginTable.find(r => /available on zerodha/i.test(r.system));
-  const shortRow    = cm.marginTable.find(r => /shortfall|excess.{0,3}shortfall/i.test(r.system));
-  const totalCapRow = cm.marginTable.find(r => /total capital required/i.test(r.system));
-  const grandTotal  = cm.grandTotal || 0;
-  const availTotal  = availRow?.total  || 0;
-  const shortTotal  = shortRow?.total  || 0;
-  const totalCap    = totalCapRow?.total || 0;
-
-  sv('mg-mis-cash',   grandTotal > 0 ? cr(grandTotal) : '—');
-  sv('mg-mis-deploy', availTotal > 0 ? cr(availTotal) : '—');
-  const rnEl = document.getElementById('mg-rn-deploy');
-  if(rnEl) {
-    rnEl.textContent = shortTotal ? cr(shortTotal) : '—';
-    rnEl.style.color = shortTotal < 0 ? 'var(--red-neg)' : shortTotal > 0 ? 'var(--green-pos)' : 'inherit';
-  }
+  // ── KPI cards ──
+  const misItems  = cm.deploy?.mishayan || [];
+  const rnItems   = cm.deploy?.rishabh  || [];
+  const misCash   = misItems[0]?.val || 0;
+  const misAvail  = (misItems.find(x => /cash available to deploy/i.test(x.label)) || {}).val || 0;
+  const rnAvail   = (rnItems.find(x => /cash available to deploy/i.test(x.label)) || {}).val || 0;
+  sv('mg-mis-cash',    misCash  > 0 ? cr(misCash)  : '—');
+  sv('mg-mis-deploy',  misAvail > 0 ? cr(misAvail) : '—');
+  sv('mg-rn-deploy',   rnAvail  > 0 ? cr(rnAvail)  : '—');
+  const totalDeploy = misAvail + rnAvail;
   const tdEl = document.getElementById('mg-total-deploy');
-  if(tdEl) { tdEl.textContent = totalCap > 0 ? cr(totalCap) : '—'; }
-  const rnDeployEl = document.getElementById('mg-rn-cash-deploy');
-  if(rnDeployEl) {
-    const v = cm.rnCashDeploy;
-    rnDeployEl.textContent = (v !== null && v !== undefined) ? cr(v) : '—';
-    rnDeployEl.style.color = v > 0 ? 'var(--green-pos)' : v < 0 ? 'var(--red-neg)' : 'inherit';
-  }
+  if(tdEl) { tdEl.textContent = totalDeploy > 0 ? cr(totalDeploy) : '—'; tdEl.style.color = totalDeploy > 0 ? 'var(--green-pos)' : 'inherit'; }
 
-  // ── Exposure by Account waterfall ──
-  const expTb = document.querySelector('#mg-mis-waterfall tbody');
-  if(expTb && cm.totalExp.length) {
-    expTb.innerHTML = cm.totalExp.map(item => `<tr>
-      <td style="color:var(--text-mute)">${item.name}</td>
-      <td class="mono r ${item.val < 0 ? 'neg' : 'muted'}">${cr(item.val)}</td>
-    </tr>`).join('') + (grandTotal ? `<tr class="trow-total">
-      <td>Grand Total</td><td class="mono r">${cr(grandTotal)}</td>
-    </tr>` : '');
-  }
-
-  // ── Margin by Strategy waterfall ──
-  const STRAT_SYSTEMS = /^(long options|psar|dma|gold fut|total capital required)$/i;
-  const stratRows = cm.marginTable.filter(r => STRAT_SYSTEMS.test(r.system));
-  const stratTb = document.querySelector('#mg-rn-waterfall tbody');
-  if(stratTb && stratRows.length) {
-    stratTb.innerHTML = stratRows.map(r => `<tr class="${/total capital/i.test(r.system)?'trow-total':''}">
-      <td style="color:var(--text-mute)">${r.system}</td>
-      <td class="mono r muted">${r.total ? cr(r.total) : '—'}</td>
+  // ── Waterfall helper ──
+  function renderWaterfall(items, tbodySel) {
+    const tb = document.querySelector(tbodySel + ' tbody');
+    if(!tb || !items.length) return;
+    tb.innerHTML = items.map(item => `<tr>
+      <td style="color:var(--text-mute)">${item.label}</td>
+      <td class="mono r muted">${item.val ? cr(item.val) : '—'}</td>
     </tr>`).join('');
   }
+
+  renderWaterfall(misItems, '#mg-mis-waterfall');
+  renderWaterfall(rnItems,  '#mg-rn-waterfall');
 
   // ── Margin breakdown table ──
   const mgTb = document.querySelector('#mg-margin-table tbody');
