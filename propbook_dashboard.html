@@ -2884,33 +2884,32 @@ function parseNetWorthInputs(wb) {
   D.nwInputs.assets = [];
   D.nwInputs.debts = [];
   
-  // Parse asset section (left side): columns 0-6
-  // Row 2 = headers, Row 3+ = data
-  // Col 0: Sr.No, Col 1: Category, Col 2: Particulars, Col 3: Equity/Debt, Col 4: Value, Col 5: Mishayan/Rishabh
+  // Parse asset section: Col 0=Sr.No, 1=Category, 2=Particulars 1, 3=Particulars 2,
+  //                       4=Equity/Debt/Cash (typ), 5=Value, 6=Entity, 7=On/Off (sta)
   for(let i=3; i<rows.length; i++) {
     const r = rows[i];
-    if(!r || r.length < 5) continue;
+    if(!r || r.length < 6) continue;
     const sno = r[0];
-    if(sno===null || sno===undefined || String(sno).trim()==='') break; // Stop at empty row
-    const cat = String(r[1]||'').trim();
+    if(sno===null || sno===undefined || String(sno).trim()==='') continue; // skip gaps, don't break
+    const cat  = String(r[1]||'').trim();
     const part = String(r[2]||'').trim();
-    const eqDebt = String(r[3]||'').trim();
-    const val = Number(r[4]) || 0;
-    const ent = String(r[5]||'').trim();
+    const typ  = String(r[4]||'').trim();   // Equity / Debt / Cash / Gold
+    const val  = Number(r[5]) || 0;         // Value
+    const ent  = String(r[6]||'').trim();   // Mishayan / Rishabh
+    const sta  = String(r[7]||'').trim();   // On / Off
     if(!part) continue;
-    D.nwInputs.assets.push({ cat, part, eqDebt, val, ent });
+    D.nwInputs.assets.push({ cat, part, typ, val, ent, sta });
   }
-  
-  // Parse debt section (right side, after gap): columns 9-12
-  // Col 9: Sr.No, Col 10: Category, Col 11: Particulars, Col 12: Value
+
+  // Parse debt section (cols 13-16): Col 13=Sr.No, 14=Category, 15=Particulars, 16=Value, 17=Entity
   for(let i=3; i<rows.length; i++) {
     const r = rows[i];
-    if(!r || r.length < 13) continue;
-    const sno = r[9];
+    if(!r || r.length < 17) continue;
+    const sno = r[13];
     if(sno===null || sno===undefined || String(sno).trim()==='') continue;
-    const cat = String(r[10]||'').trim();
-    const part = String(r[11]||'').trim();
-    const val = Number(r[12]) || 0;
+    const cat  = String(r[14]||'').trim();
+    const part = String(r[15]||'').trim();
+    const val  = Number(r[16]) || 0;
     if(!part) continue;
     D.nwInputs.debts.push({ cat, part, val });
   }
@@ -3290,7 +3289,7 @@ function getEnrichedAllocation() {
 
 function getAssetAllocationData() {
   if(CONFIG.masterSource === 'networth_inputs') {
-    return D.nwInputs.assets;
+    return D.nwInputs.assets.filter(x => x.sta === 'On');
   } else if(CONFIG.masterSource === 'sheet1_on') {
     return onItems();
   } else if(CONFIG.masterSource === 'sheet1_all') {
