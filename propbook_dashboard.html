@@ -1710,8 +1710,9 @@ body.show-sources .source-note { display: block; }
           <div style="margin-bottom:0.85rem">
             <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-mute);margin-bottom:0.45rem;text-transform:uppercase;letter-spacing:0.05em">Which sheet drives Net Worth & Liquidity?</label>
             <select id="cfg-master-source" onchange="updateConfig('masterSource',this.value);renderAll()" style="width:100%;padding:0.48rem;border:1px solid var(--border-lt);border-radius:4px;font-size:0.78rem;font-family:var(--font-body)">
+              <option value="networth_inputs" selected>Networth Inputs — Pre-computed (col V)</option>
               <option value="sheet1_on">Sheet1 — On items only</option>
-              <option value="sheet1_all" selected>Sheet1 — All items (On + Off)</option>
+              <option value="sheet1_all">Sheet1 — All items (On + Off)</option>
             </select>
           </div>
           <div style="padding:0.85rem;background:var(--cream-lt);border-radius:6px;margin-bottom:1rem">
@@ -2914,6 +2915,22 @@ function parseNetWorthInputs(wb) {
     D.nwInputs.debts.push({ cat, part, val });
   }
   
+  // ── Pre-computed summary (cols U–V, indices 20–21) ──────────────
+  // The sheet has a small summary table: col U = label, col V = value.
+  // Labels are: 'Liquidity', 'Less: Debt', 'Networth'
+  D.nwInputs.preLiquidity = null;
+  D.nwInputs.preDebt      = null;
+  D.nwInputs.preNetworth  = null;
+  for(let i=0; i<rows.length; i++) {
+    const r = rows[i]; if(!r) continue;
+    const lbl = r[20], val = r[21];
+    if(!lbl || typeof lbl !== 'string') continue;
+    const l = lbl.trim().toLowerCase();
+    if(l === 'liquidity')       D.nwInputs.preLiquidity = Number(val) || 0;
+    else if(l === 'less: debt') D.nwInputs.preDebt      = Number(val) || 0;
+    else if(l === 'networth')   D.nwInputs.preNetworth  = Number(val) || 0;
+  }
+
   // Get most recent date from assets
   D.nwInputs.dataDate = null;
 }
@@ -3194,9 +3211,7 @@ function updateConfig(key, val) {
 // Master data source computation functions
 function computeNetWorthBySource() {
   if(CONFIG.masterSource === 'networth_inputs') {
-    const assets = sum(D.nwInputs.assets, x=>x.val);
-    const debts = sum(D.nwInputs.debts, x=>x.val);
-    return assets - debts;
+    return D.nwInputs.preNetworth ?? (D.nwInputs.preLiquidity - D.nwInputs.preDebt) ?? 0;
   } else if(CONFIG.masterSource === 'sheet1_on') {
     return sum(onItems(), x=>x.val) - totalDebt();
   } else if(CONFIG.masterSource === 'sheet1_all') {
@@ -3207,7 +3222,7 @@ function computeNetWorthBySource() {
 
 function computeLiquidityBySource() {
   if(CONFIG.masterSource === 'networth_inputs') {
-    return sum(D.nwInputs.assets, x=>x.val);
+    return D.nwInputs.preLiquidity ?? sum(D.nwInputs.assets, x=>x.val);
   } else if(CONFIG.masterSource === 'sheet1_on') {
     return sum(onItems(), x=>x.val);
   } else if(CONFIG.masterSource === 'sheet1_all') {
@@ -3229,7 +3244,7 @@ function computeActiveItems() {
 
 function computeDebtBySource() {
   if(CONFIG.masterSource === 'networth_inputs') {
-    return sum(D.nwInputs.debts, x=>x.val);
+    return D.nwInputs.preDebt ?? sum(D.nwInputs.debts, x=>x.val);
   } else {
     return totalDebt();
   }
