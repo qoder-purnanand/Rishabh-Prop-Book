@@ -3344,7 +3344,7 @@ function renderAll() {
 function renderOverview(nw, liq) {
   const assetData = getAssetAllocationData();
   const on = onItems(), off = offItems();
-  const debt = totalDebt(), psar = psarNot();
+  const debt = computeDebtBySource(), psar = psarNot();
   sv('ov-date', D.dataDate ? 'Data as of ' + fd(D.dataDate) : '—');
   sv('ov-nw', cr(nw));
   sv('ov-liq', cr(liq));
@@ -3728,7 +3728,7 @@ function renderOverview(nw, liq) {
 
 function renderOverviewNew(nw, liq) {
   const assetData = getAssetAllocationData();
-  const debt = totalDebt(), psar = psarNot();
+  const debt = computeDebtBySource(), psar = psarNot();
   const eq  = sum(assetData.filter(x=>x.typ==='Equity'), x=>x.val);
   const dbt = sum(assetData.filter(x=>x.typ==='Debt'),   x=>x.val);
   const csh = sum(assetData.filter(x=>x.typ==='Cash'),   x=>x.val);
@@ -5254,15 +5254,20 @@ function collectSnapshot() {
     mf:     D.mf.map(x=>({...x})),
     debts:  D.debts.map(x=>({...x})),
     nwInputs: {
-      assets: D.nwInputs.assets.map(x=>({...x})),
-      debts:  D.nwInputs.debts.map(x=>({...x})),
+      assets:       D.nwInputs.assets.map(x=>({...x})),
+      debts:        D.nwInputs.debts.map(x=>({...x})),
+      preNetworth:  D.nwInputs.preNetworth,
+      preLiquidity: D.nwInputs.preLiquidity,
+      preDebt:      D.nwInputs.preDebt,
     },
     cashMargin: {
-      rows:        (D.cashMargin.rows||[]).map(x=>({...x})),
-      totalExp:    (D.cashMargin.totalExp||[]).map(x=>({...x})),
-      goldExp:     (D.cashMargin.goldExp||[]).map(x=>({...x})),
-      inputs:      (D.cashMargin.inputs||[]).map(x=>({...x})),
-      marginTable: (D.cashMargin.marginTable||[]).map(x=>({...x})),
+      rows:          (D.cashMargin.rows||[]).map(x=>({...x})),
+      totalExp:      (D.cashMargin.totalExp||[]).map(x=>({...x})),
+      goldExp:       (D.cashMargin.goldExp||[]).map(x=>({...x})),
+      inputs:        (D.cashMargin.inputs||[]).map(x=>({...x})),
+      marginTable:   (D.cashMargin.marginTable||[]).map(x=>({...x})),
+      grandTotal:    D.cashMargin.grandTotal,
+      rnCashDeploy:  D.cashMargin.rnCashDeploy,
       deploy: {
         mishayan: (D.cashMargin.deploy?.mishayan||[]).map(x=>({...x})),
         rishabh:  (D.cashMargin.deploy?.rishabh||[]).map(x=>({...x})),
@@ -5288,16 +5293,21 @@ function applySnapshot(snap) {
   D.mf     = (snap.mf||[]).map(x=>({...x}));
   D.debts  = (snap.debts||[]).map(x=>({...x}));
   D.nwInputs = {
-    assets: (snap.nwInputs?.assets||[]).map(x=>({...x})),
-    debts:  (snap.nwInputs?.debts||[]).map(x=>({...x})),
+    assets:       (snap.nwInputs?.assets||[]).map(x=>({...x})),
+    debts:        (snap.nwInputs?.debts||[]).map(x=>({...x})),
+    preNetworth:  snap.nwInputs?.preNetworth  ?? null,
+    preLiquidity: snap.nwInputs?.preLiquidity ?? null,
+    preDebt:      snap.nwInputs?.preDebt      ?? null,
   };
   const cm = snap.cashMargin || {};
   D.cashMargin = {
-    rows:        (cm.rows||[]).map(x=>({...x})),
-    totalExp:    (cm.totalExp||[]).map(x=>({...x})),
-    goldExp:     (cm.goldExp||[]).map(x=>({...x})),
-    inputs:      (cm.inputs||[]).map(x=>({...x})),
-    marginTable: (cm.marginTable||[]).map(x=>({...x})),
+    rows:          (cm.rows||[]).map(x=>({...x})),
+    totalExp:      (cm.totalExp||[]).map(x=>({...x})),
+    goldExp:       (cm.goldExp||[]).map(x=>({...x})),
+    inputs:        (cm.inputs||[]).map(x=>({...x})),
+    marginTable:   (cm.marginTable||[]).map(x=>({...x})),
+    grandTotal:    cm.grandTotal    ?? 0,
+    rnCashDeploy:  cm.rnCashDeploy  ?? null,
     headers: [], rawRows: [],
     deploy: {
       mishayan: (cm.deploy?.mishayan||[]).map(x=>({...x})),
