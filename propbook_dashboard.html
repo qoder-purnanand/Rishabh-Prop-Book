@@ -3123,6 +3123,13 @@ function parseCashMargin(wb) {
     if(typeof v === 'number') D.cashMargin.rnCashDeploy = v;
   }
 
+  // Grand Total: prefer the explicit "Grand Total" row if SheetJS reads it,
+  // but fall back to summing sub-totals (PivotTable Grand Total cells are
+  // sometimes not readable by SheetJS).
+  if(!D.cashMargin.grandTotal) {
+    D.cashMargin.grandTotal = D.cashMargin.totalExp.reduce((s, x) => s + x.val, 0);
+  }
+
   // Also populate legacy .rows for broker chart
   D.cashMargin.rows = D.cashMargin.totalExp;
 }
