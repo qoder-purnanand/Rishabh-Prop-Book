@@ -2586,7 +2586,7 @@ const D = {
 // CONFIG — Master Settings
 // ═══════════════════════════════════════════════════════════════
 const CONFIG = {
-  masterSource: 'sheet1_all',        // 'sheet1_on' | 'sheet1_all'
+  masterSource: 'networth_inputs',   // 'networth_inputs' | 'sheet1_on' | 'sheet1_all'
   sheet1Filter: 'all',               // 'on_only' | 'all'
   strategySource: 'sheet_direct',    // 'sheet_direct' | 'recompute'
   holdingsSource: 'holdings_sheets', // 'holdings_sheets' | 'networth_inputs'
@@ -5305,7 +5305,7 @@ function applySnapshot(snap) {
       rishabh:  (cm.deploy?.rishabh||[]).map(x=>({...x})),
     }
   };
-  if(snap.config) Object.assign(CONFIG, snap.config);
+  if(snap.config) { Object.assign(CONFIG, snap.config); CONFIG.masterSource = 'networth_inputs'; }
   return true;
 }
 
