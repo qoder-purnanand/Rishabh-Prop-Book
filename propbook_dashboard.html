@@ -500,6 +500,7 @@ body.show-sources .source-note { display: block; }
 .bdg-off { background: #fae8e8; color: #8B1A1A; border: 1px solid #d9b8b8; }
 .bdg-rn  { background: #f0eaf8; color: #4a2080; border: 1px solid #c8b8e8; }
 .bdg-mis { background: #e8eef8; color: #1a3080; border: 1px solid #b8c8e8; }
+.bdg-mw  { background: #f5ede0; color: #5a3010; border: 1px solid #d4b88a; }
 .bdg-cat { background: var(--cream); color: var(--text-mute); border: 1px solid var(--border); }
 .bdg-ok  { background: #e8f5ee; color: #02422B; border: 1px solid #b8d9c8; }
 .bdg-chk { background: #fae8e8; color: #8B1A1A; border: 1px solid #d9b8b8; }
@@ -1603,7 +1604,7 @@ body.show-sources .source-note { display: block; }
       <div class="sec-sub">Net Worth by entity · Assets from Sheet1 On items · Liabilities from Debt section</div>
     </div>
 
-    <div class="cards-row c3">
+    <div class="cards-row c4">
       <div class="kcard forest">
         <div class="kcard-lbl">Combined Net Worth</div>
         <div class="kcard-val" id="bs-nw">—</div>
@@ -1619,6 +1620,11 @@ body.show-sources .source-note { display: block; }
         <div class="kcard-val gold" id="bs-mis">—</div>
         <div class="kcard-sub">Company Net Worth</div>
       </div>
+      <div class="kcard">
+        <div class="kcard-lbl">Mishayan Wealth</div>
+        <div class="kcard-val" id="bs-mw">—</div>
+        <div class="kcard-sub">Wealth entity assets</div>
+      </div>
     </div>
 
     <div class="col2">
@@ -1631,6 +1637,7 @@ body.show-sources .source-note { display: block; }
               <th>Category</th>
               <th class="r">RN (₹)</th>
               <th class="r">Mishayan (₹)</th>
+              <th class="r">MW (₹)</th>
               <th class="r">Total (₹)</th>
               <th>Type</th>
             </tr></thead>
@@ -1879,7 +1886,7 @@ body.show-sources .source-note { display: block; }
           <div class="chart-box chart-h240"><canvas id="chart-alloc-entity"></canvas></div>
           <div class="alloc-legend" id="alloc-entity-legend"></div>
         </div>
-        <div class="source-note"><span class="sn-c">Split by entity (Rishabh / Mishayan) using col G "Mishayan / Rishabh" in Networth Inputs.</span><br><span class="sn-d">SUM(col F) grouped by col G. Futures virtual rows attributed to Mishayan.</span></div>
+        <div class="source-note"><span class="sn-c">Split by entity (Rishabh / Mishayan / Mishayan Wealth) using col G in Networth Inputs.</span><br><span class="sn-d">SUM(col F) grouped by col G. Futures virtual rows attributed to Mishayan.</span></div>
       </div>
     </div>
 
@@ -1964,6 +1971,7 @@ body.show-sources .source-note { display: block; }
               <th>Category</th>
               <th class="r">RN (₹)</th>
               <th class="r">Mishayan (₹)</th>
+              <th class="r">MW (₹)</th>
               <th class="r">Total (₹)</th>
             </tr></thead>
             <tbody></tbody>
@@ -2901,7 +2909,7 @@ function parseNetWorthInputs(wb) {
     D.nwInputs.assets.push({ cat, part, typ, val, ent, sta });
   }
 
-  // Parse debt section (cols 13-16): Col 13=Sr.No, 14=Category, 15=Particulars, 16=Value, 17=Entity
+  // Parse debt section (cols 13-17): Col 13=Sr.No, 14=Category, 15=Particulars, 16=Value, 17=Entity
   for(let i=3; i<rows.length; i++) {
     const r = rows[i];
     if(!r || r.length < 17) continue;
@@ -2910,8 +2918,9 @@ function parseNetWorthInputs(wb) {
     const cat  = String(r[14]||'').trim();
     const part = String(r[15]||'').trim();
     const val  = Number(r[16]) || 0;
+    const ent  = String(r[17]||'').trim();
     if(!part) continue;
-    D.nwInputs.debts.push({ cat, part, val });
+    D.nwInputs.debts.push({ cat, part, val, ent });
   }
   
   // ── Pre-computed summary (cols U–V, indices 20–21) ──────────────
@@ -3183,7 +3192,7 @@ const abadge = t => {
   return `<span class="bdg ${m[t]||'bdg-cat'}">${t||'—'}</span>`;
 };
 const ebadge = e => {
-  const m = {Rishabh:'bdg-rn',Mishayan:'bdg-mis'};
+  const m = {Rishabh:'bdg-rn', Mishayan:'bdg-mis', 'Mishayan Wealth':'bdg-mw'};
   return `<span class="bdg ${m[e]||'bdg-cat'}">${e||'—'}</span>`;
 };
 const stbadge = s => `<span class="bdg ${s==='On'?'bdg-on':'bdg-off'}">${s}</span>`;
@@ -3289,7 +3298,7 @@ function getEnrichedAllocation() {
 
 function getAssetAllocationData() {
   if(CONFIG.masterSource === 'networth_inputs') {
-    return D.nwInputs.assets.filter(x => x.sta === 'On');
+    return D.nwInputs.assets;
   } else if(CONFIG.masterSource === 'sheet1_on') {
     return onItems();
   } else if(CONFIG.masterSource === 'sheet1_all') {
@@ -3350,7 +3359,7 @@ function renderOverview(nw, liq) {
   sv('ov-liq', cr(liq));
   sv('ov-liq-sub', assetData.length + ' active items');
   sv('ov-debt', cr(debt));
-  sv('ov-debt-sub', D.debts.length + ' liabilities');
+  sv('ov-debt-sub', D.nwInputs.debts.length + ' liabilities');
   sv('ov-psar', cr(psar));
   sv('ov-psar-sub', xnw(psar, nw));
   sv('ov-items', on.length);
@@ -3405,12 +3414,14 @@ function renderOverview(nw, liq) {
   sv('category-breakdown-source', categorySourceText);
 
   // Entity split
-  const rn  = sum(assetData.filter(x=>x.ent==='Rishabh'),  x=>x.val);
-  const mis = sum(assetData.filter(x=>x.ent==='Mishayan'), x=>x.val);
-  const oth = sum(assetData.filter(x=>!['Rishabh','Mishayan'].includes(x.ent)), x=>x.val);
+  const rn  = sum(assetData.filter(x=>x.ent==='Rishabh'),        x=>x.val);
+  const mis = sum(assetData.filter(x=>x.ent==='Mishayan'),        x=>x.val);
+  const mw  = sum(assetData.filter(x=>x.ent==='Mishayan Wealth'), x=>x.val);
+  const oth = sum(assetData.filter(x=>!['Rishabh','Mishayan','Mishayan Wealth'].includes(x.ent)), x=>x.val);
   const bars = [
-    {name:'Rishabh Nahar', sub:'Personal', val:rn, color:'#02422B'},
-    {name:'Mishayan Capital', sub:'Company', val:mis, color:'#1a5a80'},
+    {name:'Rishabh Nahar',    sub:'Personal', val:rn,  color:'#02422B'},
+    {name:'Mishayan Capital', sub:'Company',  val:mis, color:'#1a5a80'},
+    ...(mw>0?[{name:'Mishayan Wealth', sub:'Wealth', val:mw, color:'#7a5c2e'}]:[]),
     ...(oth>0?[{name:'Other', sub:'', val:oth, color:'#DABD38'}]:[])
   ];
   sh('entity-panel', bars.map(b=>`
@@ -3423,9 +3434,10 @@ function renderOverview(nw, liq) {
       <div style="font-family:'Courier New',monospace;font-size:0.73rem;font-weight:700;color:${b.color};text-align:right">${cr(b.val)}</div>
     </div>
   `).join('') + `
-    <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border-lt);display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;font-size:0.69rem">
+    <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border-lt);display:grid;grid-template-columns:1fr 1fr${mw>0?' 1fr':''};gap:0.4rem;font-size:0.69rem">
       <div><span style="color:var(--text-lt)">RN assets:</span> <strong>${cr(rn)}</strong></div>
       <div><span style="color:var(--text-lt)">Mishayan assets:</span> <strong>${cr(mis)}</strong></div>
+      ${mw>0?`<div><span style="color:var(--text-lt)">MW assets:</span> <strong>${cr(mw)}</strong></div>`:''}
     </div>
   `);
 
@@ -3558,12 +3570,14 @@ function renderOverview(nw, liq) {
   // Entity summary table
   const entTbody = document.getElementById('ov-entity-tbody');
   if(entTbody) {
-    const rnA  = sum(assetData.filter(x=>x.ent==='Rishabh'),  x=>x.val);
-    const misA = sum(assetData.filter(x=>x.ent==='Mishayan'), x=>x.val);
-    const othA = sum(assetData.filter(x=>!['Rishabh','Mishayan'].includes(x.ent)), x=>x.val);
+    const rnA  = sum(assetData.filter(x=>x.ent==='Rishabh'),         x=>x.val);
+    const misA = sum(assetData.filter(x=>x.ent==='Mishayan'),         x=>x.val);
+    const mwA  = sum(assetData.filter(x=>x.ent==='Mishayan Wealth'),  x=>x.val);
+    const othA = sum(assetData.filter(x=>!['Rishabh','Mishayan','Mishayan Wealth'].includes(x.ent)), x=>x.val);
     const entRows = [
       { name: 'Rishabh Nahar',    assets: rnA,  liab: debt, nwE: rnA - debt },
       ...(misA > 0 ? [{ name: 'Mishayan Capital', assets: misA, liab: 0, nwE: misA }] : []),
+      ...(mwA  > 0 ? [{ name: 'Mishayan Wealth',  assets: mwA,  liab: 0, nwE: mwA  }] : []),
       ...(othA > 0 ? [{ name: 'Other',             assets: othA, liab: 0, nwE: othA }] : []),
     ];
     const combNW = sum(entRows, r => r.nwE);
@@ -3609,9 +3623,10 @@ function renderOverview(nw, liq) {
     const buckets = {};
     assetData.forEach(x => {
       const bk = x.cat || x.p1 || 'Other';
-      if(!buckets[bk]) buckets[bk] = {cat:bk, typ:x.typ, rn:0, mis:0, tot:0};
-      if(x.ent==='Rishabh')  buckets[bk].rn  += x.val;
-      else if(x.ent==='Mishayan') buckets[bk].mis += x.val;
+      if(!buckets[bk]) buckets[bk] = {cat:bk, typ:x.typ, rn:0, mis:0, mw:0, tot:0};
+      if(x.ent==='Rishabh')             buckets[bk].rn  += x.val;
+      else if(x.ent==='Mishayan')       buckets[bk].mis += x.val;
+      else if(x.ent==='Mishayan Wealth') buckets[bk].mw  += x.val;
       buckets[bk].tot += x.val;
     });
     const bRows = Object.values(buckets).sort((a,b)=>b.tot-a.tot);
@@ -3621,12 +3636,14 @@ function renderOverview(nw, liq) {
       <td style="font-size:0.7rem;color:var(--text-mute)">${b.cat}</td>
       <td class="mono r">${b.rn>0?cr(b.rn):'—'}</td>
       <td class="mono r">${b.mis>0?cr(b.mis):'—'}</td>
+      <td class="mono r">${b.mw>0?cr(b.mw):'—'}</td>
       <td class="mono r"><strong>${cr(b.tot)}</strong></td>
       <td class="mono r">${pct(b.tot,liq)}</td>
       <td>${abadge(b.typ)}</td>
     </tr>`).join('') + `<tr class="trow-total">
       <td colspan="2">Total Liquidity</td><td class="r">${cr(sum(assetData.filter(x=>x.ent==='Rishabh'),x=>x.val))}</td>
       <td class="r">${cr(sum(assetData.filter(x=>x.ent==='Mishayan'),x=>x.val))}</td>
+      <td class="r">${cr(sum(assetData.filter(x=>x.ent==='Mishayan Wealth'),x=>x.val))}</td>
       <td class="r">${cr(liq)}</td><td class="r">100%</td><td></td>
     </tr>`;
   }
@@ -3741,7 +3758,7 @@ function renderOverviewNew(nw, liq) {
   sv('ov-liq',  cr(liq));
   sv('ov-liq-sub', assetData.length + ' active positions');
   sv('ov-debt', cr(debt));
-  sv('ov-debt-sub', D.debts.length + ' liabilities · ' + pct(debt,liq) + ' of assets');
+  sv('ov-debt-sub', D.nwInputs.debts.length + ' liabilities · ' + pct(debt,liq) + ' of assets');
   sv('ov-psar', cr(psar));
   sv('ov-psar-sub', xnw(psar,nw));
 
@@ -3774,10 +3791,17 @@ function renderOverviewNew(nw, liq) {
   const legEl = document.getElementById('ov-alloc-legend');
   if(legEl) legEl.innerHTML = segments.map(s=>`<div style="display:flex;justify-content:space-between;gap:0.5rem;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.05)"><span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color}"></span>${s.label}</span><span style="text-align:right"><strong>${cr(s.val,1)}</strong><span style="color:var(--text-lt);margin-left:4px">${pct(s.val,liq)}</span></span></div>`).join('');
 
-  const rn  = sum(assetData.filter(x=>x.ent==='Rishabh'),  x=>x.val);
-  const mis = sum(assetData.filter(x=>x.ent==='Mishayan'), x=>x.val);
+  const rn    = sum(assetData.filter(x=>x.ent==='Rishabh'),         x=>x.val);
+  const mis   = sum(assetData.filter(x=>x.ent==='Mishayan'),         x=>x.val);
+  const mwMini= sum(assetData.filter(x=>x.ent==='Mishayan Wealth'),  x=>x.val);
   const entMini = document.getElementById('ov-entity-mini');
-  if(entMini) entMini.innerHTML = [['Mishayan Capital',mis,'#1a5a80'],[' Rishabh Nahar',rn,'#02422B']].map(([name,val,col])=>`
+  if(entMini) {
+    const entRows2 = [
+      ['Mishayan Capital', mis,    '#1a5a80'],
+      ['Rishabh Nahar',    rn,     '#02422B'],
+      ...(mwMini>0?[['Mishayan Wealth', mwMini, '#7a5c2e']]:[])
+    ];
+    entMini.innerHTML = entRows2.map(([name,val,col])=>`
     <div style="margin-bottom:0.6rem">
       <div style="display:flex;justify-content:space-between;font-size:0.68rem;margin-bottom:2px"><span>${name}</span><strong>${cr(val,1)}</strong></div>
       <div style="display:flex;align-items:center;gap:0.4rem">
@@ -3788,6 +3812,7 @@ function renderOverviewNew(nw, liq) {
       <div style="display:flex;justify-content:space-between"><span>Debt / Liabilities</span><span style="color:var(--red-neg);font-weight:600">${cr(debt,1)}</span></div>
       <div style="display:flex;justify-content:space-between;margin-top:2px"><span>Net Worth</span><span style="color:var(--forest);font-weight:600">${cr(nw,1)}</span></div>
     </div>`;
+  }
 
   const healthEl = document.getElementById('ov-health-panel');
   if(healthEl) {
@@ -4219,20 +4244,25 @@ function toggleBalanceTree(el, targetCls) {
 }
 
 function renderBalance(nw, liq) {
-  const on = onItems(), debt = totalDebt();
+  const on = onItems(), debt = computeDebtBySource();
   sv('bs-nw', cr(nw));
   const rnItems  = on.filter(x=>x.ent==='Rishabh');
   const misItems = on.filter(x=>x.ent==='Mishayan');
-  const othItems = on.filter(x=>!['Rishabh','Mishayan'].includes(x.ent));
+  const mwItems  = on.filter(x=>x.ent==='Mishayan Wealth');
+  const othItems = on.filter(x=>!['Rishabh','Mishayan','Mishayan Wealth'].includes(x.ent));
   const rnA  = sum(rnItems,  x=>x.val);
   const misA = sum(misItems, x=>x.val);
+  const mwA  = sum(mwItems,  x=>x.val);
   const othA = sum(othItems, x=>x.val);
-  const rnDebt  = sum(D.debts.filter(d=>d.ent==='Rishabh'),  d=>d.val);
-  const misDebt = sum(D.debts.filter(d=>d.ent==='Mishayan'), d=>d.val);
+  const rnDebt  = sum(D.nwInputs.debts.filter(d=>d.ent==='Rishabh'),         d=>d.val);
+  const misDebt = sum(D.nwInputs.debts.filter(d=>d.ent==='Mishayan'),         d=>d.val);
+  const mwDebt  = sum(D.nwInputs.debts.filter(d=>d.ent==='Mishayan Wealth'),  d=>d.val);
   const rnNW  = rnA  - rnDebt;
   const misNW = misA - misDebt;
+  const mwNW  = mwA  - mwDebt;
   sv('bs-rn',  cr(rnNW));
   sv('bs-mis', cr(misNW));
+  sv('bs-mw',  cr(mwNW));
 
   // Assets table — collapsible tree: Category > P1 > P2
   const cats = [...new Set(on.map(x=>x.cat))];
@@ -4244,7 +4274,7 @@ function renderBalance(nw, liq) {
       const catVal   = sum(catItems,x=>x.val);
       const catId    = `bc${ci}`;
       h += `<tr class="trow-section tree-row" data-open="1" style="cursor:pointer" onclick="toggleBalanceTree(this,'${catId}')">
-        <td colspan="6"><span class="tree-arrow">▼</span> <strong>${cat}</strong>
+        <td colspan="7"><span class="tree-arrow">▼</span> <strong>${cat}</strong>
           <span style="opacity:0.6;font-size:0.65rem;margin-left:0.6rem">${catItems.length} item${catItems.length!==1?'s':''} · ${cr(catVal)}</span>
         </td>
       </tr>`;
@@ -4255,8 +4285,9 @@ function renderBalance(nw, liq) {
         const p1Id     = `bp${ci}_${pi}`;
         const hasSubP2 = p1Items.length > 1 || p1Items.some(x=>x.p2&&x.p2!==p1);
         if(hasSubP2) {
-          const rnP1  = sum(p1Items.filter(x=>x.ent==='Rishabh'),  x=>x.val);
-          const misP1 = sum(p1Items.filter(x=>x.ent==='Mishayan'), x=>x.val);
+          const rnP1  = sum(p1Items.filter(x=>x.ent==='Rishabh'),         x=>x.val);
+          const misP1 = sum(p1Items.filter(x=>x.ent==='Mishayan'),         x=>x.val);
+          const mwP1  = sum(p1Items.filter(x=>x.ent==='Mishayan Wealth'),  x=>x.val);
           h += `<tr class="${catId} tree-row" data-open="1" style="cursor:pointer" onclick="toggleBalanceTree(this,'${p1Id}')">
             <td style="padding-left:1.2rem"><span class="tree-arrow">▼</span> ${p1}
               <span style="opacity:0.55;font-size:0.6rem;margin-left:0.5rem">${p1Items.length}</span>
@@ -4264,28 +4295,31 @@ function renderBalance(nw, liq) {
             <td class="muted">${cat}</td>
             <td class="mono r muted">${rnP1>0?cr(rnP1):'—'}</td>
             <td class="mono r muted">${misP1>0?cr(misP1):'—'}</td>
+            <td class="mono r muted">${mwP1>0?cr(mwP1):'—'}</td>
             <td class="mono r"><strong>${cr(p1Val)}</strong></td>
             <td></td>
           </tr>`;
           p1Items.forEach(x => {
-            const rnV=x.ent==='Rishabh'?x.val:0, misV=x.ent==='Mishayan'?x.val:0;
+            const rnV=x.ent==='Rishabh'?x.val:0, misV=x.ent==='Mishayan'?x.val:0, mwBsV=x.ent==='Mishayan Wealth'?x.val:0;
             h += `<tr class="${catId} ${p1Id}">
               <td style="padding-left:2.2rem">${x.p2||x.p1}</td>
               <td class="muted">${x.cat}</td>
               <td class="mono r">${rnV>0?cr(rnV):'—'}</td>
               <td class="mono r">${misV>0?cr(misV):'—'}</td>
+              <td class="mono r">${mwBsV>0?cr(mwBsV):'—'}</td>
               <td class="mono r">${cr(x.val)}</td>
               <td>${abadge(x.typ)}</td>
             </tr>`;
           });
         } else {
           const x=p1Items[0];
-          const rnV=x.ent==='Rishabh'?x.val:0, misV=x.ent==='Mishayan'?x.val:0;
+          const rnV=x.ent==='Rishabh'?x.val:0, misV=x.ent==='Mishayan'?x.val:0, mwBsV=x.ent==='Mishayan Wealth'?x.val:0;
           h += `<tr class="${catId}">
             <td style="padding-left:1.5rem"><strong>${x.p2||x.p1}</strong></td>
             <td class="muted">${x.cat}</td>
             <td class="mono r">${rnV>0?cr(rnV):'—'}</td>
             <td class="mono r">${misV>0?cr(misV):'—'}</td>
+            <td class="mono r">${mwBsV>0?cr(mwBsV):'—'}</td>
             <td class="mono r">${cr(x.val)}</td>
             <td>${abadge(x.typ)}</td>
           </tr>`;
@@ -4295,15 +4329,15 @@ function renderBalance(nw, liq) {
     aTb.innerHTML=h;
     if(aFt) aFt.innerHTML=`<tr class="trow-total">
       <td colspan="2">Total Assets (On)</td>
-      <td class="r">${cr(rnA)}</td><td class="r">${cr(misA)}</td><td class="r">${cr(liq)}</td><td></td>
+      <td class="r">${cr(rnA)}</td><td class="r">${cr(misA)}</td><td class="r">${mwA>0?cr(mwA):'—'}</td><td class="r">${cr(liq)}</td><td></td>
     </tr>`;
   }
 
   // Liabilities
   const lTb=document.querySelector('#bs-liab tbody'), lFt=document.getElementById('bs-liab-foot');
   if(lTb) {
-    lTb.innerHTML=D.debts.map(d=>`<tr>
-      <td><strong>${d.par}</strong></td>
+    lTb.innerHTML=D.nwInputs.debts.map(d=>`<tr>
+      <td><strong>${d.part}</strong></td>
       <td class="mono r neg">${cr(d.val)}</td>
       <td>${ebadge(d.ent)}</td>
     </tr>`).join('');
@@ -4314,9 +4348,10 @@ function renderBalance(nw, liq) {
   const sTb=document.querySelector('#bs-summary tbody');
   if(sTb) {
     const rows=[
-      {lbl:'Rishabh Nahar', assets:rnA, nwv:rnNW},
+      {lbl:'Rishabh Nahar',    assets:rnA,  nwv:rnNW},
       {lbl:'Mishayan Capital', assets:misA, nwv:misNW},
-      ...(othA>0?[{lbl:'Other Entities', assets:othA, nwv:othA}]:[])
+      ...(mwA>0?[{lbl:'Mishayan Wealth',  assets:mwA,  nwv:mwNW}]:[]),
+      ...(othA>0?[{lbl:'Other Entities',  assets:othA, nwv:othA}]:[])
     ];
     sTb.innerHTML=rows.map(r=>`<tr>
       <td><strong>${r.lbl}</strong></td>
@@ -4536,10 +4571,16 @@ function renderAllocation() {
   }
 
   // ── Entity doughnut ─────────────────────────────────────────
-  const rnV  = sum(viewData.filter(x=>x.ent==='Rishabh'),  x=>x.val);
-  const misV = sum(viewData.filter(x=>x.ent==='Mishayan'), x=>x.val);
-  const othV = sum(viewData.filter(x=>!['Rishabh','Mishayan'].includes(x.ent)), x=>x.val);
-  const entSegs = [{label:'Rishabh Nahar',val:rnV,color:'#02422B'},{label:'Mishayan Capital',val:misV,color:'#1a5a80'},...(othV>0?[{label:'Other',val:othV,color:'#DABD38'}]:[])].filter(s=>s.val>0);
+  const rnV  = sum(viewData.filter(x=>x.ent==='Rishabh'),         x=>x.val);
+  const misV = sum(viewData.filter(x=>x.ent==='Mishayan'),         x=>x.val);
+  const mwV  = sum(viewData.filter(x=>x.ent==='Mishayan Wealth'),  x=>x.val);
+  const othV = sum(viewData.filter(x=>!['Rishabh','Mishayan','Mishayan Wealth'].includes(x.ent)), x=>x.val);
+  const entSegs = [
+    {label:'Rishabh Nahar',   val:rnV,  color:'#02422B'},
+    {label:'Mishayan Capital',val:misV, color:'#1a5a80'},
+    ...(mwV>0?[{label:'Mishayan Wealth', val:mwV, color:'#7a5c2e'}]:[]),
+    ...(othV>0?[{label:'Other', val:othV, color:'#DABD38'}]:[])
+  ].filter(s=>s.val>0);
   mkChart('chart-alloc-entity', {
     type:'doughnut',
     data:{ labels:entSegs.map(s=>s.label), datasets:[{ data:entSegs.map(s=>s.val), backgroundColor:entSegs.map(s=>s.color), borderWidth:2, borderColor:'#fff' }] },
@@ -4678,15 +4719,17 @@ function renderAllocation() {
   const nwEqTb = document.querySelector('#alloc-nw-equity-table tbody');
   if(nwEqTb) {
     nwEqTb.innerHTML = nwEqItems.map(x => {
-      const rnV  = x.ent === 'Rishabh'  ? x.val : 0;
-      const misV = x.ent === 'Mishayan' ? x.val : 0;
+      const rnV  = x.ent === 'Rishabh'        ? x.val : 0;
+      const misV = x.ent === 'Mishayan'        ? x.val : 0;
+      const mwEqV= x.ent === 'Mishayan Wealth' ? x.val : 0;
       const label = x.p2 && x.p2 !== x.p1 ? x.p2 : x.p1;
       const sub   = x.p2 && x.p2 !== x.p1 ? `<div style="font-size:0.6rem;color:var(--text-lt)">${x.p1}</div>` : '';
       return `<tr>
         <td><strong>${label}</strong>${sub}</td>
         <td class="muted" style="font-size:0.7rem">${x.cat}</td>
-        <td class="mono r">${rnV  > 0 ? cr(rnV)  : '—'}</td>
-        <td class="mono r">${misV > 0 ? cr(misV) : '—'}</td>
+        <td class="mono r">${rnV   > 0 ? cr(rnV)   : '—'}</td>
+        <td class="mono r">${misV  > 0 ? cr(misV)  : '—'}</td>
+        <td class="mono r">${mwEqV > 0 ? cr(mwEqV) : '—'}</td>
         <td class="mono r"><strong>${cr(x.val)}</strong></td>
       </tr>`;
     }).join('');
