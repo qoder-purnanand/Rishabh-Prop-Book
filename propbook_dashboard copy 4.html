@@ -1346,7 +1346,7 @@ body.show-sources .source-note { display: block; }
       <div class="sec-sub" id="brokers-subtitle">All values from Sheet1 · On items only</div>
     </div>
 
-    <div class="cards-row c5">
+    <div class="cards-row c4">
       <div class="kcard forest">
         <div class="kcard-lbl">Zerodha RN Total</div>
         <div class="kcard-val" id="zrn-v">—</div>
@@ -1356,11 +1356,6 @@ body.show-sources .source-note { display: block; }
         <div class="kcard-lbl">Zerodha Mishayan Total</div>
         <div class="kcard-val" id="zmis-v">—</div>
         <div class="kcard-sub">Mishayan Capital</div>
-      </div>
-      <div class="kcard">
-        <div class="kcard-lbl">Other Client Accounts</div>
-        <div class="kcard-val" id="ocl-v">—</div>
-        <div class="kcard-sub" id="ocl-s">Mishayan Wealth · Prosperity FPI</div>
       </div>
       <div class="kcard cream">
         <div class="kcard-lbl">Prop Desk</div>
@@ -1399,23 +1394,6 @@ body.show-sources .source-note { display: block; }
       </div>
       <div class="panel-body0 sx">
         <table class="dt" id="zmis-table">
-          <thead><tr>
-            <th>Sub-Account</th>
-            <th class="r">Value (₹)</th>
-            <th>Asset Type</th>
-            <th>Status</th>
-          </tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-hd">
-        <div class="panel-title">Other Client Accounts — Mishayan Wealth · Prosperity FPI</div>
-      </div>
-      <div class="panel-body0 sx">
-        <table class="dt" id="ocl-table">
           <thead><tr>
             <th>Sub-Account</th>
             <th class="r">Value (₹)</th>
@@ -1587,7 +1565,6 @@ body.show-sources .source-note { display: block; }
         <div class="fpill" onclick="filterH('Personal Stock Holdings Zerodha',this)">RN Personal</div>
         <div class="fpill" onclick="filterH('Stock Holdings',this)">Mishayan</div>
         <div class="fpill" onclick="filterH('Mutual Funds',this)">Loaned to Mishayan</div>
-        <div class="fpill" onclick="filterH('MishayanWealth',this)">Mishayan Wealth</div>
         <div class="fsep"></div>
         <div class="fpill" onclick="filterH('QMF',this)">QMF</div>
         <div class="fpill" onclick="filterH('Momentum',this)">Momentum</div>
@@ -2044,27 +2021,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <div class="col2" style="margin-bottom:1.25rem">
-      <div class="panel">
-        <div class="panel-hd"><div class="panel-title">Geographic Exposure — PSAR by Country</div></div>
-        <div class="panel-body">
-          <div class="chart-box chart-h240"><canvas id="chart-risk-geo"></canvas></div>
-          <div class="alloc-legend" id="risk-geo-legend"></div>
-        </div>
-        <div class="source-note"><span class="sn-c">India vs Dubai split of net PSAR notional, from the Portfolio Summary sheet.</span></div>
-      </div>
-      <div class="panel">
-        <div class="panel-hd"><div class="panel-title">Underlying vs Futures Leverage</div></div>
-        <div class="panel-body0 sx">
-          <table class="dt" id="risk-leverage-table">
-            <thead><tr><th>Bucket</th><th class="r">Underlying</th><th class="r">Futures</th><th class="r">Total</th><th class="r">x NW</th><th class="r">x Liquidity</th></tr></thead>
-            <tbody id="risk-leverage-tbody"></tbody>
-          </table>
-        </div>
-        <div class="source-note"><span class="sn-c">How much of Equity/Gold exposure is real holdings vs derivative notional.</span></div>
-      </div>
-    </div>
-
     <!-- Interactive Stress Test -->
     <div class="panel" style="margin-bottom:1.25rem">
       <div class="stress-control-row">
@@ -2372,31 +2328,6 @@ body.show-sources .source-note { display: block; }
       <div class="source-note"><span class="sn-c">Margin available vs required by strategy (PSAR, LO, Gold Futures, DMA). Rows: Available on Zerodha, Total Required, Excess/Shortfall.</span><br><span class="sn-d">Cash &amp; Margin sheet, cols L–S: col L = component name, col M = Cash Component (Liquid Funds), col N = Non-Cash, col O = Liquidcase, col P = Cash, col Q = Total, col R = % of Portfolio Value</span></div>
     </div>
 
-
-    <div class="panel" style="margin-bottom:1.5rem">
-      <div class="panel-hd"><div class="panel-title">Margin Utilisation — Mishayan Wealth (Zerodha)</div></div>
-      <div class="cards-row c3" style="margin:0 0 1px 0;border-radius:0">
-        <div class="kcard"><div class="kcard-lbl">Grand Total</div><div class="kcard-val" id="mg-grand-mw" style="font-size:1.1rem">—</div></div>
-        <div class="kcard"><div class="kcard-lbl">Available on Zerodha</div><div class="kcard-val pos" id="mg-avail-mw" style="font-size:1.1rem">—</div></div>
-        <div class="kcard"><div class="kcard-lbl">Margin Excess/Shortfall</div><div class="kcard-val" id="mg-short-mw" style="font-size:1.1rem">—</div></div>
-      </div>
-      <div class="panel-body0 sx">
-        <table class="dt" id="mg-margin-table-mw">
-          <thead><tr>
-            <th>Component</th><th class="r">Cash (Liquid Funds)</th><th class="r">Non-Cash Collateral</th>
-            <th class="r">Liquidcase</th><th class="r">Cash</th><th class="r">Total</th><th class="r">% of PV</th>
-          </tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-
-
-
-
-
-
-
     <!-- Broker totals + chart -->
     <div class="col2">
       <div class="panel">
@@ -2655,13 +2586,8 @@ const D = {
   s1:[], strats:[], eq:[], mf:[], debts:[], dataDate:null,
   stratTags: {},   // strat name → tag ('Equity','Gold','Derivatives',…)
   nwInputs: { assets:[], debts:[], dataDate:null },
-  cashMargin:   { headers:[], rows:[], marginTable:[], deploy:{ mishayan:[], rishabh:[] },
-                  totalExp:[], goldExp:[], inputs:[], rawRows:[], grandTotal:0 },
-  // NEW — Mishayan Wealth now has its own Cash & Margin sheet, same shape as the main one
-  cashMarginMW: { headers:[], rows:[], marginTable:[], deploy:{ mishayan:[], rishabh:[] },
-                  totalExp:[], goldExp:[], inputs:[], rawRows:[], grandTotal:0 },
-  // NEW — from the "Portfolio Summary" sheet: country split + underlying-vs-futures leverage
-  portfolioSummary: { country: [], eqExp: {}, goldExp: {}, combinedExp: {}, psarLevNW: null, psarLevLiq: null }
+  cashMargin: { headers:[], rows:[], marginTable:[], deploy:{ mishayan:[], rishabh:[] },
+                totalExp:[], goldExp:[], inputs:[], rawRows:[] }
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -2952,8 +2878,6 @@ function parseAll(wb) {
   parseEquity(wb);
   parseMF(wb);
   parseCashMargin(wb);
-  parseCashMarginMW(wb);       // NEW
-  parsePortfolioSummary(wb);   // NEW
 }
 
 function parseNetWorthInputs(wb) {
@@ -3095,24 +3019,17 @@ function parseStrategies(wb) {
 
 function parseEquity(wb) {
   // Equity Holdings: header at row index 2, data from row 3
-  // cols: 0=symbol, 1=tag, 2=exchange, 3=qty, 4=avgPrice, 5=broker, 6=assetType, 7=subCat, 8=ltp, 9=buyVal, 10=curVal, 11=pnl, 12=pnlPct, 13=notes(optional)
-  D.eq = [];
-  const mainSn = wb.SheetNames.find(n => n.toLowerCase().includes('equity holding') && !n.toLowerCase().includes('mishayan wealth'));
-  const mwSn   = wb.SheetNames.find(n => n.toLowerCase().includes('mishayan wealth') && n.toLowerCase().includes('equity holding'));
-  parseEquitySheet(wb, mainSn, null);            // ent derived per-row from tag (RN vs Mishayan)
-  parseEquitySheet(wb, mwSn,  'Mishayan Wealth'); // ent forced — MW sheet reuses the same generic tags as Mishayan
-}
-function parseEquitySheet(wb, sn, forcedEnt) {
+  // cols: 0=symbol, 1=tag, 2=exchange, 3=qty, 4=avgPrice, 5=broker, 6=assetType, 7=subCat, 8=ltp, 9=buyVal, 10=curVal, 11=pnl, 12=pnlPct, 13=notes
+  const sn = wb.SheetNames.find(n => n.toLowerCase().includes('equity holding'));
   if(!sn || !wb.Sheets[sn]) return;
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
+  D.eq = [];
   for(let i=3; i<rows.length; i++) {
     const r = rows[i];
     if(!r || !r[0]) continue;
-    const tag = String(r[1]||'').trim();
-    const ent = forcedEnt || (tag === 'Personal Stock Holdings Zerodha' ? 'Rishabh' : 'Mishayan');
     D.eq.push({
       sym: String(r[0]||'').trim(),
-      tag, ent,
+      tag: String(r[1]||'').trim(),
       qty: Number(r[3])||0,
       avg: Number(r[4])||0,
       assetType: String(r[6]||'').trim(),
@@ -3122,7 +3039,7 @@ function parseEquitySheet(wb, sn, forcedEnt) {
       curVal: Number(r[10])||0,
       pnl:    Number(r[11])||0,
       pnlPct: Number(r[12])||0,
-      notes:  String(r[13]||'').trim(),  // blank on MW sheet — no Notes column there, which is fine
+      notes:  String(r[13]||'').trim(),
       type: 'Stock'
     });
   }
@@ -3130,27 +3047,20 @@ function parseEquitySheet(wb, sn, forcedEnt) {
 
 function parseMF(wb) {
   // Mutual Funds: header at row index 2, data from row 3
-  // cols: 0=symbol,1=isin,2=schemeCode,3=qty,4=avgPrice,5=broker,6=assetType,7=tag,8=subCat,9=nav,10=buyVal,11=curVal,12=pnl,13=pnlPct,14=notes(optional)
-  D.mf = [];
-  const mainSn = wb.SheetNames.find(n => n.toLowerCase().includes('mutual fund') && !n.toLowerCase().includes('mishayan wealth'));
-  const mwSn   = wb.SheetNames.find(n => n.toLowerCase().includes('mishayan wealth') && n.toLowerCase().includes('mutual fund'));
-  parseMFSheet(wb, mainSn, null);
-  parseMFSheet(wb, mwSn,  'Mishayan Wealth');
-}
-function parseMFSheet(wb, sn, forcedEnt) {
+  // cols: 0=symbol, 1=isin, 2=schemeCode, 3=qty, 4=avgPrice, 5=broker, 6=assetType, 7=tag, 8=subCat, 9=nav, 10=buyVal, 11=curVal, 12=pnl, 13=pnlPct, 14=notes
+  const sn = wb.SheetNames.find(n => n.toLowerCase().includes('mutual fund'));
   if(!sn || !wb.Sheets[sn]) return;
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
+  D.mf = [];
   for(let i=3; i<rows.length; i++) {
     const r = rows[i];
     if(!r || !r[0]) continue;
-    const tag = String(r[7]||'').trim();
-    const ent = forcedEnt || (tag === 'Personal Mutual Funds Zerodha' ? 'Rishabh' : 'Mishayan');
     D.mf.push({
       sym: String(r[0]||'').trim(),
-      tag, ent,
       qty: Number(r[3])||0,
       avg: Number(r[4])||0,
       assetType: String(r[6]||'').trim(),
+      tag: String(r[7]||'').trim(),
       subCat: String(r[8]||'').trim(),
       nav: Number(r[9])||0,
       buyVal: Number(r[10])||0,
@@ -3166,58 +3076,46 @@ function parseMFSheet(wb, sn, forcedEnt) {
 function parseCashMargin(wb) {
   const sn = wb.SheetNames.find(n => /^cash and margin$/i.test(n))
           || wb.SheetNames.find(n => /cash.*margin|margin.*cash/i.test(n));
-  D.cashMargin = buildCashMarginFromSheet(wb, sn);
-}
-
-// NEW — Mishayan Wealth Cash and Margin is a separate sheet with the identical layout
-function parseCashMarginMW(wb) {
-  const sn = wb.SheetNames.find(n => /mishayan wealth cash and margin/i.test(n));
-  D.cashMarginMW = buildCashMarginFromSheet(wb, sn);
-}
-
-function buildCashMarginFromSheet(wb, sn) {
-  const out = { headers:[], rows:[], marginTable:[], deploy:{ mishayan:[], rishabh:[] },
-                totalExp:[], goldExp:[], inputs:[], rawRows:[], grandTotal:0 };
-  if(!sn || !wb.Sheets[sn]) return out;
+  D.cashMargin = { headers:[], rows:[], marginTable:[], deploy:{ mishayan:[], rishabh:[] },
+                   totalExp:[], goldExp:[], inputs:[], rawRows:[], grandTotal:0 };
+  if(!sn || !wb.Sheets[sn]) return;
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
-  out.rawRows = rows;
+  D.cashMargin.rawRows = rows;
 
-  // Table 1 (cols 0-2): Total Exposure by Account
+  // ── Table 1 (cols 0-2): Total Exposure by Account ────────────
+  // New format: pivot-grouped table. Sub-total rows have "Account Total" at col 0.
+  // Grand Total row has "Grand Total" at col 0.
   for(let i=4; i<rows.length; i++) {
     const r = rows[i]; if(!r) continue;
     const grp = r[0], val = r[2];
     if(!grp || typeof grp !== 'string' || typeof val !== 'number') continue;
     const g = grp.trim();
     if(g.toLowerCase() === 'grand total') {
-      out.grandTotal = Number(val)||0;
+      D.cashMargin.grandTotal = Number(val)||0;
     } else if(/\s+total$/i.test(g)) {
-      out.totalExp.push({ name: g.replace(/\s+total$/i, '').trim(), val: Number(val)||0 });
+      D.cashMargin.totalExp.push({ name: g.replace(/\s+total$/i, '').trim(), val: Number(val)||0 });
     }
   }
 
-  // Table 2 (cols 4-6): Gold Exposure
+  // ── Table 2 (cols 4-6): Gold Exposure ────────────────────────
   for(let i=2; i<rows.length; i++) {
     const r = rows[i]; if(!r) continue;
     const sno = r[4], name = r[5], val = r[6], note = r[7];
     if(typeof sno === 'number' && name && typeof name === 'string' && name.trim()) {
-      out.goldExp.push({ sno, name: name.trim(), val: Number(val)||0, note: note||'' });
+      D.cashMargin.goldExp.push({ sno, name: name.trim(), val: Number(val)||0, note: note||'' });
     }
   }
 
-  // Table 3 (cols 9-11): Input Parameters
+  // ── Table 3 (cols 9-11): Input Parameters ────────────────────
   for(let i=2; i<rows.length; i++) {
     const r = rows[i]; if(!r) continue;
     const sno = r[9], name = r[10], val = r[11];
     if(typeof sno === 'number' && name && typeof name === 'string' && name.trim()) {
-      out.inputs.push({ sno, name: name.trim(), val: Number(val)||0 });
+      D.cashMargin.inputs.push({ sno, name: name.trim(), val: Number(val)||0 });
     }
   }
 
-  // Table 4 (cols 15-23): Margin Breakdown
-  // FIX: the new format inserts a blank column before "Total % of PV", shifting it
-  // from col 22 -> col 23 for the "Available on Zerodha / Total Required / Excess-Shortfall"
-  // rows. Prefer col 23 when present, fall back to col 22 (covers the old file + the
-  // by-strategy sub-rows, which never had col 23 populated in either format).
+  // ── Table 4 (cols 15-22): Margin Breakdown ───────────────────
   const marginRows = [];
   for(let i=2; i<rows.length; i++) {
     const r = rows[i]; if(!r) continue;
@@ -3226,8 +3124,7 @@ function buildCashMarginFromSheet(wb, sn) {
     const s = system.trim();
     if(s.includes('Sr.') || s.includes('Cash and Non') || s.includes('System')) continue;
     const cashComp   = r[17], nonCash = r[18], liquidcase = r[19],
-          cash       = r[20], total   = r[21];
-    const pctPV = (typeof r[23] === 'number') ? r[23] : r[22];
+          cash       = r[20], total   = r[21], pctPV      = r[22];
     const hasNum = [cashComp, nonCash, liquidcase, cash, total].some(v => typeof v === 'number');
     if(hasNum) {
       marginRows.push({ system: s,
@@ -3240,19 +3137,26 @@ function buildCashMarginFromSheet(wb, sn) {
       });
     }
   }
-  out.marginTable = marginRows;
+  D.cashMargin.marginTable = marginRows;
 
-  // Cols Z–AA (25-26): Cash available to deploy — Rishabh
-  out.rnCashDeploy = null;
+  // ── Cols Z–AA (25-26): Cash available to deploy — Rishabh ────
+  // Row 1 is the header (Particulars / Amount); last numeric value in col 26 is the figure.
+  D.cashMargin.rnCashDeploy = null;
   for(let i=1; i<rows.length; i++) {
     const r = rows[i]; if(!r) continue;
     const v = r[26];
-    if(typeof v === 'number') out.rnCashDeploy = v;
+    if(typeof v === 'number') D.cashMargin.rnCashDeploy = v;
   }
 
-  if(!out.grandTotal) out.grandTotal = out.totalExp.reduce((s, x) => s + x.val, 0);
-  out.rows = out.totalExp;
-  return out;
+  // Grand Total: prefer the explicit "Grand Total" row if SheetJS reads it,
+  // but fall back to summing sub-totals (PivotTable Grand Total cells are
+  // sometimes not readable by SheetJS).
+  if(!D.cashMargin.grandTotal) {
+    D.cashMargin.grandTotal = D.cashMargin.totalExp.reduce((s, x) => s + x.val, 0);
+  }
+
+  // Also populate legacy .rows for broker chart
+  D.cashMargin.rows = D.cashMargin.totalExp;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4077,31 +3981,6 @@ function renderBrokers(nw, liq) {
   sv('zmis-v', cr(zmisV));
   sv('zmis-date', zmis[0]?.dat ? fd(zmis[0].dat) : '—');
   const zmisTb = document.querySelector('#zmis-table tbody');
-
-  // NEW — any other Client Account beyond RN / Mishayan (Mishayan Wealth, Prosperity FPI, …)
-  const otherClientP1 = [...new Set(assetData.filter(x=>x.cat==='Client Account'
-    && !['Zerodha Broking RN','Zerodha Broking Mishayan'].includes(x.p1)).map(x=>x.p1))];
-  const otherClientItems = assetData.filter(x=>otherClientP1.includes(x.p1));
-  const otherClientTotal = sum(otherClientItems, x=>x.val);
-  sv('ocl-v', cr(otherClientTotal));
-  sv('ocl-s', otherClientP1.length + ' account' + (otherClientP1.length!==1?'s':'') + (otherClientP1.length?' — '+otherClientP1.join(', '):''));
-  const oclTb = document.querySelector('#ocl-table tbody');
-  if(oclTb) {
-    let h='';
-    otherClientP1.forEach(p1=>{
-      const items = assetData.filter(x=>x.p1===p1);
-      const v = sum(items, x=>x.val);
-      h += `<tr class="trow-section"><td colspan="4">${p1} — Total: ${cr(v)}</td></tr>`;
-      h += items.map(x=>`<tr>
-        <td style="padding-left:1.2rem">${x.p2}</td>
-        <td class="mono r">${cr(x.val)}</td>
-        <td>${abadge(x.typ)}</td>
-        <td>${stbadge(x.sta)}</td>
-      </tr>`).join('');
-    });
-    oclTb.innerHTML = h;
-  }
-
   if(zmisTb) zmisTb.innerHTML = zmis.map(x=>`<tr>
     <td><strong>${x.p2}</strong></td>
     <td class="mono r">${cr(x.val)}</td>
@@ -4312,7 +4191,6 @@ function renderHoldingsTable() {
     if(hFilter==='all') return true;
     if(hFilter==='Stock') return x.type==='Stock';
     if(hFilter==='MF')    return x.type==='MF';
-    if(hFilter==='MishayanWealth') return x.ent==='Mishayan Wealth';
     return x.tag===hFilter||x.subCat===hFilter;
   }).sort((a,b)=>b.curVal-a.curVal);
 
@@ -4321,18 +4199,16 @@ function renderHoldingsTable() {
   if(!tb) return;
 
   tb.innerHTML = flt.map(x=>{
+    const isMis = x.tag==='Stock Holdings';
     const isLoaned = /loan/i.test(x.notes||'');
     const pos = x.pnl>=0;
-    const entBadge = x.ent==='Mishayan Wealth' ? '<span class="bdg bdg-mw">Mishayan Wealth</span>'
-                    : x.ent==='Mishayan'        ? '<span class="bdg bdg-mis">Mishayan</span>'
-                    : '<span class="bdg bdg-rn">RN</span>';
     return `<tr>
       <td>
         <strong style="font-family:'Courier New',monospace;font-size:0.73rem">${x.sym}</strong>
         ${isLoaned?'<span class="bdg bdg-cash" style="margin-left:4px;font-size:0.52rem">LOANED</span>':''}
       </td>
       <td><span class="bdg ${x.type==='MF'?'bdg-mf':'bdg-stk'}">${x.type}</span></td>
-      <td>${entBadge}</td>
+      <td>${isMis?'<span class="bdg bdg-mis">Mishayan</span>':'<span class="bdg bdg-rn">RN</span>'}</td>
       <td style="font-size:0.67rem;color:var(--text-mute)">${x.subCat||'—'}</td>
       <td class="mono r muted">${x.qty>0?x.qty.toLocaleString('en-IN'):'—'}</td>
       <td class="mono r muted">${x.avg>0?'₹'+x.avg.toFixed(2):'—'}</td>
@@ -4867,198 +4743,99 @@ function renderAllocation() {
 // ═══════════════════════════════════════════════════════════════
 // RISK MANAGEMENT PAGE
 // ═══════════════════════════════════════════════════════════════
-// function renderRisk() {
-//   const nw  = computeNetWorthBySource();
-//   const liq = computeLiquidityBySource();
-//   const ad  = getAssetAllocationData();
-//   const psar = psarNot(), lo = loPrem(), gold = qawFut(), put = putNot();
-//   const eqVal  = sum(ad.filter(x=>x.typ==='Equity'), x=>x.val);
-//   const cshVal = sum(ad.filter(x=>x.typ==='Cash'),   x=>x.val);
-//   const eqHoldings = sum(D.eq, x=>x.curVal) + sum(D.mf.filter(x=>x.assetType==='Equity'), x=>x.curVal);
+function renderRisk() {
+  const nw  = computeNetWorthBySource();
+  const liq = computeLiquidityBySource();
+  const ad  = getAssetAllocationData();
+  const psar = psarNot(), lo = loPrem(), gold = qawFut(), put = putNot();
+  const eqVal  = sum(ad.filter(x=>x.typ==='Equity'), x=>x.val);
+  const cshVal = sum(ad.filter(x=>x.typ==='Cash'),   x=>x.val);
+  const eqHoldings = sum(D.eq, x=>x.curVal) + sum(D.mf.filter(x=>x.assetType==='Equity'), x=>x.curVal);
 
-//   sv('risk-eq-exp',   cr(eqHoldings + eqVal));
-//   sv('risk-eq-exp-s', 'Holdings + portfolio');
-//   sv('risk-psar',     cr(psar));
-//   sv('risk-psar-s',   xnw(psar,nw));
-//   sv('risk-lo',       cr(lo));
-//   sv('risk-gold',     cr(gold));
-//   sv('risk-cash',     cr(cshVal));
-//   sv('risk-cash-s',   pct(cshVal,liq)+' of liquidity');
+  sv('risk-eq-exp',   cr(eqHoldings + eqVal));
+  sv('risk-eq-exp-s', 'Holdings + portfolio');
+  sv('risk-psar',     cr(psar));
+  sv('risk-psar-s',   xnw(psar,nw));
+  sv('risk-lo',       cr(lo));
+  sv('risk-gold',     cr(gold));
+  sv('risk-cash',     cr(cshVal));
+  sv('risk-cash-s',   pct(cshVal,liq)+' of liquidity');
 
-//   // Render interactive stress chart + table
-//   runStressTest(parseFloat(document.getElementById('stress-slider')?.value || -10));
+  // Render interactive stress chart + table
+  runStressTest(parseFloat(document.getElementById('stress-slider')?.value || -10));
 
-//   // Exposure mix chart
-//   const expSegs = [
-//     {label:'PSAR Notional', val:psar,   color:'#8B1A1A'},
-//     {label:'QAW/Gold Futures',val:gold, color:'#b8a020'},
-//     {label:'Equity Holdings', val:eqHoldings, color:'#02422B'},
-//     {label:'Debt MF',         val:sum(D.mf.filter(x=>x.assetType==='Debt'),x=>x.curVal), color:'#1a5a80'},
-//     {label:'LO Premium',      val:lo,   color:'#c06030'},
-//     {label:'Put Protection',  val:put,  color:'#008080'},
-//     {label:'Cash',            val:cshVal,color:'#DABD38'},
-//   ].filter(s=>s.val>0);
-//   mkChart('chart-risk-exposure', {
-//     type:'doughnut',
-//     data:{ labels:expSegs.map(s=>s.label), datasets:[{ data:expSegs.map(s=>s.val), backgroundColor:expSegs.map(s=>s.color), borderWidth:2, borderColor:'#fff' }] },
-//     options:{ cutout:'50%', plugins:{ legend:{ position:'right', labels:{ font:{family:CHART_FONT,size:10}, color:'#4a6b5a' } }, tooltip:{ callbacks:{ label: ctx => ' '+ctx.label+': '+cr(ctx.raw,1) } } } }
-//   });
+  // Exposure mix chart
+  const expSegs = [
+    {label:'PSAR Notional', val:psar,   color:'#8B1A1A'},
+    {label:'QAW/Gold Futures',val:gold, color:'#b8a020'},
+    {label:'Equity Holdings', val:eqHoldings, color:'#02422B'},
+    {label:'Debt MF',         val:sum(D.mf.filter(x=>x.assetType==='Debt'),x=>x.curVal), color:'#1a5a80'},
+    {label:'LO Premium',      val:lo,   color:'#c06030'},
+    {label:'Put Protection',  val:put,  color:'#008080'},
+    {label:'Cash',            val:cshVal,color:'#DABD38'},
+  ].filter(s=>s.val>0);
+  mkChart('chart-risk-exposure', {
+    type:'doughnut',
+    data:{ labels:expSegs.map(s=>s.label), datasets:[{ data:expSegs.map(s=>s.val), backgroundColor:expSegs.map(s=>s.color), borderWidth:2, borderColor:'#fff' }] },
+    options:{ cutout:'50%', plugins:{ legend:{ position:'right', labels:{ font:{family:CHART_FONT,size:10}, color:'#4a6b5a' } }, tooltip:{ callbacks:{ label: ctx => ' '+ctx.label+': '+cr(ctx.raw,1) } } } }
+  });
 
-//   // Scenario cards
-//   const scenarios = buildScenarios(nw, eqHoldings, psar, lo, gold, put, cshVal, liq);
-//   const sc = document.getElementById('scenario-cards');
-//   if(sc) sc.innerHTML = scenarios.map(s=>{
-//     const totalImpact = s.items.reduce((t,i)=>t+i.impact,0);
-//     return `<div class="scenario-card">
-//       <div style="overflow:hidden;margin-bottom:0.5rem">
-//         <span class="scenario-badge ${s.badgeClass}">${s.badge}</span>
-//         <div class="scenario-name">${s.name}</div>
-//       </div>
-//       <div style="font-size:0.68rem;color:var(--text-lt);margin-bottom:0.65rem;line-height:1.5">${s.desc}</div>
-//       ${s.items.map(i=>`<div class="scenario-impact-row">
-//         <span style="color:var(--text-mute)">${i.label}</span>
-//         <span class="mono ${i.impact>=0?'pos':'neg'}" style="font-size:0.73rem">${i.impact>=0?'+':''}${cr(i.impact)}</span>
-//       </div>`).join('')}
-//       <div class="scenario-total-row">
-//         <span>Net NW Impact</span>
-//         <span class="mono ${totalImpact>=0?'pos':'neg'}">${totalImpact>=0?'+':''}${cr(totalImpact)} (${nw>0?(totalImpact/nw*100).toFixed(1):'—'}% NW)</span>
-//       </div>
-//       ${s.action?`<div class="stress-action"><strong>Action:</strong> ${s.action}</div>`:''}
-//     </div>`;
-//   }).join('');
+  // Scenario cards
+  const scenarios = buildScenarios(nw, eqHoldings, psar, lo, gold, put, cshVal, liq);
+  const sc = document.getElementById('scenario-cards');
+  if(sc) sc.innerHTML = scenarios.map(s=>{
+    const totalImpact = s.items.reduce((t,i)=>t+i.impact,0);
+    return `<div class="scenario-card">
+      <div style="overflow:hidden;margin-bottom:0.5rem">
+        <span class="scenario-badge ${s.badgeClass}">${s.badge}</span>
+        <div class="scenario-name">${s.name}</div>
+      </div>
+      <div style="font-size:0.68rem;color:var(--text-lt);margin-bottom:0.65rem;line-height:1.5">${s.desc}</div>
+      ${s.items.map(i=>`<div class="scenario-impact-row">
+        <span style="color:var(--text-mute)">${i.label}</span>
+        <span class="mono ${i.impact>=0?'pos':'neg'}" style="font-size:0.73rem">${i.impact>=0?'+':''}${cr(i.impact)}</span>
+      </div>`).join('')}
+      <div class="scenario-total-row">
+        <span>Net NW Impact</span>
+        <span class="mono ${totalImpact>=0?'pos':'neg'}">${totalImpact>=0?'+':''}${cr(totalImpact)} (${nw>0?(totalImpact/nw*100).toFixed(1):'—'}% NW)</span>
+      </div>
+      ${s.action?`<div class="stress-action"><strong>Action:</strong> ${s.action}</div>`:''}
+    </div>`;
+  }).join('');
 
-//   // Risk heatmap table
-//   const buckets = buildRiskBuckets(nw, eqHoldings, psar, lo, gold, put, cshVal, liq);
-//   const htb = document.getElementById('risk-heatmap-tbody');
-//   if(htb) htb.innerHTML = buckets.map(b=>`<tr>
-//     <td><strong>${b.name}</strong></td>
-//     <td class="mono r">${cr(b.notional)}</td>
-//     <td class="mono r">${pct(b.notional,nw)}</td>
-//     ${[-10,-20,-30].map(m=>`<td class="mono r ${calcBucketImpact(b,m)>=0?'pos':'neg'}">${calcBucketImpact(b,m)>=0?'+':''}${cr(calcBucketImpact(b,m))}</td>`).join('')}
-//     <td class="mono r pos">${cr(calcGoldImpact(b,15))}</td>
-//     <td class="mono r ${calcRateImpact(b)<=0?'neg':'pos'}">${cr(calcRateImpact(b))}</td>
-//     <td class="mono r pos">${cr(calcBucketImpact(b,15))}</td>
-//     <td><span class="bdg ${b.ratingClass}">${b.rating}</span></td>
-//   </tr>`).join('');
+  // Risk heatmap table
+  const buckets = buildRiskBuckets(nw, eqHoldings, psar, lo, gold, put, cshVal, liq);
+  const htb = document.getElementById('risk-heatmap-tbody');
+  if(htb) htb.innerHTML = buckets.map(b=>`<tr>
+    <td><strong>${b.name}</strong></td>
+    <td class="mono r">${cr(b.notional)}</td>
+    <td class="mono r">${pct(b.notional,nw)}</td>
+    ${[-10,-20,-30].map(m=>`<td class="mono r ${calcBucketImpact(b,m)>=0?'pos':'neg'}">${calcBucketImpact(b,m)>=0?'+':''}${cr(calcBucketImpact(b,m))}</td>`).join('')}
+    <td class="mono r pos">${cr(calcGoldImpact(b,15))}</td>
+    <td class="mono r ${calcRateImpact(b)<=0?'neg':'pos'}">${cr(calcRateImpact(b))}</td>
+    <td class="mono r pos">${cr(calcBucketImpact(b,15))}</td>
+    <td><span class="bdg ${b.ratingClass}">${b.rating}</span></td>
+  </tr>`).join('');
 
-//   // Risk limits
-//   const limitsTb = document.getElementById('risk-limits-tbody');
-//   if(limitsTb) {
-//     const limits = [
-//       {lbl:'PSAR / Net Worth', cur:nw>0?(psar/nw*100).toFixed(1)+'%':'—', thr:'< 600% NW', ok:psar/nw<6, val:psar/nw},
-//       {lbl:'Equity Exposure / NW', cur:nw>0?((eqHoldings+eqVal)/nw*100).toFixed(1)+'%':'—', thr:'< 100%', ok:(eqHoldings+eqVal)/nw<1, val:(eqHoldings+eqVal)/nw},
-//       {lbl:'Cash Buffer / Liquidity', cur:pct(cshVal,liq), thr:'> 15%', ok:cshVal/liq>0.15, val:cshVal/liq},
-//       {lbl:'Gold Notional / NW', cur:nw>0?(gold/nw*100).toFixed(1)+'%':'—', thr:'< 60%', ok:gold/nw<0.6, val:gold/nw},
-//       {lbl:'LO Premium / NW', cur:nw>0?(lo/nw*100).toFixed(1)+'%':'—', thr:'< 3%', ok:lo/nw<0.03, val:lo/nw},
-//       {lbl:'Total Liabilities / Assets', cur:liq>0?(sum(D.debts,x=>x.val)/liq*100).toFixed(1)+'%':'—', thr:'< 15%', ok:sum(D.debts,x=>x.val)/liq<0.15, val:sum(D.debts,x=>x.val)/liq},
-//     ];
-//     limitsTb.innerHTML = limits.map(l=>`<tr>
-//       <td><strong>${l.lbl}</strong></td>
-//       <td class="mono r ${l.ok?'':'neg'}">${l.cur}</td>
-//       <td class="mono r muted">${l.thr}</td>
-//       <td><span class="bdg ${l.ok?'bdg-ok':'bdg-chk'}">${l.ok?'OK':'WATCH'}</span></td>
-//     </tr>`).join('');
-//   }
-// }
-
-
-
-  // NEW — from Portfolio Summary sheet
-  const ps = D.portfolioSummary;
-
-  if (ps && ps.country && ps.country.length) {
-    mkChart('chart-risk-geo', {
-      type: 'doughnut',
-      data: {
-        labels: ps.country.map(c => c.name),
-        datasets: [{
-          data: ps.country.map(c => c.val),
-          backgroundColor: ['#02422B', '#DABD38', '#1a5a80'],
-          borderWidth: 2,
-          borderColor: '#fff'
-        }]
-      },
-      options: {
-        cutout: '55%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx =>
-                ' ' +
-                ctx.label +
-                ': ' +
-                cr(ctx.raw, 1) +
-                (
-                  ps.country[ctx.dataIndex].share != null
-                    ? ' (' + (ps.country[ctx.dataIndex].share * 100).toFixed(1) + '%)'
-                    : ''
-                )
-            }
-          }
-        }
-      }
-    });
-
-    const legEl = document.getElementById('risk-geo-legend');
-
-    if (legEl) {
-      legEl.innerHTML = ps.country.map((c, i) => `
-        <div class="alloc-leg-item">
-          <div class="alloc-leg-dot" style="background:${['#02422B','#DABD38','#1a5a80'][i % 3]}"></div>
-          <span>${c.name}</span>
-          <strong style="margin-left:auto">${cr(c.val,1)}</strong>
-          <span style="color:var(--text-lt);margin-left:0.3rem">
-            ${c.share != null ? (c.share * 100).toFixed(1) + '%' : ''}
-          </span>
-        </div>
-      `).join('');
-    }
-  }
-
-  const levTb = document.getElementById('risk-leverage-tbody');
-
-  if (levTb && ps) {
-    const rowsDef = [
-      { lbl: 'Equity',        b: ps.eqExp },
-      { lbl: 'Gold',          b: ps.goldExp },
-      { lbl: 'Equity + Gold', b: ps.combinedExp },
+  // Risk limits
+  const limitsTb = document.getElementById('risk-limits-tbody');
+  if(limitsTb) {
+    const limits = [
+      {lbl:'PSAR / Net Worth', cur:nw>0?(psar/nw*100).toFixed(1)+'%':'—', thr:'< 600% NW', ok:psar/nw<6, val:psar/nw},
+      {lbl:'Equity Exposure / NW', cur:nw>0?((eqHoldings+eqVal)/nw*100).toFixed(1)+'%':'—', thr:'< 100%', ok:(eqHoldings+eqVal)/nw<1, val:(eqHoldings+eqVal)/nw},
+      {lbl:'Cash Buffer / Liquidity', cur:pct(cshVal,liq), thr:'> 15%', ok:cshVal/liq>0.15, val:cshVal/liq},
+      {lbl:'Gold Notional / NW', cur:nw>0?(gold/nw*100).toFixed(1)+'%':'—', thr:'< 60%', ok:gold/nw<0.6, val:gold/nw},
+      {lbl:'LO Premium / NW', cur:nw>0?(lo/nw*100).toFixed(1)+'%':'—', thr:'< 3%', ok:lo/nw<0.03, val:lo/nw},
+      {lbl:'Total Liabilities / Assets', cur:liq>0?(sum(D.debts,x=>x.val)/liq*100).toFixed(1)+'%':'—', thr:'< 15%', ok:sum(D.debts,x=>x.val)/liq<0.15, val:sum(D.debts,x=>x.val)/liq},
     ];
-
-    levTb.innerHTML = rowsDef
-      .filter(r =>
-        r.b &&
-        (
-          r.b.underlying ||
-          r.b.futures ||
-          r.b.total ||
-          r.b.eqpart ||
-          r.b.goldpart
-        )
-      )
-      .map(r => {
-        const u = r.b.underlying || r.b.eqpart;
-        const f = r.b.futures || r.b.goldpart;
-        const t = r.b.total;
-
-        return `<tr>
-          <td><strong>${r.lbl}</strong></td>
-          <td class="mono r">${u ? cr(u.val) : '—'}</td>
-          <td class="mono r">${f ? cr(f.val) : '—'}</td>
-          <td class="mono r"><strong>${t ? cr(t.val) : '—'}</strong></td>
-          <td class="mono r">${t && t.levNW != null ? t.levNW.toFixed(2) + 'x' : '—'}</td>
-          <td class="mono r">${t && t.levLiq != null ? t.levLiq.toFixed(2) + 'x' : '—'}</td>
-        </tr>`;
-      })
-      .join('');
+    limitsTb.innerHTML = limits.map(l=>`<tr>
+      <td><strong>${l.lbl}</strong></td>
+      <td class="mono r ${l.ok?'':'neg'}">${l.cur}</td>
+      <td class="mono r muted">${l.thr}</td>
+      <td><span class="bdg ${l.ok?'bdg-ok':'bdg-chk'}">${l.ok?'OK':'WATCH'}</span></td>
+    </tr>`).join('');
   }
-
-
-
-
-
-
-
+}
 
 // Stress test impact helper — asset beta model
 // PSAR: leveraged equity futures, beta=1 (tracks index); LO: long options gain on down move; Gold: negative equity beta; Debt: near-zero
@@ -5278,51 +5055,6 @@ function parseNavExcel(wb) {
     });
   }
 }
-
-// NEW — "Portfolio Summary" sheet: PSAR by country (India/Dubai) + Equity/Gold
-// exposure split into Underlying vs Futures, with leverage on NW and on Liquidity.
-// Parsed by label-matching rather than fixed row numbers, since this sheet has
-// a lot of blank spacer rows/cols that can shift between edits.
-function parsePortfolioSummary(wb) {
-  const empty = { country: [], eqExp: {}, goldExp: {}, combinedExp: {}, psarLevNW: null, psarLevLiq: null };
-  D.portfolioSummary = empty;
-  const sn = wb.SheetNames.find(n => /^portfolio summary$/i.test(n));
-  if(!sn || !wb.Sheets[sn]) return;
-  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
-
-  let section = null; // 'eq' | 'gold' | 'combined'
-  const buckets = { eq:{}, gold:{}, combined:{} };
-  const country = [];
-  let psarLevNW = null, psarLevLiq = null;
-
-  for(let i=0; i<rows.length; i++) {
-    const r = rows[i]; if(!r) continue;
-    const c1 = r[1], c2 = r[2], c3 = r[3];
-    const c11 = r[11], c12 = r[12], c13 = r[13], c14 = r[14];
-
-    if(typeof c1 === 'string') {
-      const lbl = c1.trim();
-      if((lbl === 'India' || lbl === 'Dubai') && typeof c2 === 'number') {
-        country.push({ name: lbl, val: c2, share: typeof c3 === 'number' ? c3 : null });
-      }
-      if(lbl === 'Net PSAR Exposure' && typeof c3 === 'number') psarLevNW = c3;
-    }
-    if(c2 === 'Liquidity' && typeof c3 === 'number' && psarLevLiq === null) psarLevLiq = c3;
-
-    if(typeof c11 === 'string') {
-      const l11 = c11.trim();
-      if(l11 === 'Total Equity Exposure') section = 'eq';
-      else if(l11 === 'Total Gold Exposure') section = 'gold';
-      else if(l11 === 'Total EQ + Gold') section = 'combined';
-      else if(section && ['Underlying','Futures','EQ','Gold','Total'].includes(l11)) {
-        const key = l11 === 'EQ' ? 'eqPart' : l11 === 'Gold' ? 'goldPart' : l11.toLowerCase();
-        buckets[section][key] = { val: Number(c12)||0, levNW: c13, levLiq: c14 };
-      }
-    }
-  }
-  D.portfolioSummary = { country, eqExp: buckets.eq, goldExp: buckets.gold, combinedExp: buckets.combined, psarLevNW, psarLevLiq };
-}
-
 
 function calcDailyReturns(navs) {
   const r=[];
@@ -5844,124 +5576,6 @@ function confirmClearData() {
 // ═══════════════════════════════════════════════════════════════
 // CASH & MARGIN PAGE
 // ═══════════════════════════════════════════════════════════════
-// function renderCashMargin() {
-//   const cm = D.cashMargin;
-
-//   // ── KPI cards (new format: margin table + grand total) ──
-//   const availRow    = cm.marginTable.find(r => /available on zerodha/i.test(r.system));
-//   const shortRow    = cm.marginTable.find(r => /shortfall|excess.{0,3}shortfall/i.test(r.system));
-//   const totalCapRow = cm.marginTable.find(r => /total capital required/i.test(r.system));
-//   const grandTotal  = cm.grandTotal || 0;
-//   const availTotal  = availRow?.total  || 0;
-//   const shortTotal  = shortRow?.total  || 0;
-//   const totalCap    = totalCapRow?.total || 0;
-
-//   sv('mg-mis-cash',   grandTotal > 0 ? cr(grandTotal) : '—');
-//   sv('mg-mis-deploy', availTotal > 0 ? cr(availTotal) : '—');
-//   const rnEl = document.getElementById('mg-rn-deploy');
-//   if(rnEl) {
-//     rnEl.textContent = shortTotal ? cr(shortTotal) : '—';
-//     rnEl.style.color = shortTotal < 0 ? 'var(--red-neg)' : shortTotal > 0 ? 'var(--green-pos)' : 'inherit';
-//   }
-//   const tdEl = document.getElementById('mg-total-deploy');
-//   if(tdEl) { tdEl.textContent = totalCap > 0 ? cr(totalCap) : '—'; }
-//   const rnDeployEl = document.getElementById('mg-rn-cash-deploy');
-//   if(rnDeployEl) {
-//     const v = cm.rnCashDeploy;
-//     rnDeployEl.textContent = (v !== null && v !== undefined) ? cr(v) : '—';
-//     rnDeployEl.style.color = v > 0 ? 'var(--green-pos)' : v < 0 ? 'var(--red-neg)' : 'inherit';
-//   }
-
-//   // ── Exposure by Account waterfall ──
-//   const expTb = document.querySelector('#mg-mis-waterfall tbody');
-//   if(expTb && cm.totalExp.length) {
-//     expTb.innerHTML = cm.totalExp.map(item => `<tr>
-//       <td style="color:var(--text-mute)">${item.name}</td>
-//       <td class="mono r ${item.val < 0 ? 'neg' : 'muted'}">${cr(item.val)}</td>
-//     </tr>`).join('') + (grandTotal ? `<tr class="trow-total">
-//       <td>Grand Total</td><td class="mono r">${cr(grandTotal)}</td>
-//     </tr>` : '');
-//   }
-
-//   // ── Margin by Strategy waterfall ──
-//   const STRAT_SYSTEMS = /^(long options|psar|dma|gold fut|total capital required)$/i;
-//   const stratRows = cm.marginTable.filter(r => STRAT_SYSTEMS.test(r.system));
-//   const stratTb = document.querySelector('#mg-rn-waterfall tbody');
-//   if(stratTb && stratRows.length) {
-//     stratTb.innerHTML = stratRows.map(r => `<tr class="${/total capital/i.test(r.system)?'trow-total':''}">
-//       <td style="color:var(--text-mute)">${r.system}</td>
-//       <td class="mono r muted">${r.total ? cr(r.total) : '—'}</td>
-//     </tr>`).join('');
-//   }
-
-//   // ── Margin breakdown table ──
-//   const mgTb = document.querySelector('#mg-margin-table tbody');
-//   if(mgTb && cm.marginTable?.length) {
-//     const isKey = s => /available|required|shortfall|total capital/i.test(s);
-//     mgTb.innerHTML = cm.marginTable.map(r => {
-//       const key = isKey(r.system);
-//       const neg = r.system.toLowerCase().includes('shortfall');
-//       return `<tr class="${key?'trow-total':''}">
-//         <td><strong${neg?' style="color:var(--red-neg)"':''}>${r.system}</strong></td>
-//         <td class="mono r${neg?' neg':''}">${r.cashComp   ? cr(r.cashComp)    : '—'}</td>
-//         <td class="mono r${neg?' neg':''}">${r.nonCash    ? cr(r.nonCash)     : '—'}</td>
-//         <td class="mono r${neg?' neg':''}">${r.liquidcase ? cr(r.liquidcase)  : '—'}</td>
-//         <td class="mono r${neg?' neg':''}">${r.cash       ? cr(r.cash)        : '—'}</td>
-//         <td class="mono r${key?' pos':neg?' neg':''}">${r.total ? cr(r.total) : '—'}</td>
-//         <td class="mono r muted">${r.pctPV ? (r.pctPV*100).toFixed(1)+'%' : '—'}</td>
-//       </tr>`;
-//     }).join('');
-//   }
-
-//   // ── Gold exposure table ──
-//   const goldTb = document.querySelector('#mg-gold-table tbody');
-//   if(goldTb && cm.goldExp?.length) {
-//     const goldTotal = sum(cm.goldExp, x=>x.val);
-//     goldTb.innerHTML = cm.goldExp.map(g => `<tr>
-//       <td>${g.name}</td>
-//       <td class="mono r">${g.val ? cr(g.val) : '—'}</td>
-//       <td style="font-size:0.67rem;color:var(--text-mute)">${g.note||'—'}</td>
-//     </tr>`).join('') + `<tr class="trow-total"><td>Total</td><td class="r">${cr(goldTotal)}</td><td></td></tr>`;
-//   }
-
-//   // ── Input parameters table ──
-//   const inpTb = document.querySelector('#mg-inputs-table tbody');
-//   if(inpTb && cm.inputs?.length) {
-//     inpTb.innerHTML = cm.inputs.map(p => `<tr>
-//       <td>${p.name}</td>
-//       <td class="mono r">${p.val ? cr(p.val) : '—'}</td>
-//     </tr>`).join('');
-//   }
-
-//   // ── Broker totals table + chart ──
-//   const brTb = document.querySelector('#mg-broker-table tbody');
-//   const brokers = cm.rows || [];
-//   const brokerTotal = sum(brokers, b=>b.val);
-//   if(brTb && brokers.length) {
-//     brTb.innerHTML = brokers.map(b=>`<tr>
-//       <td><strong>${b.name}</strong></td>
-//       <td class="mono r">${cr(b.val)}</td>
-//       <td class="mono r muted">${pct(b.val, brokerTotal)}</td>
-//     </tr>`).join('') + `<tr class="trow-total"><td>Total</td><td class="r">${cr(brokerTotal)}</td><td class="r">100%</td></tr>`;
-//   }
-
-//   if(brokers.length) {
-//     mkChart('chart-mg-broker', {
-//       type:'bar',
-//       data:{ labels:brokers.map(b=>b.name), datasets:[{
-//         label:'Exposure', data:brokers.map(b=>b.val),
-//         backgroundColor:CHART_COLORS.slice(0,brokers.length), borderRadius:4
-//       }]},
-//       options:{ indexAxis:'y', plugins:{ legend:{display:false},
-//         tooltip:{ callbacks:{ label: ctx=>' '+cr(ctx.raw)+' ('+pct(ctx.raw,brokerTotal)+')' }}},
-//         scales:{
-//           x:{ ticks:{ callback:v=>'₹'+(v/1e7).toFixed(1)+'Cr', font:{size:10} }, grid:{color:'rgba(0,0,0,0.05)'} },
-//           y:{ ticks:{ font:{size:10} } }
-//         }, maintainAspectRatio:false }
-//     });
-//   }
-// }
-
 function renderCashMargin() {
   const cm = D.cashMargin;
 
@@ -5970,265 +5584,115 @@ function renderCashMargin() {
   const shortRow    = cm.marginTable.find(r => /shortfall|excess.{0,3}shortfall/i.test(r.system));
   const totalCapRow = cm.marginTable.find(r => /total capital required/i.test(r.system));
   const grandTotal  = cm.grandTotal || 0;
-  const availTotal  = availRow?.total || 0;
-  const shortTotal  = shortRow?.total || 0;
+  const availTotal  = availRow?.total  || 0;
+  const shortTotal  = shortRow?.total  || 0;
   const totalCap    = totalCapRow?.total || 0;
 
-  sv('mg-mis-cash', grandTotal > 0 ? cr(grandTotal) : '—');
+  sv('mg-mis-cash',   grandTotal > 0 ? cr(grandTotal) : '—');
   sv('mg-mis-deploy', availTotal > 0 ? cr(availTotal) : '—');
-
   const rnEl = document.getElementById('mg-rn-deploy');
-  if (rnEl) {
+  if(rnEl) {
     rnEl.textContent = shortTotal ? cr(shortTotal) : '—';
-    rnEl.style.color =
-      shortTotal < 0
-        ? 'var(--red-neg)'
-        : shortTotal > 0
-        ? 'var(--green-pos)'
-        : 'inherit';
+    rnEl.style.color = shortTotal < 0 ? 'var(--red-neg)' : shortTotal > 0 ? 'var(--green-pos)' : 'inherit';
   }
-
   const tdEl = document.getElementById('mg-total-deploy');
-  if (tdEl) {
-    tdEl.textContent = totalCap > 0 ? cr(totalCap) : '—';
-  }
-
+  if(tdEl) { tdEl.textContent = totalCap > 0 ? cr(totalCap) : '—'; }
   const rnDeployEl = document.getElementById('mg-rn-cash-deploy');
-  if (rnDeployEl) {
+  if(rnDeployEl) {
     const v = cm.rnCashDeploy;
-    rnDeployEl.textContent =
-      v !== null && v !== undefined ? cr(v) : '—';
-    rnDeployEl.style.color =
-      v > 0
-        ? 'var(--green-pos)'
-        : v < 0
-        ? 'var(--red-neg)'
-        : 'inherit';
+    rnDeployEl.textContent = (v !== null && v !== undefined) ? cr(v) : '—';
+    rnDeployEl.style.color = v > 0 ? 'var(--green-pos)' : v < 0 ? 'var(--red-neg)' : 'inherit';
   }
 
   // ── Exposure by Account waterfall ──
   const expTb = document.querySelector('#mg-mis-waterfall tbody');
-  if (expTb && cm.totalExp.length) {
-    expTb.innerHTML =
-      cm.totalExp
-        .map(
-          item => `<tr>
+  if(expTb && cm.totalExp.length) {
+    expTb.innerHTML = cm.totalExp.map(item => `<tr>
       <td style="color:var(--text-mute)">${item.name}</td>
       <td class="mono r ${item.val < 0 ? 'neg' : 'muted'}">${cr(item.val)}</td>
-    </tr>`
-        )
-        .join('') +
-      (grandTotal
-        ? `<tr class="trow-total">
-      <td>Grand Total</td>
-      <td class="mono r">${cr(grandTotal)}</td>
-    </tr>`
-        : '');
+    </tr>`).join('') + (grandTotal ? `<tr class="trow-total">
+      <td>Grand Total</td><td class="mono r">${cr(grandTotal)}</td>
+    </tr>` : '');
   }
 
   // ── Margin by Strategy waterfall ──
-  const STRAT_SYSTEMS =
-    /^(long options|psar|dma|gold fut|total capital required)$/i;
-
-  const stratRows = cm.marginTable.filter(r =>
-    STRAT_SYSTEMS.test(r.system)
-  );
-
+  const STRAT_SYSTEMS = /^(long options|psar|dma|gold fut|total capital required)$/i;
+  const stratRows = cm.marginTable.filter(r => STRAT_SYSTEMS.test(r.system));
   const stratTb = document.querySelector('#mg-rn-waterfall tbody');
-
-  if (stratTb && stratRows.length) {
-    stratTb.innerHTML = stratRows
-      .map(
-        r => `<tr class="${/total capital/i.test(r.system) ? 'trow-total' : ''}">
+  if(stratTb && stratRows.length) {
+    stratTb.innerHTML = stratRows.map(r => `<tr class="${/total capital/i.test(r.system)?'trow-total':''}">
       <td style="color:var(--text-mute)">${r.system}</td>
       <td class="mono r muted">${r.total ? cr(r.total) : '—'}</td>
-    </tr>`
-      )
-      .join('');
+    </tr>`).join('');
   }
 
   // ── Margin breakdown table ──
   const mgTb = document.querySelector('#mg-margin-table tbody');
-
-  if (mgTb && cm.marginTable?.length) {
-    const isKey = s =>
-      /available|required|shortfall|total capital/i.test(s);
-
-    mgTb.innerHTML = cm.marginTable
-      .map(r => {
-        const key = isKey(r.system);
-        const neg = r.system.toLowerCase().includes('shortfall');
-
-        return `<tr class="${key ? 'trow-total' : ''}">
-        <td><strong${neg ? ' style="color:var(--red-neg)"' : ''}>${r.system}</strong></td>
-        <td class="mono r${neg ? ' neg' : ''}">${r.cashComp ? cr(r.cashComp) : '—'}</td>
-        <td class="mono r${neg ? ' neg' : ''}">${r.nonCash ? cr(r.nonCash) : '—'}</td>
-        <td class="mono r${neg ? ' neg' : ''}">${r.liquidcase ? cr(r.liquidcase) : '—'}</td>
-        <td class="mono r${neg ? ' neg' : ''}">${r.cash ? cr(r.cash) : '—'}</td>
-        <td class="mono r${key ? ' pos' : neg ? ' neg' : ''}">${r.total ? cr(r.total) : '—'}</td>
-        <td class="mono r muted">${r.pctPV ? (r.pctPV * 100).toFixed(1) + '%' : '—'}</td>
+  if(mgTb && cm.marginTable?.length) {
+    const isKey = s => /available|required|shortfall|total capital/i.test(s);
+    mgTb.innerHTML = cm.marginTable.map(r => {
+      const key = isKey(r.system);
+      const neg = r.system.toLowerCase().includes('shortfall');
+      return `<tr class="${key?'trow-total':''}">
+        <td><strong${neg?' style="color:var(--red-neg)"':''}>${r.system}</strong></td>
+        <td class="mono r${neg?' neg':''}">${r.cashComp   ? cr(r.cashComp)    : '—'}</td>
+        <td class="mono r${neg?' neg':''}">${r.nonCash    ? cr(r.nonCash)     : '—'}</td>
+        <td class="mono r${neg?' neg':''}">${r.liquidcase ? cr(r.liquidcase)  : '—'}</td>
+        <td class="mono r${neg?' neg':''}">${r.cash       ? cr(r.cash)        : '—'}</td>
+        <td class="mono r${key?' pos':neg?' neg':''}">${r.total ? cr(r.total) : '—'}</td>
+        <td class="mono r muted">${r.pctPV ? (r.pctPV*100).toFixed(1)+'%' : '—'}</td>
       </tr>`;
-      })
-      .join('');
+    }).join('');
   }
 
   // ── Gold exposure table ──
   const goldTb = document.querySelector('#mg-gold-table tbody');
-
-  if (goldTb && cm.goldExp?.length) {
-    const goldTotal = sum(cm.goldExp, x => x.val);
-
-    goldTb.innerHTML =
-      cm.goldExp
-        .map(
-          g => `<tr>
+  if(goldTb && cm.goldExp?.length) {
+    const goldTotal = sum(cm.goldExp, x=>x.val);
+    goldTb.innerHTML = cm.goldExp.map(g => `<tr>
       <td>${g.name}</td>
       <td class="mono r">${g.val ? cr(g.val) : '—'}</td>
-      <td style="font-size:0.67rem;color:var(--text-mute)">${g.note || '—'}</td>
-    </tr>`
-        )
-        .join('') +
-      `<tr class="trow-total">
-      <td>Total</td>
-      <td class="r">${cr(goldTotal)}</td>
-      <td></td>
-    </tr>`;
+      <td style="font-size:0.67rem;color:var(--text-mute)">${g.note||'—'}</td>
+    </tr>`).join('') + `<tr class="trow-total"><td>Total</td><td class="r">${cr(goldTotal)}</td><td></td></tr>`;
   }
 
   // ── Input parameters table ──
   const inpTb = document.querySelector('#mg-inputs-table tbody');
-
-  if (inpTb && cm.inputs?.length) {
-    inpTb.innerHTML = cm.inputs
-      .map(
-        p => `<tr>
+  if(inpTb && cm.inputs?.length) {
+    inpTb.innerHTML = cm.inputs.map(p => `<tr>
       <td>${p.name}</td>
       <td class="mono r">${p.val ? cr(p.val) : '—'}</td>
-    </tr>`
-      )
-      .join('');
+    </tr>`).join('');
   }
 
   // ── Broker totals table + chart ──
   const brTb = document.querySelector('#mg-broker-table tbody');
   const brokers = cm.rows || [];
-  const brokerTotal = sum(brokers, b => b.val);
-
-  if (brTb && brokers.length) {
-    brTb.innerHTML =
-      brokers
-        .map(
-          b => `<tr>
+  const brokerTotal = sum(brokers, b=>b.val);
+  if(brTb && brokers.length) {
+    brTb.innerHTML = brokers.map(b=>`<tr>
       <td><strong>${b.name}</strong></td>
       <td class="mono r">${cr(b.val)}</td>
       <td class="mono r muted">${pct(b.val, brokerTotal)}</td>
-    </tr>`
-        )
-        .join('') +
-      `<tr class="trow-total">
-      <td>Total</td>
-      <td class="r">${cr(brokerTotal)}</td>
-      <td class="r">100%</td>
-    </tr>`;
+    </tr>`).join('') + `<tr class="trow-total"><td>Total</td><td class="r">${cr(brokerTotal)}</td><td class="r">100%</td></tr>`;
   }
 
-  if (brokers.length) {
+  if(brokers.length) {
     mkChart('chart-mg-broker', {
-      type: 'bar',
-      data: {
-        labels: brokers.map(b => b.name),
-        datasets: [{
-          label: 'Exposure',
-          data: brokers.map(b => b.val),
-          backgroundColor: CHART_COLORS.slice(0, brokers.length),
-          borderRadius: 4
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx =>
-                ' ' + cr(ctx.raw) + ' (' + pct(ctx.raw, brokerTotal) + ')'
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              callback: v => '₹' + (v / 1e7).toFixed(1) + 'Cr',
-              font: { size: 10 }
-            },
-            grid: { color: 'rgba(0,0,0,0.05)' }
-          },
-          y: {
-            ticks: { font: { size: 10 } }
-          }
-        },
-        maintainAspectRatio: false
-      }
+      type:'bar',
+      data:{ labels:brokers.map(b=>b.name), datasets:[{
+        label:'Exposure', data:brokers.map(b=>b.val),
+        backgroundColor:CHART_COLORS.slice(0,brokers.length), borderRadius:4
+      }]},
+      options:{ indexAxis:'y', plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label: ctx=>' '+cr(ctx.raw)+' ('+pct(ctx.raw,brokerTotal)+')' }}},
+        scales:{
+          x:{ ticks:{ callback:v=>'₹'+(v/1e7).toFixed(1)+'Cr', font:{size:10} }, grid:{color:'rgba(0,0,0,0.05)'} },
+          y:{ ticks:{ font:{size:10} } }
+        }, maintainAspectRatio:false }
     });
   }
-
-  // NEW — Mishayan Wealth mirrors the same layout
-  renderCashMarginBlock(D.cashMarginMW, 'mw');
 }
-
-// Generalized renderer — pass 'mw' suffix for the Mishayan Wealth panels
-function renderCashMarginBlock(cm, suffix) {
-  if (!cm || !cm.rawRows || !cm.rawRows.length) return;
-
-  const availRow = cm.marginTable.find(r => /available on zerodha/i.test(r.system));
-  const totalCapRow = cm.marginTable.find(r => /total capital required/i.test(r.system));
-  const shortRow = cm.marginTable.find(r => /shortfall/i.test(r.system));
-
-  sv('mg-grand-' + suffix, cr(cm.grandTotal || 0));
-  sv('mg-avail-' + suffix, availRow ? cr(availRow.total) : '—');
-
-  const shortEl = document.getElementById('mg-short-' + suffix);
-  if (shortEl) {
-    const v = shortRow ? shortRow.total : 0;
-    shortEl.textContent = shortRow ? cr(v) : '—';
-    shortEl.style.color =
-      v < 0
-        ? 'var(--red-neg)'
-        : v > 0
-        ? 'var(--green-pos)'
-        : 'inherit';
-  }
-
-  sv('mg-cap-' + suffix, totalCapRow ? cr(totalCapRow.total) : '—');
-
-  const tb = document.querySelector('#mg-margin-table-' + suffix + ' tbody');
-
-  if (tb) {
-    const isKey = s => /available|required|shortfall|total capital/i.test(s);
-
-    tb.innerHTML = cm.marginTable
-      .map(r => {
-        const key = isKey(r.system);
-        const neg = r.system.toLowerCase().includes('shortfall');
-
-        return `<tr class="${key ? 'trow-total' : ''}">
-          <td><strong${neg ? ' style="color:var(--red-neg)"' : ''}>${r.system}</strong></td>
-          <td class="mono r${neg ? ' neg' : ''}">${r.cashComp ? cr(r.cashComp) : '—'}</td>
-          <td class="mono r${neg ? ' neg' : ''}">${r.nonCash ? cr(r.nonCash) : '—'}</td>
-          <td class="mono r${neg ? ' neg' : ''}">${r.liquidcase ? cr(r.liquidcase) : '—'}</td>
-          <td class="mono r${neg ? ' neg' : ''}">${r.cash ? cr(r.cash) : '—'}</td>
-          <td class="mono r${key ? ' pos' : neg ? ' neg' : ''}">${r.total ? cr(r.total) : '—'}</td>
-          <td class="mono r muted">${r.pctPV ? (r.pctPV * 100).toFixed(1) + '%' : '—'}</td>
-        </tr>`;
-      })
-      .join('');
-  }
-}
-
-
-
-
-
 
 // ── Update renderAll to include new pages ───────────────────────
 const _origRenderAll = renderAll;

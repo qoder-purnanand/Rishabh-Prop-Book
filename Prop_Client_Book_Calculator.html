@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prop Client Book Calculator — Qode</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Lato:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --deep-forest:#002017;
+    --forest-green:#02422B;
+    --golden:#DABD38;
+    --cream:#EFEDC3;
+    --cream-dim:#e4e2b4;
+    --ink:#0a1512;
+    --line: rgba(239,237,195,0.14);
+    --line-soft: rgba(2,66,43,0.14);
+    --danger:#b5473a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--deep-forest);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(218,189,56,0.06), transparent 40%),
+      radial-gradient(circle at 100% 30%, rgba(239,237,195,0.04), transparent 45%);
+    color: var(--cream);
+    font-family: 'Lato', sans-serif;
+    min-height:100vh;
+  }
+  ::selection{ background: var(--golden); color: var(--deep-forest); }
+
+  /* ---------- header ---------- */
+  header{
+    padding: 38px 48px 28px;
+    border-bottom: 1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .brand-eyebrow{
+    text-transform:uppercase;
+    letter-spacing:0.22em;
+    font-size:11px;
+    color: var(--golden);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Playfair Display', serif;
+    font-weight:600;
+    font-size:34px;
+    margin:0;
+    color: var(--cream);
+    letter-spacing:0.01em;
+  }
+  header p{
+    margin:8px 0 0;
+    color: rgba(239,237,195,0.6);
+    font-size:14px;
+    max-width:520px;
+  }
+  .av-readout{
+    text-align:right;
+  }
+  .av-readout .label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.16em;
+    color: rgba(239,237,195,0.5);
+    margin-bottom:6px;
+  }
+  .av-readout .value{
+    font-family:'JetBrains Mono', monospace;
+    font-size:26px;
+    font-weight:500;
+    color: var(--golden);
+  }
+
+  /* ---------- layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns: 340px 1fr;
+    gap:0;
+    align-items:start;
+  }
+  @media (max-width: 980px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- input rail ---------- */
+  .input-rail{
+    position:sticky;
+    top:0;
+    padding: 32px 30px 60px;
+    border-right: 1px solid var(--line);
+    max-height:100vh;
+    overflow-y:auto;
+  }
+  @media (max-width: 980px){
+    .input-rail{ position:static; max-height:none; border-right:none; border-bottom:1px solid var(--line); }
+  }
+  .rail-group{ margin-bottom: 30px; }
+  .rail-group-title{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.16em;
+    color: var(--golden);
+    font-weight:700;
+    margin-bottom:14px;
+    padding-bottom:8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .field{ margin-bottom:16px; }
+  .field label{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size:12.5px;
+    color: rgba(239,237,195,0.75);
+    margin-bottom:6px;
+  }
+  .field label .hint{
+    font-size:10.5px;
+    color: rgba(239,237,195,0.35);
+    font-weight:400;
+  }
+  .field input{
+    width:100%;
+    background: rgba(239,237,195,0.05);
+    border: 1px solid rgba(239,237,195,0.18);
+    border-radius:6px;
+    padding:9px 11px;
+    color: var(--cream);
+    font-family:'JetBrains Mono', monospace;
+    font-size:13.5px;
+    transition: border-color .15s, background .15s;
+  }
+  .field input:focus{
+    outline:none;
+    border-color: var(--golden);
+    background: rgba(218,189,56,0.06);
+  }
+  .field.pct-field{ position:relative; }
+  .field.pct-field input{ padding-right:28px; }
+  .field.pct-field .suffix{
+    position:absolute; right:11px; bottom:9px;
+    font-size:13px; color: rgba(239,237,195,0.4);
+    pointer-events:none;
+  }
+  .haircut-row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+  }
+  .reset-btn{
+    width:100%;
+    background:none;
+    border: 1px solid rgba(239,237,195,0.25);
+    color: rgba(239,237,195,0.65);
+    font-family:'Lato',sans-serif;
+    font-size:12px;
+    letter-spacing:0.06em;
+    padding:9px;
+    border-radius:6px;
+    cursor:pointer;
+    transition: all .15s;
+    margin-top:6px;
+  }
+  .reset-btn:hover{ border-color: var(--golden); color: var(--golden); }
+
+  /* ---------- output area ---------- */
+  .outputs{ padding: 32px 48px 80px; }
+  .section-title{
+    font-family:'Playfair Display', serif;
+    font-size:20px;
+    font-weight:600;
+    color: var(--cream);
+    margin: 44px 0 4px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .section-title:first-child{ margin-top:0; }
+  .section-title .idx{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color: var(--golden);
+    border:1px solid rgba(218,189,56,0.4);
+    border-radius:3px;
+    padding:2px 6px;
+  }
+  .section-sub{
+    font-size:12.5px;
+    color: rgba(239,237,195,0.45);
+    margin: 0 0 18px;
+    max-width:640px;
+  }
+
+  /* derived metric cards */
+  .metric-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:14px;
+  }
+  @media (max-width: 760px){ .metric-grid{ grid-template-columns: repeat(2,1fr); } }
+  .metric-card{
+    background: rgba(239,237,195,0.04);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .metric-card .m-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color: rgba(239,237,195,0.45);
+    margin-bottom:8px;
+  }
+  .metric-card .m-value{
+    font-family:'JetBrains Mono', monospace;
+    font-size:19px;
+    color: var(--cream);
+    font-weight:500;
+  }
+
+  /* tables */
+  table{
+    width:100%;
+    border-collapse: collapse;
+    font-size:13.5px;
+  }
+  thead th{
+    text-align:right;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color: rgba(239,237,195,0.5);
+    font-weight:700;
+    padding:10px 14px;
+    border-bottom: 1px solid rgba(239,237,195,0.25);
+  }
+  thead th:first-child{ text-align:left; }
+  tbody th{
+    text-align:left;
+    font-weight:500;
+    color: rgba(239,237,195,0.85);
+    padding:11px 14px;
+    border-bottom: 1px solid var(--line);
+    white-space:nowrap;
+  }
+  tbody td{
+    text-align:right;
+    font-family:'JetBrains Mono', monospace;
+    padding:11px 14px;
+    border-bottom: 1px solid var(--line);
+    color: rgba(239,237,195,0.9);
+  }
+  tbody tr.total-row th, tbody tr.total-row td{
+    border-top: 1px solid rgba(218,189,56,0.5);
+    border-bottom:none;
+    color: var(--golden);
+    font-weight:700;
+    padding-top:13px;
+  }
+  tbody tr.deployable-row th, tbody tr.deployable-row td{
+    color: var(--cream);
+    font-weight:700;
+    background: rgba(218,189,56,0.05);
+  }
+  .table-wrap{
+    background: rgba(239,237,195,0.03);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding: 6px 6px 4px;
+    overflow-x:auto;
+  }
+  .zero{ color: rgba(239,237,195,0.25); }
+
+  /* final allocation */
+  .alloc-layout{
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap:28px;
+    align-items:center;
+  }
+  @media (max-width: 900px){ .alloc-layout{ grid-template-columns:1fr; } }
+  .alloc-bar{
+    display:flex;
+    height:54px;
+    border-radius:8px;
+    overflow:hidden;
+    border: 1px solid rgba(239,237,195,0.15);
+  }
+  .alloc-seg{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--deep-forest);
+    transition: width .25s ease;
+    min-width: 2px;
+  }
+  .alloc-seg.cash{ background: var(--golden); }
+  .alloc-seg.pledge{ background: var(--cream); }
+  .alloc-seg.nonpledge{ background: rgba(239,237,195,0.28); color: var(--cream); }
+  .alloc-legend{ display:flex; gap:22px; margin-top:14px; flex-wrap:wrap; }
+  .alloc-legend .item{ display:flex; align-items:center; gap:8px; font-size:12.5px; color: rgba(239,237,195,0.7); }
+  .alloc-legend .swatch{ width:11px; height:11px; border-radius:3px; }
+  .swatch.cash{ background:var(--golden); }
+  .swatch.pledge{ background:var(--cream); }
+  .swatch.nonpledge{ background:rgba(239,237,195,0.28); }
+
+  .alloc-table th, .alloc-table td{ font-size:14px; }
+  .alloc-table tbody tr:last-child th, .alloc-table tbody tr:last-child td{
+    border-top:1px solid rgba(218,189,56,0.5);
+    border-bottom:none;
+    color:var(--golden);
+    font-weight:700;
+    padding-top:13px;
+  }
+
+  footer{
+    padding: 22px 48px 40px;
+    font-size:11px;
+    color: rgba(239,237,195,0.3);
+    border-top:1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand-eyebrow">Qode Research Desk</div>
+    <h1>Prop Client Book Calculator</h1>
+    <p>Margin, collateral and deployable capital allocation across PSAR, long options, put protection and drawdown reserves.</p>
+  </div>
+  <div class="av-readout">
+    <div class="label">Account Value</div>
+    <div class="value" id="avReadout">₹0</div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ============ INPUT RAIL ============ -->
+  <div class="input-rail">
+
+    <div class="rail-group">
+      <div class="rail-group-title">Account</div>
+      <div class="field">
+        <label>Account Value <span class="hint">₹</span></label>
+        <input type="number" id="in_av" value="1000000000" step="1000000">
+      </div>
+    </div>
+
+    <div class="rail-group">
+      <div class="rail-group-title">PSAR</div>
+      <div class="field pct-field" style="padding-right:0">
+        <label>psar (leverage multiplier) <span class="hint">×</span></label>
+        <input type="number" id="in_psar" value="4" step="0.1">
+      </div>
+      <div class="field">
+        <label>psar available leverage <span class="hint">×</span></label>
+        <input type="number" id="in_psarLev" value="8" step="0.5">
+      </div>
+    </div>
+
+    <div class="rail-group">
+      <div class="rail-group-title">Long Options</div>
+      <div class="field pct-field">
+        <label>long (premium / day)</label>
+        <input type="number" id="in_long" value="2" step="0.1">
+        <span class="suffix">%</span>
+      </div>
+    </div>
+
+    <div class="rail-group">
+      <div class="rail-group-title">Equity</div>
+      <div class="field pct-field">
+        <label>eq percentage</label>
+        <input type="number" id="in_eqPct" value="60" step="1">
+        <span class="suffix">%</span>
+      </div>
+      <div class="field pct-field">
+        <label>Put Protection <span class="hint">% of Eq Value</span></label>
+        <input type="number" id="in_put" value="2" step="0.1">
+        <span class="suffix">%</span>
+      </div>
+    </div>
+
+    <div class="rail-group">
+      <div class="rail-group-title">Haircuts <span class="hint" style="text-transform:none;letter-spacing:0;">(by collateral column)</span></div>
+      <div class="haircut-row">
+        <div class="field pct-field">
+          <label>Cash Collateral</label>
+          <input type="number" id="in_hc_cashcoll" value="90" step="1">
+          <span class="suffix">%</span>
+        </div>
+        <div class="field pct-field">
+          <label>Non-Cash Collateral</label>
+          <input type="number" id="in_hc_noncash" value="80" step="1">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="haircut-row">
+        <div class="field pct-field">
+          <label>LiquidCase</label>
+          <input type="number" id="in_hc_liquid" value="100" step="1">
+          <span class="suffix">%</span>
+        </div>
+        <div class="field pct-field">
+          <label>Cash</label>
+          <input type="number" id="in_hc_cash" value="100" step="1">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="reset-btn" id="resetBtn">Reset to defaults</button>
+  </div>
+
+  <!-- ============ OUTPUTS ============ -->
+  <div class="outputs">
+
+    <div class="section-title"><span class="idx">01</span> Derived Metrics</div>
+    <p class="section-sub">Single-value figures computed directly from the inputs.</p>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="m-label">Net PSAR Exposure</div>
+        <div class="m-value" id="out_netPsar">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Long Options Premium / Day</div>
+        <div class="m-value" id="out_longPrem">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Equity Value</div>
+        <div class="m-value" id="out_eqValue">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Total Drawdown Margin</div>
+        <div class="m-value" id="out_ddMargin">—</div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="idx">02</span> Margin Matrix</div>
+    <p class="section-sub">Each strategy's margin requirement, split across collateral types — then converted to deployable capital via the haircut.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Strategy</th>
+            <th>Cash Collateral</th>
+            <th>Non-Cash Collateral</th>
+            <th>LiquidCase</th>
+            <th>Cash</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>PSAR</th>
+            <td id="m_psar_cc">—</td>
+            <td id="m_psar_ncc">—</td>
+            <td id="m_psar_lc" class="zero">—</td>
+            <td id="m_psar_cash" class="zero">—</td>
+          </tr>
+          <tr>
+            <th>Long Options</th>
+            <td id="m_lo_cc" class="zero">—</td>
+            <td id="m_lo_ncc" class="zero">—</td>
+            <td id="m_lo_lc" class="zero">—</td>
+            <td id="m_lo_cash">—</td>
+          </tr>
+          <tr>
+            <th>Put Protection</th>
+            <td id="m_pp_cc" class="zero">—</td>
+            <td id="m_pp_ncc" class="zero">—</td>
+            <td id="m_pp_lc" class="zero">—</td>
+            <td id="m_pp_cash">—</td>
+          </tr>
+          <tr>
+            <th>Drawdown</th>
+            <td id="m_dd_cc" class="zero">—</td>
+            <td id="m_dd_ncc" class="zero">—</td>
+            <td id="m_dd_lc">—</td>
+            <td id="m_dd_cash">—</td>
+          </tr>
+          <tr class="total-row">
+            <th>Total Margin</th>
+            <td id="m_tot_cc">—</td>
+            <td id="m_tot_ncc">—</td>
+            <td id="m_tot_lc">—</td>
+            <td id="m_tot_cash">—</td>
+          </tr>
+          <tr>
+            <th>Haircut</th>
+            <td id="m_hc_cc">—</td>
+            <td id="m_hc_ncc">—</td>
+            <td id="m_hc_lc">—</td>
+            <td id="m_hc_cash">—</td>
+          </tr>
+          <tr class="deployable-row">
+            <th>Total Deployable</th>
+            <td id="m_dep_cc">—</td>
+            <td id="m_dep_ncc">—</td>
+            <td id="m_dep_lc">—</td>
+            <td id="m_dep_cash">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-title"><span class="idx">03</span> Final Allocation</div>
+    <p class="section-sub">Deployable capital reassembled into the book's headline split — Cash, Pledgeable Equities and Non-Pledgeable Equities.</p>
+
+    <div class="alloc-layout">
+      <div>
+        <div class="alloc-bar">
+          <div class="alloc-seg cash" id="bar_cash">—</div>
+          <div class="alloc-seg pledge" id="bar_pledge">—</div>
+          <div class="alloc-seg nonpledge" id="bar_nonpledge">—</div>
+        </div>
+        <div class="alloc-legend">
+          <div class="item"><span class="swatch cash"></span>Cash</div>
+          <div class="item"><span class="swatch pledge"></span>Pledgeable Equities</div>
+          <div class="item"><span class="swatch nonpledge"></span>Non-Pledgeable Equities</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="alloc-table">
+          <thead>
+            <tr><th style="text-align:left">Category</th><th>Amount</th><th>Weight</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>Cash</th><td id="a_cash">—</td><td id="a_cash_w">—</td></tr>
+            <tr><th>Pledgeable Equities</th><td id="a_pledge">—</td><td id="a_pledge_w">—</td></tr>
+            <tr><th>Non-Pledgeable Equities</th><td id="a_nonpledge">—</td><td id="a_nonpledge_w">—</td></tr>
+            <tr><th>Total</th><td id="a_total">—</td><td id="a_total_w">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>Qode Research Desk — internal tool. All figures recalculate live; nothing here is persisted.</footer>
+
+<script>
+const DEFAULTS = {
+  av: 1000000000,
+  psar: 4,
+  psarLev: 8,
+  long: 2,
+  eqPct: 60,
+  put: 2,
+  hc_cashcoll: 90,
+  hc_noncash: 80,
+  hc_liquid: 100,
+  hc_cash: 100
+};
+
+const ids = ['in_av','in_psar','in_psarLev','in_long','in_eqPct','in_put',
+  'in_hc_cashcoll','in_hc_noncash','in_hc_liquid','in_hc_cash'];
+
+function fmtINR(n){
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  const neg = n < 0;
+  n = Math.abs(n);
+  const str = n.toLocaleString('en-IN', {maximumFractionDigits: 0});
+  return (neg ? '-₹' : '₹') + str;
+}
+function fmtPct(n){
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return (n*100).toFixed(2) + '%';
+}
+
+function getInputs(){
+  return {
+    av: parseFloat(document.getElementById('in_av').value) || 0,
+    psar: parseFloat(document.getElementById('in_psar').value) || 0,
+    psarLev: parseFloat(document.getElementById('in_psarLev').value) || 0,
+    longPct: (parseFloat(document.getElementById('in_long').value) || 0) / 100,
+    eqPct: (parseFloat(document.getElementById('in_eqPct').value) || 0) / 100,
+    putPct: (parseFloat(document.getElementById('in_put').value) || 0) / 100,
+    hc_cashcoll: (parseFloat(document.getElementById('in_hc_cashcoll').value) || 0) / 100,
+    hc_noncash: (parseFloat(document.getElementById('in_hc_noncash').value) || 0) / 100,
+    hc_liquid: (parseFloat(document.getElementById('in_hc_liquid').value) || 0) / 100,
+    hc_cash: (parseFloat(document.getElementById('in_hc_cash').value) || 0) / 100,
+  };
+}
+
+function recalc(){
+  const v = getInputs();
+
+  // ---- derived metrics ----
+  const netPsarExposure = v.av * v.psar;
+  const longPremiumPerDay = v.longPct * v.av;
+  const eqValue = v.eqPct * v.av;
+  const totalDrawdownMargin = (v.psar * 6) / 100;
+
+  document.getElementById('avReadout').textContent = fmtINR(v.av);
+  document.getElementById('out_netPsar').textContent = fmtINR(netPsarExposure);
+  document.getElementById('out_longPrem').textContent = fmtINR(longPremiumPerDay);
+  document.getElementById('out_eqValue').textContent = fmtINR(eqValue);
+  document.getElementById('out_ddMargin').textContent = fmtPct(totalDrawdownMargin);
+
+  // ---- margin matrix ----
+  const psarSplit = v.psarLev ? (v.av * v.psar / v.psarLev / 2) : 0;
+  const m = {
+    psar:   { cc: psarSplit, ncc: psarSplit, lc: 0, cash: 0 },
+    lo:     { cc: 0, ncc: 0, lc: 0, cash: longPremiumPerDay },
+    pp:     { cc: 0, ncc: 0, lc: 0, cash: v.putPct * eqValue },
+    dd:     { cc: 0, ncc: 0, lc: totalDrawdownMargin * v.av * (1/3), cash: totalDrawdownMargin * v.av * (2/3) },
+  };
+
+  const setCell = (id, val) => document.getElementById(id).textContent = fmtINR(val);
+  setCell('m_psar_cc', m.psar.cc); setCell('m_psar_ncc', m.psar.ncc); setCell('m_psar_lc', m.psar.lc); setCell('m_psar_cash', m.psar.cash);
+  setCell('m_lo_cc', m.lo.cc);     setCell('m_lo_ncc', m.lo.ncc);     setCell('m_lo_lc', m.lo.lc);     setCell('m_lo_cash', m.lo.cash);
+  setCell('m_pp_cc', m.pp.cc);     setCell('m_pp_ncc', m.pp.ncc);     setCell('m_pp_lc', m.pp.lc);     setCell('m_pp_cash', m.pp.cash);
+  setCell('m_dd_cc', m.dd.cc);     setCell('m_dd_ncc', m.dd.ncc);     setCell('m_dd_lc', m.dd.lc);     setCell('m_dd_cash', m.dd.cash);
+
+  const totals = {
+    cc: m.psar.cc + m.lo.cc + m.pp.cc + m.dd.cc,
+    ncc: m.psar.ncc + m.lo.ncc + m.pp.ncc + m.dd.ncc,
+    lc: m.psar.lc + m.lo.lc + m.pp.lc + m.dd.lc,
+    cash: m.psar.cash + m.lo.cash + m.pp.cash + m.dd.cash,
+  };
+  setCell('m_tot_cc', totals.cc); setCell('m_tot_ncc', totals.ncc); setCell('m_tot_lc', totals.lc); setCell('m_tot_cash', totals.cash);
+
+  document.getElementById('m_hc_cc').textContent = fmtPct(v.hc_cashcoll);
+  document.getElementById('m_hc_ncc').textContent = fmtPct(v.hc_noncash);
+  document.getElementById('m_hc_lc').textContent = fmtPct(v.hc_liquid);
+  document.getElementById('m_hc_cash').textContent = fmtPct(v.hc_cash);
+
+  const deployable = {
+    cc: v.hc_cashcoll ? totals.cc / v.hc_cashcoll : 0,
+    ncc: v.hc_noncash ? totals.ncc / v.hc_noncash : 0,
+    lc: v.hc_liquid ? totals.lc / v.hc_liquid : 0,
+    cash: v.hc_cash ? totals.cash / v.hc_cash : 0,
+  };
+  setCell('m_dep_cc', deployable.cc); setCell('m_dep_ncc', deployable.ncc); setCell('m_dep_lc', deployable.lc); setCell('m_dep_cash', deployable.cash);
+
+  // ---- final allocation ----
+  const cashAlloc = deployable.cc + deployable.lc + deployable.cash;
+  const pledgeable = deployable.ncc;
+  const nonPledgeable = v.av - cashAlloc - pledgeable;
+  const total = cashAlloc + pledgeable + nonPledgeable;
+
+  setCell('a_cash', cashAlloc);
+  setCell('a_pledge', pledgeable);
+  setCell('a_nonpledge', nonPledgeable);
+  setCell('a_total', total);
+
+  document.getElementById('a_cash_w').textContent = fmtPct(total ? cashAlloc/total : 0);
+  document.getElementById('a_pledge_w').textContent = fmtPct(total ? pledgeable/total : 0);
+  document.getElementById('a_nonpledge_w').textContent = fmtPct(total ? nonPledgeable/total : 0);
+  document.getElementById('a_total_w').textContent = fmtPct(total ? total/total : 0);
+
+  // bar
+  const wCash = total ? Math.max(0, cashAlloc/total*100) : 0;
+  const wPledge = total ? Math.max(0, pledgeable/total*100) : 0;
+  const wNonPledge = total ? Math.max(0, nonPledgeable/total*100) : 0;
+  const barCash = document.getElementById('bar_cash');
+  const barPledge = document.getElementById('bar_pledge');
+  const barNonpledge = document.getElementById('bar_nonpledge');
+  barCash.style.width = wCash + '%';
+  barPledge.style.width = wPledge + '%';
+  barNonpledge.style.width = wNonPledge + '%';
+  barCash.textContent = wCash > 8 ? wCash.toFixed(1)+'%' : '';
+  barPledge.textContent = wPledge > 8 ? wPledge.toFixed(1)+'%' : '';
+  barNonpledge.textContent = wNonPledge > 8 ? wNonPledge.toFixed(1)+'%' : '';
+}
+
+ids.forEach(id => document.getElementById(id).addEventListener('input', recalc));
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('in_av').value = DEFAULTS.av;
+  document.getElementById('in_psar').value = DEFAULTS.psar;
+  document.getElementById('in_psarLev').value = DEFAULTS.psarLev;
+  document.getElementById('in_long').value = DEFAULTS.long;
+  document.getElementById('in_eqPct').value = DEFAULTS.eqPct;
+  document.getElementById('in_put').value = DEFAULTS.put;
+  document.getElementById('in_hc_cashcoll').value = DEFAULTS.hc_cashcoll;
+  document.getElementById('in_hc_noncash').value = DEFAULTS.hc_noncash;
+  document.getElementById('in_hc_liquid').value = DEFAULTS.hc_liquid;
+  document.getElementById('in_hc_cash').value = DEFAULTS.hc_cash;
+  recalc();
+});
+
+recalc();
+</script>
+
+</body>
+</html>
