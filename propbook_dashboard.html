@@ -359,9 +359,7 @@ body {
   display: block;
 }
 body.show-sources .source-note { display: block; }
-/* Source notes inside panel headers sit below the header */
 .panel-hd .source-note { margin-top: 0.4rem; }
-/* Source notes inside kcards */
 .kcard .source-note { margin-top: 0.45rem; }
 .kcard.forest .kcard-sub,
 .kcard.deep .kcard-sub { color: rgba(239,237,195,0.4); }
@@ -576,7 +574,6 @@ body.show-sources .source-note { display: block; }
 .sx::-webkit-scrollbar { height: 4px; }
 .sx::-webkit-scrollbar-track { background: var(--cream); }
 .sx::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-/* Inner scroll + frozen headers for panel tables */
 .panel-body0.sx { max-height: 620px; overflow-y: auto; overflow-x: auto; }
 .panel-body0.sx::-webkit-scrollbar { width: 4px; height: 4px; }
 .panel-body0.sx::-webkit-scrollbar-track { background: var(--cream); }
@@ -1154,6 +1151,7 @@ body.show-sources .source-note { display: block; }
       <span class="sheet-tag">Strategy Allocation</span>
       <span class="sheet-tag">Equity Holdings</span>
       <span class="sheet-tag">Mutual Funds</span>
+      <span class="sheet-tag">Mishayan Wealth</span>
     </div>
   </div>
   <div id="upload-status"></div>
@@ -1210,7 +1208,6 @@ body.show-sources .source-note { display: block; }
       <div id="ov-alert-strip" style="margin-left:auto"></div>
     </div>
 
-    <!-- ── SECTION 1: TOP KPIs ─────────────────────────────────── -->
     <div class="cards-row c6" style="margin-bottom:1.25rem">
       <div class="kcard forest">
         <div class="kcard-lbl">Net Worth</div>
@@ -1233,8 +1230,8 @@ body.show-sources .source-note { display: block; }
       <div class="kcard cream">
         <div class="kcard-lbl">Cash to Deploy</div>
         <div class="kcard-val gold" id="ov-deployable">—</div>
-        <div class="kcard-sub" id="ov-deployable-sub">Mishayan + Rishabh</div>
-        <div class="source-note"><span class="sn-c">Cash to Deploy = Mishayan deployable + Rishabh deployable</span><br><span class="sn-d">Cash &amp; Margin sheet: col W, row "Cash Available to deploy in Equity" (Mishayan) + col Z, same row (Rishabh)</span></div>
+        <div class="kcard-sub" id="ov-deployable-sub">RN + Mishayan + MW</div>
+        <div class="source-note"><span class="sn-c">Cash to Deploy = literal cash balance sitting in each Zerodha account right now</span><br><span class="sn-d">Networth Inputs sheet, rows where col E "Equity/Debt/Cash" = "Cash" and col D "Particulars 2" = "Cash" (excludes Contract Value), summed by entity</span></div>
       </div>
       <div class="kcard">
         <div class="kcard-lbl">Holdings P&amp;L</div>
@@ -1250,9 +1247,7 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- ── SECTION 2: ALLOCATION + ENTITY SPLIT ─────────────────── -->
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.25rem">
-      <!-- Asset Allocation -->
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Asset Allocation</div></div>
         <div class="panel-body" style="padding:0.75rem">
@@ -1262,19 +1257,16 @@ body.show-sources .source-note { display: block; }
           </div>
         </div>
       </div>
-      <!-- Entity Split -->
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">By Entity</div></div>
         <div class="panel-body" style="padding:0.75rem" id="ov-entity-mini"></div>
       </div>
-      <!-- Key Ratios -->
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Health Monitor</div></div>
         <div class="panel-body0" id="ov-health-panel" style="padding:0.5rem 0.75rem"></div>
       </div>
     </div>
 
-    <!-- ── SECTION 3: STRATEGY EXPOSURE ──────────────────────────── -->
     <div style="margin-bottom:1.25rem">
       <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem">
         <div style="width:3px;height:16px;background:var(--red-neg);border-radius:2px"></div>
@@ -1299,10 +1291,7 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-
-    <!-- ── SECTION 5: HOLDINGS SNAPSHOT + RETURN EXPECTATION ─────── -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
-      <!-- Holdings Summary -->
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Holdings Snapshot</div></div>
         <div class="panel-body0 sx">
@@ -1318,7 +1307,6 @@ body.show-sources .source-note { display: block; }
           </table>
         </div>
       </div>
-      <!-- Return Expectation -->
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Return Expectation</div></div>
         <div class="panel-body0 sx">
@@ -1335,7 +1323,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
     </div>
-
 
   </div>
 
@@ -1410,6 +1397,7 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
+    <!-- NEW: Mishayan Wealth / Prosperity FPI / any other Client Account not RN or Mishayan -->
     <div class="panel">
       <div class="panel-hd">
         <div class="panel-title">Other Client Accounts — Mishayan Wealth · Prosperity FPI</div>
@@ -1538,7 +1526,7 @@ body.show-sources .source-note { display: block; }
         <div class="kcard-lbl">Total Holdings Value</div>
         <div class="kcard-val" id="hld-total">—</div>
         <div class="kcard-sub" id="hld-total-s">—</div>
-        <div class="source-note"><span class="sn-c">SUM of all equity stock holdings + all mutual fund holdings (current market value)</span><br><span class="sn-d">SUM(Equity Holdings col K "Value as of Today") + SUM(Mutual Funds col L "Value as of Today")</span></div>
+        <div class="source-note"><span class="sn-c">SUM of all equity stock holdings + all mutual fund holdings (current market value)</span><br><span class="sn-d">SUM(Equity Holdings col K "Value as of Today") + SUM(Mutual Funds col L "Value as of Today") — now includes Mishayan Wealth Equity Holdings / Mutual Funds sheets too</span></div>
       </div>
       <div class="kcard">
         <div class="kcard-lbl">Total P&L</div>
@@ -1550,7 +1538,7 @@ body.show-sources .source-note { display: block; }
         <div class="kcard-lbl">Equity Holdings</div>
         <div class="kcard-val gold" id="hld-eq">—</div>
         <div class="kcard-sub" id="hld-eq-s">—</div>
-        <div class="source-note"><span class="sn-c">Direct equity stocks held in Zerodha (Mishayan + RN accounts)</span><br><span class="sn-d">SUM(Equity Holdings col K "Value as of Today"), all rows. Classified by col G "Debt/Equity" = "Equity".</span></div>
+        <div class="source-note"><span class="sn-c">Direct equity stocks held in Zerodha (Mishayan + RN + Mishayan Wealth accounts)</span><br><span class="sn-d">SUM(Equity Holdings col K "Value as of Today"), all rows. Classified by col G "Debt/Equity" = "Equity".</span></div>
       </div>
       <div class="kcard">
         <div class="kcard-lbl">Mutual Funds</div>
@@ -1560,7 +1548,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Holdings summary charts -->
     <div class="col2" style="margin-bottom:1.1rem">
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Holdings by Asset Type (Value)</div></div>
@@ -1586,8 +1573,8 @@ body.show-sources .source-note { display: block; }
         <div class="fsep"></div>
         <div class="fpill" onclick="filterH('Personal Stock Holdings Zerodha',this)">RN Personal</div>
         <div class="fpill" onclick="filterH('Stock Holdings',this)">Mishayan</div>
-        <div class="fpill" onclick="filterH('Mutual Funds',this)">Loaned to Mishayan</div>
         <div class="fpill" onclick="filterH('MishayanWealth',this)">Mishayan Wealth</div>
+        <div class="fpill" onclick="filterH('Mutual Funds',this)">Loaned to Mishayan</div>
         <div class="fsep"></div>
         <div class="fpill" onclick="filterH('QMF',this)">QMF</div>
         <div class="fpill" onclick="filterH('Momentum',this)">Momentum</div>
@@ -1733,7 +1720,6 @@ body.show-sources .source-note { display: block; }
     </div>
 
     <div class="col2">
-      <!-- SETTING 1: Master Data Source -->
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Setting 1 — Master Data Source</div></div>
         <div class="panel-body">
@@ -1758,7 +1744,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
 
-      <!-- SETTING 2: Sheet1 On/Off Toggle -->
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Setting 2 — Sheet1 On/Off Toggle</div></div>
         <div class="panel-body">
@@ -1785,7 +1770,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
 
-      <!-- SETTING 3: Strategy Exposure Source -->
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Setting 3 — Strategy Exposure Source</div></div>
         <div class="panel-body">
@@ -1809,7 +1793,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
 
-      <!-- SETTING 4: Holdings P&L Source -->
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Setting 4 — Holdings P&L Source</div></div>
         <div class="panel-body">
@@ -1859,7 +1842,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- KPI row -->
     <div class="cards-row c5" id="alloc-kpi-row">
       <div class="kcard forest">
         <div class="kcard-lbl">Total Liquidity</div>
@@ -1893,7 +1875,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Row 1: Asset class donut + Entity split donut -->
     <div class="col2">
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Asset Class Allocation</div></div>
@@ -1913,7 +1894,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Row 2: Strategy allocation donut + bar -->
     <div class="col2">
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Strategy Notional Breakdown</div></div>
@@ -1944,7 +1924,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Notional vs NW/Liq combined table -->
     <div class="panel">
       <div class="panel-hd"><div class="panel-title">Notional Exposure Summary — NW &amp; Liquidity Reference</div></div>
       <div class="panel-body0 sx">
@@ -1963,7 +1942,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Row 3: Equity breakdown — Holdings sub-cats (left) + NW Inputs line items (right) -->
     <div class="col2">
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Equity Sub-Category Breakdown — Holdings</div></div>
@@ -2015,7 +1993,6 @@ body.show-sources .source-note { display: block; }
       <div class="sec-sub">Stress tests · Black swan scenarios · Portfolio at-risk analysis</div>
     </div>
 
-    <!-- Current exposure KPI row -->
     <div class="cards-row c5" style="margin-bottom:1.5rem">
       <div class="kcard forest">
         <div class="kcard-lbl">Total Equity Exposure</div>
@@ -2044,6 +2021,7 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
+    <!-- NEW: Geographic Exposure + Underlying vs Futures Leverage (from Portfolio Summary sheet) -->
     <div class="col2" style="margin-bottom:1.25rem">
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Geographic Exposure — PSAR by Country</div></div>
@@ -2051,7 +2029,7 @@ body.show-sources .source-note { display: block; }
           <div class="chart-box chart-h240"><canvas id="chart-risk-geo"></canvas></div>
           <div class="alloc-legend" id="risk-geo-legend"></div>
         </div>
-        <div class="source-note"><span class="sn-c">India vs Dubai split of net PSAR notional, from the Portfolio Summary sheet.</span></div>
+        <div class="source-note"><span class="sn-c">India vs Dubai split of net PSAR notional.</span><br><span class="sn-d">Portfolio Summary sheet, PSAR-by-account table, col H "Country" grouped and summed on col I "Net Exposure".</span></div>
       </div>
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Underlying vs Futures Leverage</div></div>
@@ -2061,11 +2039,10 @@ body.show-sources .source-note { display: block; }
             <tbody id="risk-leverage-tbody"></tbody>
           </table>
         </div>
-        <div class="source-note"><span class="sn-c">How much of Equity/Gold exposure is real holdings vs derivative notional.</span></div>
+        <div class="source-note"><span class="sn-c">How much of Equity/Gold exposure is real holdings vs derivative notional.</span><br><span class="sn-d">Portfolio Summary sheet, "Total Equity Exposure" / "Total Gold Exposure" / "Total EQ + Gold" blocks (cols L–O).</span></div>
       </div>
     </div>
 
-    <!-- Interactive Stress Test -->
     <div class="panel" style="margin-bottom:1.25rem">
       <div class="stress-control-row">
         <div>
@@ -2109,7 +2086,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Pre-built Scenarios -->
     <div class="sec-hd" style="margin-top:0.5rem">
       <div class="sec-title" style="font-size:1.15rem">Black Swan &amp; Scenario Library</div>
       <div class="sec-sub">Pre-defined market events — impact on your portfolio</div>
@@ -2117,7 +2093,6 @@ body.show-sources .source-note { display: block; }
 
     <div class="scenario-grid" id="scenario-cards"></div>
 
-    <!-- Strategy Risk Heatmap -->
     <div class="sec-hd" style="margin-top:1.75rem">
       <div class="sec-title" style="font-size:1.15rem">Strategy Risk Heatmap</div>
       <div class="sec-sub">Impact severity across scenarios</div>
@@ -2142,7 +2117,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Risk Limit Monitor -->
     <div class="col2" style="margin-top:1.25rem">
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Risk Limit Monitor</div></div>
@@ -2174,7 +2148,6 @@ body.show-sources .source-note { display: block; }
       <div class="sec-sub">Upload daily NAV data · CAGR · Sharpe · MDD · Correlation</div>
     </div>
 
-    <!-- Upload zone -->
     <div id="navperf-upload-section">
       <div class="nav-upload-zone" id="nav-upload-box"
         onclick="document.getElementById('nav-file-in').click()"
@@ -2193,7 +2166,6 @@ body.show-sources .source-note { display: block; }
       <input type="file" id="nav-file-in" accept=".xlsx,.xls" style="display:none" onchange="handleNavFile(event)">
       <div id="nav-upload-status" style="font-size:0.72rem;color:var(--text-lt);text-align:center;margin-top:0.75rem;min-height:1rem"></div>
 
-      <!-- Sample format hint -->
       <div class="panel" style="margin-top:1.25rem">
         <div class="panel-hd"><div class="panel-title">Expected Excel Format</div></div>
         <div class="panel-body">
@@ -2217,7 +2189,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Results section (hidden until file loaded) -->
     <div id="navperf-results" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
         <div>
@@ -2227,7 +2198,6 @@ body.show-sources .source-note { display: block; }
         <button class="upload-btn" onclick="document.getElementById('nav-file-in').click()" style="font-size:0.72rem;padding:0.4rem 1rem">↑ Reload NAV File</button>
       </div>
 
-      <!-- Performance metrics table -->
       <div class="panel" style="margin-bottom:1.25rem">
         <div class="panel-hd"><div class="panel-title">Performance Metrics · RFR = 6.0% p.a.</div></div>
         <div class="panel-body0 sx">
@@ -2249,7 +2219,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
 
-      <!-- Equity curves chart -->
       <div class="panel" style="margin-bottom:1.25rem">
         <div class="panel-hd">
           <div class="panel-title">Equity Curves — Indexed to 100</div>
@@ -2260,7 +2229,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
 
-      <!-- Drawdown chart -->
       <div class="panel" style="margin-bottom:1.25rem">
         <div class="panel-hd"><div class="panel-title">Drawdown Over Time (%)</div></div>
         <div class="panel-body">
@@ -2268,7 +2236,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
 
-      <!-- Monthly returns heatmap -->
       <div class="panel" style="margin-bottom:1.25rem">
         <div class="panel-hd"><div class="panel-title">Monthly Returns Heatmap (%)</div></div>
         <div class="panel-body0 sx">
@@ -2276,7 +2243,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
 
-      <!-- Correlation matrix -->
       <div class="panel" style="margin-bottom:1.25rem">
         <div class="panel-hd"><div class="panel-title">Correlation Matrix — Daily Returns</div></div>
         <div class="panel-body0 sx">
@@ -2296,7 +2262,6 @@ body.show-sources .source-note { display: block; }
       <div class="sec-sub">Available cash, margin utilisation, and deployment plan — from Cash and Margin sheet</div>
     </div>
 
-    <!-- KPI strip -->
     <div class="cards-row c5" style="margin-bottom:1.5rem">
       <div class="kcard forest">
         <div class="kcard-lbl">Total Portfolio Value</div>
@@ -2330,7 +2295,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Exposure + Margin waterfalls -->
     <div class="col2" style="margin-bottom:1.5rem">
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Exposure by Account</div></div>
@@ -2352,7 +2316,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Margin breakdown table -->
     <div class="panel" style="margin-bottom:1.5rem">
       <div class="panel-hd"><div class="panel-title">Margin Utilisation — Mishayan (Zerodha)</div></div>
       <div class="panel-body0 sx">
@@ -2369,10 +2332,10 @@ body.show-sources .source-note { display: block; }
           <tbody></tbody>
         </table>
       </div>
-      <div class="source-note"><span class="sn-c">Margin available vs required by strategy (PSAR, LO, Gold Futures, DMA). Rows: Available on Zerodha, Total Required, Excess/Shortfall.</span><br><span class="sn-d">Cash &amp; Margin sheet, cols L–S: col L = component name, col M = Cash Component (Liquid Funds), col N = Non-Cash, col O = Liquidcase, col P = Cash, col Q = Total, col R = % of Portfolio Value</span></div>
+      <div class="source-note"><span class="sn-c">Margin available vs required by strategy (PSAR, LO, Gold Futures, DMA). Rows: Available on Zerodha, Total Required, Excess/Shortfall.</span><br><span class="sn-d">Cash &amp; Margin sheet, cols L–S: col L = component name, col M = Cash Component (Liquid Funds), col N = Non-Cash, col O = Liquidcase, col P = Cash, col Q = Total, col R = % of Portfolio Value. Note: "% of PV" reads col X, falling back to col W for rows where the newer column layout leaves it blank.</span></div>
     </div>
 
-
+    <!-- NEW: Mishayan Wealth Cash & Margin (mirrors the panel above) -->
     <div class="panel" style="margin-bottom:1.5rem">
       <div class="panel-hd"><div class="panel-title">Margin Utilisation — Mishayan Wealth (Zerodha)</div></div>
       <div class="cards-row c3" style="margin:0 0 1px 0;border-radius:0">
@@ -2389,15 +2352,9 @@ body.show-sources .source-note { display: block; }
           <tbody></tbody>
         </table>
       </div>
+      <div class="source-note"><span class="sn-c">Same layout as the Mishayan margin table above, sourced from the new "Mishayan Wealth Cash and Margin" sheet.</span></div>
     </div>
 
-
-
-
-
-
-
-    <!-- Broker totals + chart -->
     <div class="col2">
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Total Exposure by Account</div></div>
@@ -2418,7 +2375,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Gold Exposure + Input Parameters -->
     <div class="col2">
       <div class="panel">
         <div class="panel-hd"><div class="panel-title">Gold Exposure Breakdown</div></div>
@@ -2450,7 +2406,6 @@ body.show-sources .source-note { display: block; }
       <div class="sec-sub">Upload a new Excel file · Review changes before applying</div>
     </div>
 
-    <!-- Current data status -->
     <div class="cards-row c4" style="margin-bottom:1.5rem">
       <div class="kcard forest">
         <div class="kcard-lbl">Loaded As Of</div>
@@ -2474,7 +2429,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Upload zone -->
     <div class="panel" style="margin-bottom:1.5rem">
       <div class="panel-hd"><div class="panel-title">Upload New Excel File</div></div>
       <div class="panel-body">
@@ -2492,14 +2446,12 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Diff review section (hidden until a new file is parsed) -->
     <div id="upd-diff-section" style="display:none">
       <div class="sec-hd" style="margin-bottom:1rem">
         <div class="sec-title" style="font-size:1.1rem">Review Changes</div>
         <div class="sec-sub" id="upd-diff-sub">—</div>
       </div>
 
-      <!-- Summary badges -->
       <div class="cards-row c3" style="margin-bottom:1rem">
         <div class="kcard" style="border-left:3px solid #155724">
           <div class="kcard-lbl">New Rows</div>
@@ -2518,7 +2470,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
 
-      <!-- Diff table -->
       <div class="panel" style="margin-bottom:1.25rem">
         <div class="panel-hd"><div class="panel-title">Change Detail</div></div>
         <div class="panel-body0 sx">
@@ -2536,7 +2487,6 @@ body.show-sources .source-note { display: block; }
         </div>
       </div>
 
-      <!-- Action buttons -->
       <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
         <button class="btn-apply" onclick="applyUpdate()">Apply All Changes & Save</button>
         <button class="btn-cancel" onclick="cancelUpdate()">Cancel</button>
@@ -2544,7 +2494,6 @@ body.show-sources .source-note { display: block; }
       </div>
     </div>
 
-    <!-- Danger zone -->
     <div class="danger-zone">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem">
         <div>
@@ -2566,7 +2515,6 @@ body.show-sources .source-note { display: block; }
       <button id="notes-add-btn" onclick="openNewNote()">+ New Note</button>
     </div>
 
-    <!-- Compose / edit form (hidden until triggered) -->
     <div id="notes-form" class="panel" style="display:none;margin-bottom:1.25rem">
       <div class="panel-hd">
         <div class="panel-title" id="notes-form-title">New Note</div>
@@ -2610,14 +2558,12 @@ body.show-sources .source-note { display: block; }
     return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
 
-  // Compute expected hashes once on load and hold in closure
   let _eH = null, _pH = null;
   (async () => {
     _eH = await sha256('rishabh.nahar@qodeinvest.com');
     _pH = await sha256('Nahar@123');
   })();
 
-  // Already authenticated in this tab? Skip login screen.
   if (sessionStorage.getItem('pb_auth') === '1') {
     document.getElementById('login-screen').style.display = 'none';
   }
@@ -2730,12 +2676,10 @@ function setupDt(tableId) {
   if(!table) return;
   const thead = table.querySelector('thead');
   if(!thead) return;
-  // Use only the first header row for sort/filter setup
   const headerRow = thead.querySelector('tr');
   if(!headerRow) return;
   const ths = Array.from(headerRow.querySelectorAll('th'));
 
-  // ── Sort icons on header row (once per th) ──
   ths.forEach((th, ci) => {
     if(th.dataset.dtInited) return;
     th.dataset.dtInited = '1';
@@ -2747,7 +2691,6 @@ function setupDt(tableId) {
     th.addEventListener('click', () => _dtSort(tableId, ci, th));
   });
 
-  // ── Per-column filter row (add once) ──
   if(!thead.querySelector('tr.dt-filter-row')) {
     const filterRow = document.createElement('tr');
     filterRow.className = 'dt-filter-row';
@@ -2759,7 +2702,6 @@ function setupDt(tableId) {
       inp.type = 'text';
       inp.placeholder = '…';
       inp.addEventListener('input', () => { _dtFilter(tableId); refreshDtTotals(tableId); });
-      // Stop click on input from triggering column sort
       inp.addEventListener('click', e => e.stopPropagation());
       th.appendChild(inp);
       filterRow.appendChild(th);
@@ -2777,7 +2719,6 @@ function _dtSort(tableId, ci, clickedTh) {
   if(!tbody) return;
   const cur = clickedTh.dataset.sortDir || '';
   const dir = cur === 'asc' ? 'desc' : 'asc';
-  // Reset all header-row ths
   const headerRow = table.querySelector('thead tr:first-child');
   if(headerRow) headerRow.querySelectorAll('th').forEach(th => {
     th.dataset.sortDir = '';
@@ -2811,7 +2752,6 @@ function _dtFilter(tableId) {
   const tbody = table.querySelector('tbody');
   if(!tbody) return;
   tbody.querySelectorAll('tr').forEach(row => {
-    // Never hide total/section header rows
     if(row.classList.contains('trow-total') || row.classList.contains('trow-section')) {
       row.style.display = '';
       return;
@@ -2835,12 +2775,10 @@ function refreshDtTotals(tableId) {
   if(!thead || !tbody) return;
   const tfoot = table.querySelector('tfoot');
 
-  // Use only first header row for column metadata
   const ths = Array.from(thead.querySelectorAll('tr:first-child th'));
   const numCols = ths.reduce((acc, th, ci) => { if(th.classList.contains('r')) acc.push(ci); return acc; }, []);
   if(!numCols.length) return;
 
-  // Sum only visible, non-total, non-section, non-child rows
   const totals = {};
   numCols.forEach(ci => totals[ci] = 0);
   let anyData = false;
@@ -2857,7 +2795,6 @@ function refreshDtTotals(tableId) {
   });
   if(!anyData) return;
 
-  // Update inline trow-total in tbody if present
   const inlineTotRow = tbody.querySelector('tr.trow-total');
   if(inlineTotRow) {
     const tds = inlineTotRow.querySelectorAll('td');
@@ -2865,10 +2802,8 @@ function refreshDtTotals(tableId) {
     return;
   }
 
-  // Otherwise create/update tfoot total row
   let tf = tfoot || document.createElement('tfoot');
   if(!tfoot) table.appendChild(tf);
-  // Remove any legacy static trow-total in tfoot (replace with dynamic dt-totals)
   const legacyTot = tf.querySelector('.trow-total');
   if(legacyTot) legacyTot.remove();
   let tfRow = tf.querySelector('tr.dt-totals');
@@ -2911,7 +2846,6 @@ function processFile(file) {
       document.getElementById('upload-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       showPage('overview', document.querySelector('.nav-tab'));
-      // Push to server so any device can auto-load this data
       pushToServer(buf, file.name);
     } catch(err) {
       if(st) st.textContent = '✗ Error: ' + err.message;
@@ -2921,8 +2855,6 @@ function processFile(file) {
   reader.readAsArrayBuffer(file);
 }
 
-// Push uploaded Excel to /api/upload — enables cross-device auto-load
-// Silently skips if server has no upload endpoint or Blob is not configured
 function pushToServer(arrayBuffer, filename) {
   const syncEl = document.getElementById('sync-status');
   fetch('/api/upload', {
@@ -2930,16 +2862,13 @@ function pushToServer(arrayBuffer, filename) {
     headers: { 'Content-Type': 'application/octet-stream', 'X-Filename': filename },
     body: arrayBuffer
   }).then(r => {
-    // 404/501/503 = not configured → skip silently
     if (r.status === 404 || r.status === 501 || r.status === 503) return;
     if(syncEl) {
       syncEl.style.display = 'inline';
       syncEl.textContent = r.ok ? '✓ Synced to cloud' : '⚠ Sync failed (' + r.status + ')';
       setTimeout(() => { syncEl.style.display = 'none'; }, 3000);
     }
-  }).catch(() => {
-    // Network error or no server — ignore completely
-  });
+  }).catch(() => {});
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2952,12 +2881,14 @@ function parseAll(wb) {
   parseEquity(wb);
   parseMF(wb);
   parseCashMargin(wb);
-  parseCashMarginMW(wb);       // NEW
-  parsePortfolioSummary(wb);   // NEW
+  parseCashMarginMW(wb);       // NEW — Mishayan Wealth Cash and Margin sheet
+  parsePortfolioSummary(wb);   // NEW — Portfolio Summary sheet (country + leverage)
 }
 
 function parseNetWorthInputs(wb) {
   // Parse Networth Inputs sheet: Col E (index 4) = Assets, Col M (index 12) = Debts
+  // Generic row loop — automatically picks up any new account/entity (Mishayan Wealth,
+  // Prosperity FPI, etc.) without needing code changes here.
   const sn = wb.SheetNames.find(n => n === 'Networth Inputs');
   if(!sn || !wb.Sheets[sn]) {
     D.nwInputs = { assets:[], debts:[], dataDate:null };
@@ -2968,24 +2899,30 @@ function parseNetWorthInputs(wb) {
   D.nwInputs.assets = [];
   D.nwInputs.debts = [];
   
-  // Parse asset section: Col 0=Sr.No, 1=Category, 2=Particulars 1, 3=Particulars 2,
-  //                       4=Equity/Debt/Cash (typ), 5=Value, 6=Entity, 7=On/Off (sta)
   for(let i=3; i<rows.length; i++) {
     const r = rows[i];
     if(!r || r.length < 6) continue;
     const sno = r[0];
-    if(sno===null || sno===undefined || String(sno).trim()==='') continue; // skip gaps, don't break
+    if(sno===null || sno===undefined || String(sno).trim()==='') continue;
     const cat  = String(r[1]||'').trim();
-    const part = String(r[2]||'').trim();
-    const typ  = String(r[4]||'').trim();   // Equity / Debt / Cash / Gold
-    const val  = Number(r[5]) || 0;         // Value
-    const ent  = String(r[6]||'').trim();   // Mishayan / Rishabh
-    const sta  = String(r[7]||'').trim();   // On / Off
-    if(!part) continue;
-    D.nwInputs.assets.push({ cat, part, typ, val, ent, sta });
+    // FIX: this sheet has TWO particulars columns (Particulars 1 = account/bucket,
+    // Particulars 2 = the specific line, e.g. "Equity Holdings" / "Equity Mutual Fund
+    // Holdings" / "Cash"). Previously only col2 was captured as a single "part" field
+    // and p1/p2 were never set, so every table that reads x.p1/x.p2 (Balance Sheet,
+    // Accounts, Allocation) rendered "undefined".
+    const p1   = String(r[2]||'').trim();
+    const p2   = String(r[3]||'').trim();
+    const typ  = String(r[4]||'').trim();
+    const val  = Number(r[5]) || 0;
+    const ent  = String(r[6]||'').trim();
+    const sta  = String(r[7]||'').trim();
+    let   dat  = null;
+    if(r[8] instanceof Date) dat = r[8];
+    else if(r[8]!==null && r[8]!==undefined) { const d = new Date(r[8]); if(!isNaN(d)) dat = d; }
+    if(!p1 && !p2) continue;
+    D.nwInputs.assets.push({ cat, p1, p2, part: p2||p1, typ, val, ent, sta, dat });
   }
 
-  // Parse debt section (cols 13-17): Col 13=Sr.No, 14=Category, 15=Particulars, 16=Value, 17=Entity
   for(let i=3; i<rows.length; i++) {
     const r = rows[i];
     if(!r || r.length < 17) continue;
@@ -2999,9 +2936,6 @@ function parseNetWorthInputs(wb) {
     D.nwInputs.debts.push({ cat, part, val, ent });
   }
   
-  // ── Pre-computed summary (cols U–V, indices 20–21) ──────────────
-  // The sheet has a small summary table: col U = label, col V = value.
-  // Labels are: 'Liquidity', 'Less: Debt', 'Networth'
   D.nwInputs.preLiquidity = null;
   D.nwInputs.preDebt      = null;
   D.nwInputs.preNetworth  = null;
@@ -3015,17 +2949,12 @@ function parseNetWorthInputs(wb) {
     else if(l === 'networth')   D.nwInputs.preNetworth  = Number(val) || 0;
   }
 
-  // Get most recent date from assets
   D.nwInputs.dataDate = null;
 }
 
 function parseSheet1(wb) {
-  // Find Networth Inputs (new name) or Sheet1 (legacy)
   const sn = wb.SheetNames.find(n => n === 'Networth Inputs') || wb.SheetNames.find(n => n === 'Sheet1') || wb.SheetNames[0];
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
-  // Row 0: "Liquidity" header  Row 1: blank  Row 2: column headers  Row 3+: data
-  // Col indices: 0=sno, 1=cat, 2=p1, 3=p2, 4=assetType, 5=value, 6=entity, 7=status, 8=date, 9=attach
-  // Debt cols: 12=sno, 13=cat, 14=particulars, 15=value, 16=entity
   D.s1 = []; D.debts = [];
   for(let i=3; i<rows.length; i++) {
     const r = rows[i];
@@ -3047,7 +2976,6 @@ function parseSheet1(wb) {
     if(!p1 && !p2) continue;
     D.s1.push({ cat, p1, p2, typ, val, ent, sta, dat });
   }
-  // Debt section (cols 12-16), starting row index 3
   for(let i=3; i<rows.length; i++) {
     const r = rows[i];
     if(!r || r.length < 16) continue;
@@ -3059,19 +2987,18 @@ function parseSheet1(wb) {
     if(!par) continue;
     D.debts.push({ cat, par, val, ent });
   }
-  // Most recent data date
   const dates = D.s1.filter(x=>x.dat).map(x=>x.dat.getTime());
   D.dataDate = dates.length ? new Date(Math.max(...dates)) : null;
 }
 
 function parseStrategies(wb) {
   // Strategy Allocation: header at row index 1, data from row 2
-  // Col layout (V2 Latest): 0=sno, 1=acc, 2=strat, 3=posSize, 4=Tag, 5=portfolioValue, 6=%share, 7=exposure, 8=netExp, 9=loPrem
+  // Generic row loop — new accounts (Mishayan Wealth, Prosperity FPI) flow through automatically.
   const sn = wb.SheetNames.find(n => /strategy allocation$/i.test(n)) || wb.SheetNames.find(n => n.toLowerCase().includes('strategy'));
   if(!sn || !wb.Sheets[sn]) return;
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
   D.strats = [];
-  D.stratTags = {};   // strat name → asset tag ('Equity','Gold','Derivatives',…)
+  D.stratTags = {};
   for(let i=2; i<rows.length; i++) {
     const r = rows[i];
     if(!r) continue;
@@ -3096,11 +3023,13 @@ function parseStrategies(wb) {
 function parseEquity(wb) {
   // Equity Holdings: header at row index 2, data from row 3
   // cols: 0=symbol, 1=tag, 2=exchange, 3=qty, 4=avgPrice, 5=broker, 6=assetType, 7=subCat, 8=ltp, 9=buyVal, 10=curVal, 11=pnl, 12=pnlPct, 13=notes(optional)
+  // NEW: also parses the Mishayan Wealth Equity Holdings sheet and tags ent='Mishayan Wealth'
+  // explicitly, since that sheet reuses the same generic "Stock Holdings" tag as Mishayan Capital.
   D.eq = [];
   const mainSn = wb.SheetNames.find(n => n.toLowerCase().includes('equity holding') && !n.toLowerCase().includes('mishayan wealth'));
   const mwSn   = wb.SheetNames.find(n => n.toLowerCase().includes('mishayan wealth') && n.toLowerCase().includes('equity holding'));
-  parseEquitySheet(wb, mainSn, null);            // ent derived per-row from tag (RN vs Mishayan)
-  parseEquitySheet(wb, mwSn,  'Mishayan Wealth'); // ent forced — MW sheet reuses the same generic tags as Mishayan
+  parseEquitySheet(wb, mainSn, null);
+  parseEquitySheet(wb, mwSn,  'Mishayan Wealth');
 }
 function parseEquitySheet(wb, sn, forcedEnt) {
   if(!sn || !wb.Sheets[sn]) return;
@@ -3122,7 +3051,7 @@ function parseEquitySheet(wb, sn, forcedEnt) {
       curVal: Number(r[10])||0,
       pnl:    Number(r[11])||0,
       pnlPct: Number(r[12])||0,
-      notes:  String(r[13]||'').trim(),  // blank on MW sheet — no Notes column there, which is fine
+      notes:  String(r[13]||'').trim(),
       type: 'Stock'
     });
   }
@@ -3131,6 +3060,7 @@ function parseEquitySheet(wb, sn, forcedEnt) {
 function parseMF(wb) {
   // Mutual Funds: header at row index 2, data from row 3
   // cols: 0=symbol,1=isin,2=schemeCode,3=qty,4=avgPrice,5=broker,6=assetType,7=tag,8=subCat,9=nav,10=buyVal,11=curVal,12=pnl,13=pnlPct,14=notes(optional)
+  // NEW: also parses Mishayan Wealth Mutual Funds sheet, tagging ent explicitly.
   D.mf = [];
   const mainSn = wb.SheetNames.find(n => n.toLowerCase().includes('mutual fund') && !n.toLowerCase().includes('mishayan wealth'));
   const mwSn   = wb.SheetNames.find(n => n.toLowerCase().includes('mishayan wealth') && n.toLowerCase().includes('mutual fund'));
@@ -3175,6 +3105,7 @@ function parseCashMarginMW(wb) {
   D.cashMarginMW = buildCashMarginFromSheet(wb, sn);
 }
 
+// Shared parser for both the main and Mishayan Wealth Cash & Margin sheets.
 function buildCashMarginFromSheet(wb, sn) {
   const out = { headers:[], rows:[], marginTable:[], deploy:{ mishayan:[], rishabh:[] },
                 totalExp:[], goldExp:[], inputs:[], rawRows:[], grandTotal:0 };
@@ -3214,10 +3145,10 @@ function buildCashMarginFromSheet(wb, sn) {
   }
 
   // Table 4 (cols 15-23): Margin Breakdown
-  // FIX: the new format inserts a blank column before "Total % of PV", shifting it
+  // FIX: the new file format inserts a blank column before "Total % of PV", shifting it
   // from col 22 -> col 23 for the "Available on Zerodha / Total Required / Excess-Shortfall"
-  // rows. Prefer col 23 when present, fall back to col 22 (covers the old file + the
-  // by-strategy sub-rows, which never had col 23 populated in either format).
+  // rows. Prefer col 23 when it's a number, fall back to col 22 (covers the old file's
+  // layout plus the by-strategy sub-rows, which never populate col 23 in either format).
   const marginRows = [];
   for(let i=2; i<rows.length; i++) {
     const r = rows[i]; if(!r) continue;
@@ -3255,6 +3186,49 @@ function buildCashMarginFromSheet(wb, sn) {
   return out;
 }
 
+// NEW — "Portfolio Summary" sheet: PSAR by country (India/Dubai) + Equity/Gold
+// exposure split into Underlying vs Futures, with leverage on NW and on Liquidity.
+// Parsed by label-matching rather than fixed row numbers, since this sheet has
+// a lot of blank spacer rows/cols that can shift between edits.
+function parsePortfolioSummary(wb) {
+  D.portfolioSummary = { country: [], eqExp: {}, goldExp: {}, combinedExp: {}, psarLevNW: null, psarLevLiq: null };
+  const sn = wb.SheetNames.find(n => /^portfolio summary$/i.test(n));
+  if(!sn || !wb.Sheets[sn]) return;
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
+
+  let section = null; // 'eq' | 'gold' | 'combined'
+  const buckets = { eq:{}, gold:{}, combined:{} };
+  const country = [];
+  let psarLevNW = null, psarLevLiq = null;
+
+  for(let i=0; i<rows.length; i++) {
+    const r = rows[i]; if(!r) continue;
+    const c1 = r[1], c2 = r[2], c3 = r[3];
+    const c11 = r[11], c12 = r[12], c13 = r[13], c14 = r[14];
+
+    if(typeof c1 === 'string') {
+      const lbl = c1.trim();
+      if((lbl === 'India' || lbl === 'Dubai') && typeof c2 === 'number') {
+        country.push({ name: lbl, val: c2, share: typeof c3 === 'number' ? c3 : null });
+      }
+      if(lbl === 'Net PSAR Exposure' && typeof c3 === 'number') psarLevNW = c3;
+    }
+    if(c2 === 'Liquidity' && typeof c3 === 'number' && psarLevLiq === null) psarLevLiq = c3;
+
+    if(typeof c11 === 'string') {
+      const l11 = c11.trim();
+      if(l11 === 'Total Equity Exposure') section = 'eq';
+      else if(l11 === 'Total Gold Exposure') section = 'gold';
+      else if(l11 === 'Total EQ + Gold') section = 'combined';
+      else if(section && ['Underlying','Futures','EQ','Gold','Total'].includes(l11)) {
+        const key = l11 === 'EQ' ? 'eqpart' : l11 === 'Gold' ? 'goldpart' : l11.toLowerCase();
+        buckets[section][key] = { val: Number(c12)||0, levNW: c13, levLiq: c14 };
+      }
+    }
+  }
+  D.portfolioSummary = { country, eqExp: buckets.eq, goldExp: buckets.gold, combinedExp: buckets.combined, psarLevNW, psarLevLiq };
+}
+
 // ═══════════════════════════════════════════════════════════════
 // COMPUTED
 // ═══════════════════════════════════════════════════════════════
@@ -3273,8 +3247,7 @@ const totalDebt= () => sum(D.debts, x=>x.val);
 const netWorth = () => liquidity() - totalDebt();
 const psarNot  = () => sum(D.strats.filter(r=>r.strat==='PSAR'), r=>r.netExp);
 const loPrem   = () => sum(D.strats.filter(r=>r.strat==='Long Options'), r=>r.loPrem);
-const GOLD_STRATS = ['QAW','Gold Futures','Gold','Gold PRCS'];  // fallback when no tag data
-// Use tag from parsed data if available; fall back to name-list
+const GOLD_STRATS = ['QAW','Gold Futures','Gold','Gold PRCS'];
 const isGoldStrat  = s => (D.stratTags[s] ? D.stratTags[s] === 'Gold' : GOLD_STRATS.includes(s));
 const isEqStrat    = s => (D.stratTags[s] ? D.stratTags[s] === 'Equity' : s === 'QAW Futures' || s === 'Stock Futures');
 const qawFut   = () => sum(D.strats.filter(r=>isGoldStrat(r.strat)), r=>r.netExp);
@@ -3298,7 +3271,6 @@ const stbadge = s => `<span class="bdg ${s==='On'?'bdg-on':'bdg-off'}">${s}</spa
 // ═══════════════════════════════════════════════════════════════
 function updateConfig(key, val) {
   CONFIG[key] = val;
-  // Update UI to reflect disabled settings
   const set2 = document.getElementById('cfg-sheet1-filter');
   const set2Na = document.getElementById('set2-na');
   if(set2 && set2Na) {
@@ -3312,7 +3284,6 @@ function updateConfig(key, val) {
   }
 }
 
-// Master data source computation functions
 function computeNetWorthBySource() {
   if(CONFIG.masterSource === 'networth_inputs') {
     return D.nwInputs.preNetworth ?? (D.nwInputs.preLiquidity - D.nwInputs.preDebt) ?? 0;
@@ -3354,42 +3325,72 @@ function computeDebtBySource() {
   }
 }
 
-// ── Enriched allocation: corrected asset types + strategy notionals ──
-// Used ONLY for allocation charts/tables — does NOT affect NW calculations
-
 function getEnrichedAllocation() {
   const base = getAssetAllocationData();
   const items = base.map(x => ({...x}));
-  // No reclassification — prop deposits stay as Debt in all views
 
-  // Add equity futures notionals from strategies
   const qawFutV  = sum(D.strats.filter(r=>r.strat==='QAW Futures'),   r=>r.netExp);
   const stkFutV  = sum(D.strats.filter(r=>r.strat==='Stock Futures'),  r=>r.netExp);
   const psarV    = psarNot();
-  const goldFutV = qawFut();   // QAW Gold / Gold Futures
+  const goldFutV = qawFut();
   const loV      = loPrem();
   const putV     = putNot();
 
-  // Equity futures only — PSAR, Long Options, Put Protection excluded from allocation view
   if(qawFutV > 0)  items.push({cat:'Derivatives', p1:'QAW Equity Futures', p2:'', typ:'Equity', val:qawFutV,  ent:'Mishayan', sta:'On', _virtual:true});
   if(stkFutV > 0)  items.push({cat:'Derivatives', p1:'Stock Futures',       p2:'', typ:'Equity', val:stkFutV,  ent:'Mishayan', sta:'On', _virtual:true});
-  // Gold Futures counted under Gold
   if(goldFutV> 0)  items.push({cat:'Derivatives', p1:'Gold Futures (QAW)',  p2:'', typ:'Gold',   val:goldFutV, ent:'Mishayan', sta:'On', _virtual:true});
-  // PSAR, Long Options, Put Protection intentionally excluded — not counted in asset allocation
 
-  // Reclassify QAW-tagged equity holdings as Gold
-  // (Gold ETF / Gold component tagged QAW in holdings sheet)
   const eqAll = [...D.eq, ...D.mf];
   eqAll.forEach(h => {
     const tagLo = (h.tag||'').toLowerCase();
     const subLo = (h.subCat||'').toLowerCase();
     if((tagLo.includes('qaw') || subLo.includes('gold')) && h.curVal > 0) {
       // find matching item in items by value proximity and add as Gold override
-      // (holdings come via Sheet1 or nwInputs, not directly in getAssetAllocationData)
     }
   });
 
   return items;
+}
+
+// ── Equity breakdown for the Allocation page ─────────────────────────────
+// Level 1 = each Equity-typed Networth Inputs line (grouped by account p1 + p2)
+//   — this is exactly what feeds the Equity KPI / donut, so the grand total here
+//   always ties to that number.
+// Level 2 = for lines whose p2 is literally "Equity Holdings" or "Equity Mutual
+//   Fund Holdings", drill into the matching holdings sheet (matched by entity)
+//   and split by sub-category. Any gap between the NW Inputs value and what the
+//   holdings sheets actually show is surfaced as an explicit "Other / not in
+//   holdings sheets" line, rather than silently dropped — so the total still ties.
+function computeEquityBreakdown(showExp) {
+  const base  = getAssetAllocationData().filter(x => x.typ === 'Equity');
+  let   total = sum(base, x => x.val);
+
+  const groups = base.map(x => {
+    let bySubcat = {}, trackedTotal = 0;
+    const p2Lo = (x.p2||'').toLowerCase();
+    if(p2Lo === 'equity holdings') {
+      D.eq.filter(h => h.ent === x.ent).forEach(h => {
+        const k = h.subCat || h.tag || 'Other';
+        bySubcat[k] = (bySubcat[k]||0) + h.curVal;
+      });
+    } else if(p2Lo === 'equity mutual fund holdings') {
+      D.mf.filter(h => h.ent === x.ent && (h.assetType||'').toLowerCase()==='equity').forEach(h => {
+        const k = h.subCat || h.tag || 'Other';
+        bySubcat[k] = (bySubcat[k]||0) + h.curVal;
+      });
+    }
+    trackedTotal = sum(Object.values(bySubcat), v=>v);
+    return { p1:x.p1, p2:x.p2, ent:x.ent, val:x.val, bySubcat, untracked: x.val - trackedTotal, _virtual:false };
+  }).sort((a,b) => b.val - a.val);
+
+  if(showExp) {
+    const qawFutV = sum(D.strats.filter(r=>r.strat==='QAW Futures'),  r=>r.netExp);
+    const stkFutV = sum(D.strats.filter(r=>r.strat==='Stock Futures'), r=>r.netExp);
+    if(qawFutV > 0) { groups.push({ p1:'QAW Equity Futures', p2:'', ent:'Mishayan', val:qawFutV, bySubcat:{}, untracked:0, _virtual:true }); total += qawFutV; }
+    if(stkFutV > 0) { groups.push({ p1:'Stock Futures',       p2:'', ent:'Mishayan', val:stkFutV, bySubcat:{}, untracked:0, _virtual:true }); total += stkFutV; }
+  }
+
+  return { total, groups };
 }
 
 function getAssetAllocationData() {
@@ -3407,7 +3408,6 @@ function computePSARNotional() {
   if(CONFIG.strategySource === 'sheet_direct') {
     return psarNot();
   } else if(CONFIG.strategySource === 'recompute') {
-    // Recompute: use base from master source × position sizing
     const baseLiq = computeLiquidityBySource();
     return sum(D.strats.filter(r=>r.strat==='PSAR'), r=>r.posSize * baseLiq);
   }
@@ -3418,7 +3418,6 @@ function computeHoldingsTotal() {
   if(CONFIG.holdingsSource === 'holdings_sheets') {
     return sum(D.eq, x=>x.curVal) + sum(D.mf, x=>x.curVal);
   } else if(CONFIG.holdingsSource === 'networth_inputs') {
-    // Get holdings value from Networth Inputs - categories like Stocks, Equity
     return sum(D.nwInputs.assets.filter(x=>['Client Account','Stocks','Mutual Funds','Equity'].includes(x.cat)), x=>x.val);
   }
   return sum(D.eq, x=>x.curVal) + sum(D.mf, x=>x.curVal);
@@ -3429,7 +3428,6 @@ function computeHoldingsTotal() {
 // ═══════════════════════════════════════════════════════════════
 function renderAll() {
   const nw = computeNetWorthBySource(), liq = computeLiquidityBySource();
-  // Header
   sv('h-nw',   cr(nw));
   sv('h-psar', cr(computePSARNotional()));
   sv('h-liq',  cr(liq));
@@ -3441,7 +3439,9 @@ function renderAll() {
   renderHoldings();
   renderBalance(nw, liq);
   renderSettings(nw, liq);
-  // Set up sort/filter/totals on all .dt tables after all renders
+  renderAllocation();
+  renderRisk();
+  renderCashMargin();
   setTimeout(setupAllDts, 0);
 }
 
@@ -3464,7 +3464,6 @@ function renderOverview(nw, liq) {
     'Networth Inputs mode (no On/Off)';
   sv('ov-items-sub', offText);
 
-  // Donut / Asset allocation chart
   const eq  = sum(assetData.filter(x=>x.typ==='Equity'), x=>x.val);
   const dbt = sum(assetData.filter(x=>x.typ==='Debt'),   x=>x.val);
   const csh = sum(assetData.filter(x=>x.typ==='Cash'),   x=>x.val);
@@ -3475,17 +3474,14 @@ function renderOverview(nw, liq) {
     {label:'Cash',      val:csh, color:'#DABD38'},
     {label:'Gold',      val:gld, color:'#b8a020'},
   ], liq);
-  // Chart.js version of the same donut (replaces SVG)
   const ovSegs=[{label:'Equity',val:eq,color:'#02422B'},{label:'Debt',val:dbt,color:'#1a5a80'},{label:'Cash',val:csh,color:'#DABD38'},{label:'Gold',val:gld,color:'#b8a020'}].filter(s=>s.val>0);
   mkChart('ov-asset-donut',{type:'doughnut',data:{labels:ovSegs.map(s=>s.label),datasets:[{data:ovSegs.map(s=>s.val),backgroundColor:ovSegs.map(s=>s.color),borderWidth:2,borderColor:'#fff'}]},options:{cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+cr(ctx.raw,1)+' ('+pct(ctx.raw,liq)+')'}}}}});
 
-  // Update dynamic title
   const titleText = CONFIG.masterSource === 'networth_inputs' ? 'Asset Allocation — Networth Inputs' :
                    CONFIG.masterSource === 'sheet1_on' ? 'Asset Allocation — On Items Only' :
                    'Asset Allocation — All Items (On + Off)';
   sv('asset-allocation-title', titleText);
 
-  // Update dynamic source attribution
   const sourceText = CONFIG.masterSource === 'networth_inputs' ?
     'Networth Inputs sheet Col E (assets, rows 3+) for asset types' :
     CONFIG.masterSource === 'sheet1_on' ?
@@ -3493,7 +3489,6 @@ function renderOverview(nw, liq) {
     'Sheet1, rows 3+ (all items), Columns D (asset type) & F (value)';
   sv('asset-allocation-source', sourceText);
 
-  // Update Entity Split source attribution
   const entitySourceText = CONFIG.masterSource === 'networth_inputs' ?
     'Networth Inputs sheet Col E (assets, rows 3+) filtered by entity' :
     CONFIG.masterSource === 'sheet1_on' ?
@@ -3501,7 +3496,6 @@ function renderOverview(nw, liq) {
     'Sheet1, rows 3+ (all items), Columns G (entity owner) & F (value)';
   sv('entity-split-source', entitySourceText);
 
-  // Update Category Breakdown source attribution
   const categorySourceText = CONFIG.masterSource === 'networth_inputs' ?
     'Networth Inputs sheet Col E (assets, rows 3+) grouped by category' :
     CONFIG.masterSource === 'sheet1_on' ?
@@ -3509,7 +3503,6 @@ function renderOverview(nw, liq) {
     'Sheet1, rows 3+ (all items), Columns B (category) & F (value)';
   sv('category-breakdown-source', categorySourceText);
 
-  // Entity split
   const rn  = sum(assetData.filter(x=>x.ent==='Rishabh'),        x=>x.val);
   const mis = sum(assetData.filter(x=>x.ent==='Mishayan'),        x=>x.val);
   const mw  = sum(assetData.filter(x=>x.ent==='Mishayan Wealth'), x=>x.val);
@@ -3537,7 +3530,6 @@ function renderOverview(nw, liq) {
     </div>
   `);
 
-  // Category table
   const cats = {};
   assetData.forEach(x => { if(!cats[x.cat]) cats[x.cat]={v:0,n:0}; cats[x.cat].v+=x.val; cats[x.cat].n++; });
   const catTb = document.querySelector('#cat-table tbody');
@@ -3548,7 +3540,6 @@ function renderOverview(nw, liq) {
     <td class="muted">${d.n}</td>
   </tr>`).join('')+`<tr class="trow-total"><td>Total</td><td class="r">${cr(liq)}</td><td class="r">100.0%</td><td></td></tr>`;
 
-  // Risk monitor
   const riskRows = [
     {lbl:'PSAR / Net Worth', val:xnw(psar,nw), bar:Math.min(psar/nw/8,1), ok:psar/nw<6},
     {lbl:'PSAR Notional', val:cr(psar), bar:Math.min(psar/liq,1), ok:true},
@@ -3566,7 +3557,6 @@ function renderOverview(nw, liq) {
     </div>
   `).join(''));
 
-  // Off items
   const offTotal = sum(off, x=>x.val);
   sv('off-lbl', `${off.length} items · ${cr(offTotal)} excluded`);
   const offTb = document.querySelector('#off-table tbody');
@@ -3579,21 +3569,16 @@ function renderOverview(nw, liq) {
     <td style="font-size:0.65rem;color:var(--text-lt)">Status = Off in Sheet1</td>
   </tr>`).join('');
 
-
-  // ── NEW OVERVIEW ELEMENTS ───────────────────────────────────────
-  // Holdings P&L KPI
   const holdingsPnl = sum(D.eq, x=>x.pnl) + sum(D.mf, x=>x.pnl);
   const pnlEl = document.getElementById('ov-pnl');
   if(pnlEl) { pnlEl.textContent = cr(holdingsPnl); pnlEl.style.color = holdingsPnl >= 0 ? 'var(--green-pos)' : 'var(--red-neg)'; }
   sv('ov-pnl-sub', (D.eq.length + D.mf.length) + ' holdings');
 
-  // Cash Buffer KPI
   const csh2 = sum(assetData.filter(x=>x.typ==='Cash'), x=>x.val);
   const cashEl = document.getElementById('ov-cash');
   if(cashEl) { cashEl.textContent = cr(csh2); cashEl.style.color = liq > 0 && csh2/liq < 0.05 ? 'var(--red-neg)' : 'inherit'; }
   sv('ov-cash-sub', liq > 0 ? (csh2/liq*100).toFixed(1) + '% of liquidity' : '—');
 
-  // Alert strip — show only if a limit is breached
   const psarR = nw > 0 ? psar/nw : 0;
   const loR   = nw > 0 ? loPrem()/nw : 0;
   const debtR = liq > 0 ? debt/liq : 0;
@@ -3614,7 +3599,6 @@ function renderOverview(nw, liq) {
     }
   }
 
-  // Portfolio by Account / Bucket — horizontal bar
   const byP1 = {};
   assetData.forEach(x => { const k = x.p1 || 'Other'; byP1[k] = (byP1[k]||0) + x.val; });
   const p1Ent = Object.entries(byP1).sort((a,b) => b[1]-a[1]);
@@ -3637,7 +3621,6 @@ function renderOverview(nw, liq) {
     }
   });
 
-  // Leverage & Notional vs Net Worth — vertical bar
   const levItems = [
     { label: 'Net Worth',     val: nw,       color: '#02422B' },
     { label: 'PSAR Notional', val: psarNot(), color: '#8B1A1A' },
@@ -3663,7 +3646,6 @@ function renderOverview(nw, liq) {
     }
   });
 
-  // Entity summary table
   const entTbody = document.getElementById('ov-entity-tbody');
   if(entTbody) {
     const rnA  = sum(assetData.filter(x=>x.ent==='Rishabh'),         x=>x.val);
@@ -3689,7 +3671,6 @@ function renderOverview(nw, liq) {
     </tr>`;
   }
 
-  // Key Ratios & Limits panel
   const ratiosEl = document.getElementById('ov-ratios-panel');
   if(ratiosEl) {
     const eqVal  = sum(assetData.filter(x=>x.typ==='Equity'), x=>x.val);
@@ -3711,9 +3692,6 @@ function renderOverview(nw, liq) {
       </div>`).join('') + '</div>';
   }
 
-  // ── MASTERSHEET SECTIONS ─────────────────────────────────────
-
-  // Section A — Liquidity: group assetData by bucket/category
   const liqTbody = document.getElementById('ov-liquidity-tbody');
   if(liqTbody) {
     const buckets = {};
@@ -3744,7 +3722,6 @@ function renderOverview(nw, liq) {
     </tr>`;
   }
 
-  // Section B — Investments & Holdings
   const invTbody = document.getElementById('ov-investments-tbody');
   if(invTbody) {
     const eqTot    = sum(D.eq, x=>x.curVal);
@@ -3753,7 +3730,7 @@ function renderOverview(nw, liq) {
     const goldEq   = sum(D.eq.filter(x=>(x.subCat||x.tag||'').toLowerCase().includes('gold')), x=>x.curVal);
     const totalInv = eqTot + mfEqTot + mfDbtTot;
     sv('ov-sec-inv-total', cr(totalInv) + ' total holdings');
-    const eqPnl = sum(D.eq, x=>x.pnl), mfPnl = sum(D.mf, x=>x.pnl);
+    const eqPnl = sum(D.eq,x=>x.pnl), mfPnl = sum(D.mf,x=>x.pnl);
     const rows = [
       {cls:'Equity',       inst:'Equity Holdings (Zerodha/Direct)', cost:sum(D.eq,x=>x.buyVal), cur:eqTot,    pnl:eqPnl,  pnlPct: sum(D.eq,x=>x.buyVal)>0?eqPnl/sum(D.eq,x=>x.buyVal):0 },
       {cls:'Equity MF',    inst:'Equity Mutual Funds',               cost:sum(D.mf.filter(x=>x.assetType==='Equity'),x=>x.buyVal), cur:mfEqTot,  pnl:sum(D.mf.filter(x=>x.assetType==='Equity'),x=>x.pnl), pnlPct:mfEqTot>0?sum(D.mf.filter(x=>x.assetType==='Equity'),x=>x.pnl)/sum(D.mf.filter(x=>x.assetType==='Equity'),x=>x.buyVal):0 },
@@ -3775,7 +3752,6 @@ function renderOverview(nw, liq) {
     </tr>`;
   }
 
-  // Section C — Value at Risk / Derivatives
   const varTbody = document.getElementById('ov-var-tbody');
   if(varTbody) {
     const psarV = psarNot(), loV = loPrem(), goldV = qawFut(), putV = putNot();
@@ -3811,7 +3787,6 @@ function renderOverview(nw, liq) {
     </tr>`;
   }
 
-  // Section D — Net Worth Waterfall
   const wfEl = document.getElementById('ov-nw-waterfall');
   if(wfEl) {
     const eqV  = sum(assetData.filter(x=>x.typ==='Equity'), x=>x.val);
@@ -3847,7 +3822,6 @@ function renderOverviewNew(nw, liq) {
   const csh = sum(assetData.filter(x=>x.typ==='Cash'),   x=>x.val);
   const gld = sum(assetData.filter(x=>x.typ==='Gold'),   x=>x.val);
 
-  // ── Section 1: KPIs ──
   sv('ov-date', D.dataDate ? 'Data as of ' + fd(D.dataDate) : '—');
   sv('ov-nw',   cr(nw));
   sv('ov-nw-sub', 'Leverage ' + (liq>0?(liq/nw).toFixed(2)+'x':'—'));
@@ -3863,15 +3837,20 @@ function renderOverviewNew(nw, liq) {
   if(pnlEl) { pnlEl.textContent = (holdingsPnl>=0?'+':'')+cr(holdingsPnl); pnlEl.style.color = holdingsPnl>=0?'var(--green-pos)':'var(--red-neg)'; }
   sv('ov-pnl-sub', (D.eq.length+D.mf.length)+' holdings · '+(holdingsPnl>=0?'+':'')+pct(holdingsPnl, sum([...D.eq,...D.mf],x=>x.buyVal))+' return');
 
-  // Deployable cash from cashMargin
-  const misAvail = (D.cashMargin?.deploy?.mishayan||[]).find(x=>/cash available to deploy/i.test(x.label))?.val || 0;
-  const rnAvail  = (D.cashMargin?.deploy?.rishabh||[]).find(x=>/cash available to deploy/i.test(x.label))?.val || 0;
-  const totalDeploy = misAvail + rnAvail;
+  // FIX: the old "col W/Z — cash available to deploy" cells this used to read no longer
+  // exist in the new file format (D.cashMargin.deploy was always empty, so this KPI
+  // silently showed "—" forever). Use the literal cash balance sitting in each Zerodha
+  // account instead (Networth Inputs, typ=Cash, particulars exactly "Cash") — that is
+  // the actual deployable cash today.
+  const cashOnly = getAssetAllocationData().filter(x => x.typ === 'Cash' && x.p2 === 'Cash');
+  const rnAvail  = sum(cashOnly.filter(x => x.ent === 'Rishabh'),         x => x.val);
+  const misAvail = sum(cashOnly.filter(x => x.ent === 'Mishayan'),         x => x.val);
+  const mwAvail  = sum(cashOnly.filter(x => x.ent === 'Mishayan Wealth'),  x => x.val);
+  const totalDeploy = rnAvail + misAvail + mwAvail;
   const depEl = document.getElementById('ov-deployable');
   if(depEl) { depEl.textContent = totalDeploy>0?cr(totalDeploy):'—'; depEl.style.color = totalDeploy>0?'var(--gold-dark,#b8901c)':'inherit'; }
-  sv('ov-deployable-sub', misAvail>0&&rnAvail>0 ? 'Mis: '+cr(misAvail,1)+' · RN: '+cr(rnAvail,1) : '—');
+  sv('ov-deployable-sub', 'RN: '+cr(rnAvail,1)+' · Mis: '+cr(misAvail,1)+(mwAvail?' · MW: '+cr(mwAvail,1):''));
 
-  // Alert strip
   const psarR = nw>0?psar/nw:0, loR = nw>0?loPrem()/nw:0, debtR = liq>0?debt/liq:0, cshR = liq>0?csh/liq:0;
   const alerts = [];
   if(psarR>6)    alerts.push('PSAR '+psarR.toFixed(1)+'x NW — exceeds 6x');
@@ -3881,7 +3860,6 @@ function renderOverviewNew(nw, liq) {
   const strip = document.getElementById('ov-alert-strip');
   if(strip) strip.innerHTML = alerts.length ? '<div style="display:flex;flex-wrap:wrap;gap:0.4rem">'+alerts.map(a=>`<span style="font-size:0.65rem;color:var(--red-neg);background:rgba(139,26,26,0.08);border-radius:3px;padding:2px 8px;font-weight:700">⚠ ${a}</span>`).join('')+'</div>' : '';
 
-  // ── Section 2: Allocation donut + entity + health ──
   const segments = [{label:'Equity',val:eq,color:'#02422B'},{label:'Debt',val:dbt,color:'#1a5a80'},{label:'Cash',val:csh,color:'#DABD38'},{label:'Gold',val:gld,color:'#b8a020'}].filter(s=>s.val>0);
   mkChart('ov-alloc-donut',{type:'doughnut',data:{labels:segments.map(s=>s.label),datasets:[{data:segments.map(s=>s.val),backgroundColor:segments.map(s=>s.color),borderWidth:2,borderColor:'#fff'}]},options:{cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+cr(ctx.raw,1)+' ('+pct(ctx.raw,liq)+')'}}},maintainAspectRatio:false}});
   const legEl = document.getElementById('ov-alloc-legend');
@@ -3927,7 +3905,6 @@ function renderOverviewNew(nw, liq) {
     </div>`).join('');
   }
 
-  // ── Section 3: Strategy Exposure table ──
   const stratRows = [
     {strat:'PSAR',            val:psarNot(),  role:'DIRECTIONAL', beta:1.0,  expRet:0.10},
     {strat:'QAW Futures',     val:sum(D.strats.filter(r=>r.strat==='QAW Futures'),r=>r.netExp), role:'DIRECTIONAL', beta:1.0, expRet:0.12},
@@ -3963,7 +3940,6 @@ function renderOverviewNew(nw, liq) {
     </tr>`;
   }
 
-  // ── Section 5: Holdings + Return Expectation ──
   const eqTot = sum(D.eq, x=>x.curVal), mfEqTot = sum(D.mf.filter(x=>x.assetType==='Equity'),x=>x.curVal);
   const mfDbtTot = sum(D.mf.filter(x=>x.assetType==='Debt'),x=>x.curVal);
   const eqPnl = sum(D.eq,x=>x.pnl), mfPnl = sum(D.mf,x=>x.pnl);
@@ -3981,7 +3957,6 @@ function renderOverviewNew(nw, liq) {
   }).join('') + `<tr class="trow-total"><td>Total</td><td class="r muted">${cr(sum(holdRows,r=>r.cost))}</td><td class="r">${cr(sum(holdRows,r=>r.cur))}</td>
     <td class="r ${(eqPnl+mfPnl)>=0?'pos':'neg'}">${(eqPnl+mfPnl)>=0?'+':''}${cr(eqPnl+mfPnl)}</td><td></td></tr>`;
 
-  // Return expectation table — exp. return % is editable; recalculates dynamically
   window._retRows = [
     {name:'Debt / Fixed Inc', exp: dbt,     ret:0.050},
     {name:'Equity (Holdings)',exp: eq,      ret:0.150},
@@ -4009,7 +3984,6 @@ function renderOverviewNew(nw, liq) {
 
 }
 
-// Donut chart
 function drawDonut(segs, total) {
   const svg = document.getElementById('donut-svg');
   const leg = document.getElementById('donut-legend');
@@ -4048,17 +4022,14 @@ function drawDonut(segs, total) {
   </div>`).join('');
 }
 
-
 // ─── BROKERS ─────────────────────────────────────────────────
 function renderBrokers(nw, liq) {
   const assetData = getAssetAllocationData();
 
-  // Update dynamic subtitle
   const subtitleText = CONFIG.masterSource === 'networth_inputs' ? 'Values from Networth Inputs sheet' :
                       CONFIG.masterSource === 'sheet1_on' ? 'All values from Sheet1 · On items only' :
                       'All values from Sheet1 · All items (On + Off)';
   sv('brokers-subtitle', subtitleText);
-  // Zerodha RN
   const zrn = assetData.filter(x=>x.p1==='Zerodha Broking RN');
   const zrnV = sum(zrn, x=>x.val);
   sv('zrn-v', cr(zrnV));
@@ -4071,12 +4042,17 @@ function renderBrokers(nw, liq) {
     <td>${stbadge(x.sta)}</td>
   </tr>`).join('')+`<tr class="trow-total"><td>Total RN</td><td class="r">${cr(zrnV)}</td><td></td><td></td></tr>`;
 
-  // Zerodha Mishayan
   const zmis = assetData.filter(x=>x.p1==='Zerodha Broking Mishayan');
   const zmisV = sum(zmis, x=>x.val);
   sv('zmis-v', cr(zmisV));
   sv('zmis-date', zmis[0]?.dat ? fd(zmis[0].dat) : '—');
   const zmisTb = document.querySelector('#zmis-table tbody');
+  if(zmisTb) zmisTb.innerHTML = zmis.map(x=>`<tr>
+    <td><strong>${x.p2}</strong></td>
+    <td class="mono r">${cr(x.val)}</td>
+    <td>${abadge(x.typ)}</td>
+    <td>${stbadge(x.sta)}</td>
+  </tr>`).join('')+`<tr class="trow-total"><td>Total Mishayan</td><td class="r">${cr(zmisV)}</td><td></td><td></td></tr>`;
 
   // NEW — any other Client Account beyond RN / Mishayan (Mishayan Wealth, Prosperity FPI, …)
   const otherClientP1 = [...new Set(assetData.filter(x=>x.cat==='Client Account'
@@ -4087,29 +4063,21 @@ function renderBrokers(nw, liq) {
   sv('ocl-s', otherClientP1.length + ' account' + (otherClientP1.length!==1?'s':'') + (otherClientP1.length?' — '+otherClientP1.join(', '):''));
   const oclTb = document.querySelector('#ocl-table tbody');
   if(oclTb) {
-    let h='';
+    let hOcl='';
     otherClientP1.forEach(p1=>{
       const items = assetData.filter(x=>x.p1===p1);
       const v = sum(items, x=>x.val);
-      h += `<tr class="trow-section"><td colspan="4">${p1} — Total: ${cr(v)}</td></tr>`;
-      h += items.map(x=>`<tr>
+      hOcl += `<tr class="trow-section"><td colspan="4">${p1} — Total: ${cr(v)}</td></tr>`;
+      hOcl += items.map(x=>`<tr>
         <td style="padding-left:1.2rem">${x.p2}</td>
         <td class="mono r">${cr(x.val)}</td>
         <td>${abadge(x.typ)}</td>
         <td>${stbadge(x.sta)}</td>
       </tr>`).join('');
     });
-    oclTb.innerHTML = h;
+    oclTb.innerHTML = hOcl;
   }
 
-  if(zmisTb) zmisTb.innerHTML = zmis.map(x=>`<tr>
-    <td><strong>${x.p2}</strong></td>
-    <td class="mono r">${cr(x.val)}</td>
-    <td>${abadge(x.typ)}</td>
-    <td>${stbadge(x.sta)}</td>
-  </tr>`).join('')+`<tr class="trow-total"><td>Total Mishayan</td><td class="r">${cr(zmisV)}</td><td></td><td></td></tr>`;
-
-  // Prop
   const props = assetData.filter(x=>x.cat==='Prop');
   const propBrokers = [...new Set(props.map(x=>x.p1).filter(Boolean))];
   const propOnV = CONFIG.masterSource === 'sheet1_on' ? sum(props.filter(x=>x.sta==='On'), x=>x.val) : sum(props, x=>x.val);
@@ -4136,7 +4104,6 @@ function renderBrokers(nw, liq) {
     if(propFt) propFt.innerHTML=`<tr class="trow-total"><td colspan="2">Total Prop (On)</td><td class="r">${cr(propOnV)}</td><td colspan="3"></td></tr>`;
   }
 
-  // Other
   const others = assetData.filter(x=>['Other Investments','FD'].includes(x.cat));
   const otherOnV = CONFIG.masterSource === 'sheet1_on' ? sum(others.filter(x=>x.sta==='On'), x=>x.val) : sum(others, x=>x.val);
   sv('other-v', cr(otherOnV));
@@ -4150,8 +4117,6 @@ function renderBrokers(nw, liq) {
     <td>${stbadge(x.sta)}</td>
     <td class="muted" style="font-size:0.65rem">${fd(x.dat)}</td>
   </tr>`).join('');
-
-
 }
 
 // ─── STRATEGIES ───────────────────────────────────────────────
@@ -4165,9 +4130,6 @@ function renderStrategies(nw) {
   sv('st-put',  cr(put));
   sv('st-qaw-eq', cr(qawEqF)); sv('st-qaw-eq-s', xnw(qawEqF,nw)+' · '+xliq(qawEqF,liq));
 
-  // Strategy breakdown by broker
-  // Gold strategies are grouped into a single "GOLD FUTURES" section
-  // QAW Futures (equity leg) gets its own "QAW EQUITY FUTURES" section
   const goldGroup  = { strat:'GOLD FUTURES',      rows:[], total:0, totalLo:0, isGroup:true };
   const qawEqGroup = { strat:'QAW EQUITY FUTURES', rows:[], total:0, totalLo:0, isGroup:false };
   const otherGroups = {};
@@ -4205,7 +4167,6 @@ function renderStrategies(nw) {
     let h = '';
     allGroups.forEach(({ strat, rows, total, totalLo, isGroup }) => {
       const multiRow = rows.length > 1;
-      // For grouped gold section, show constituent strategies in sub-rows
       const subLabel = isGroup
         ? ` <span style="font-size:0.6rem;font-weight:400;opacity:0.7">${rows.length} strategies</span>`
         : multiRow
@@ -4225,7 +4186,6 @@ function renderStrategies(nw) {
         <td class="mono r"><strong>${xnw(total,nw)}</strong> <span style="opacity:0.65;font-weight:400">· ${xliq(total,liq)}</span></td>
       </tr>`;
       if(isGroup) {
-        // Show each constituent strategy as a sub-row
         const stratSubs = {};
         rows.forEach(r => {
           if(!stratSubs[r.strat]) stratSubs[r.strat]={strat:r.strat,total:0,rows:[]};
@@ -4260,7 +4220,6 @@ function renderStrategies(nw) {
     sbTb.innerHTML = h;
   }
   if(sbFt) sbFt.innerHTML = `<tr class="trow-total"><td>Grand Total</td><td></td><td></td><td class="r">${cr(grandTotal)}</td><td></td><td class="r">${xnw(grandTotal,nw)} · ${xliq(grandTotal,liq)}</td></tr>`;
-
 }
 
 // ─── HOLDINGS ─────────────────────────────────────────────────
@@ -4288,14 +4247,12 @@ function renderHoldings() {
   sv('hld-mf', cr(mfV)); sv('hld-mf-s', D.mf.length+' funds');
   renderHoldingsTable();
 
-  // Holdings type chart
   const byType={'Stock':{val:eqV,color:'#02422B'},'Mutual Fund':{val:mfV,color:'#1a5a80'}};
   const hldTotal = eqV + mfV;
   mkChart('hld-chart-type',{type:'doughnut',data:{labels:Object.keys(byType),datasets:[{data:Object.values(byType).map(x=>x.val),backgroundColor:Object.values(byType).map(x=>x.color),borderWidth:2,borderColor:'#fff'}]},options:{cutout:'55%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+cr(ctx.raw,1)+' ('+pct(ctx.raw,hldTotal)+')'}}}}});
   const hldLeg = document.getElementById('hld-type-legend');
   if(hldLeg) hldLeg.innerHTML = Object.entries(byType).map(([l,x])=>`<div class="alloc-leg-item"><div class="alloc-leg-dot" style="background:${x.color}"></div><span>${l}</span><strong style="margin-left:auto">${cr(x.val,1)}</strong><span style="color:var(--text-lt);margin-left:0.3rem">${pct(x.val,hldTotal)}</span></div>`).join('');
 
-  // P&L by sub-category bar chart (₹ + % P&L dual axis)
   const subcMap={}, subcBuyMap={};
   all.forEach(h=>{ const k=h.subCat||h.tag||'Other'; if(!subcMap[k]) { subcMap[k]=0; subcBuyMap[k]=0; } subcMap[k]+=h.pnl; subcBuyMap[k]+=h.buyVal; });
   const subcEntries=Object.entries(subcMap).sort((a,b)=>b[1]-a[1]);
@@ -4303,7 +4260,6 @@ function renderHoldings() {
   mkChart('hld-chart-pnl',{type:'bar',data:{labels:subcEntries.map(([k])=>k),datasets:[
     {label:'P&L (₹)',data:subcEntries.map(([,v])=>v),backgroundColor:subcEntries.map(([,v])=>v>=0?'rgba(2,66,43,0.75)':'rgba(139,26,26,0.75)'),borderRadius:3}
   ]},options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' P&L: '+(ctx.raw>=0?'+':'')+cr(ctx.raw),afterLabel:ctx=>' Return: '+(subcPctArr[ctx.dataIndex]>=0?'+':'')+subcPctArr[ctx.dataIndex].toFixed(2)+'%'}}},scales:{x:{grid:{color:'rgba(200,201,164,0.3)'},ticks:{color:'#7a9b8a',font:{family:CHART_FONT,size:9},callback:v=>{const a=Math.abs(v);return (v<0?'-':'')+(a>=1e7?(a/1e7).toFixed(1)+'Cr':a>=1e5?(a/1e5).toFixed(0)+'L':'')}}},y:{grid:{display:false},ticks:{color:'#4a6b5a',font:{family:CHART_FONT,size:9}}}}}});
-
 }
 
 function renderHoldingsTable() {
@@ -4323,6 +4279,8 @@ function renderHoldingsTable() {
   tb.innerHTML = flt.map(x=>{
     const isLoaned = /loan/i.test(x.notes||'');
     const pos = x.pnl>=0;
+    // NEW — 3-way entity badge (RN / Mishayan / Mishayan Wealth) using explicit ent field
+    // set at parse time, since Mishayan and Mishayan Wealth share identical generic tags.
     const entBadge = x.ent==='Mishayan Wealth' ? '<span class="bdg bdg-mw">Mishayan Wealth</span>'
                     : x.ent==='Mishayan'        ? '<span class="bdg bdg-mis">Mishayan</span>'
                     : '<span class="bdg bdg-rn">RN</span>';
@@ -4360,7 +4318,6 @@ function toggleBalanceTree(el, targetCls) {
   const open = el.dataset.open !== '0';
   el.dataset.open = open ? '0' : '1';
   el.querySelector('.tree-arrow').textContent = open ? '▶' : '▼';
-  // When collapsing a category, also collapse all child p1 rows inside it
   document.querySelectorAll('tr.'+targetCls).forEach(r => {
     r.style.display = open ? 'none' : '';
     if(open && r.dataset.open === '1') { r.dataset.open = '1'; }
@@ -4388,7 +4345,6 @@ function renderBalance(nw, liq) {
   sv('bs-mis', cr(misNW));
   sv('bs-mw',  cr(mwNW));
 
-  // Assets table — collapsible tree: Category > P1 > P2
   const cats = [...new Set(on.map(x=>x.cat))];
   const aTb = document.querySelector('#bs-assets tbody'), aFt = document.getElementById('bs-assets-foot');
   if(aTb) {
@@ -4457,7 +4413,6 @@ function renderBalance(nw, liq) {
     </tr>`;
   }
 
-  // Liabilities
   const lTb=document.querySelector('#bs-liab tbody'), lFt=document.getElementById('bs-liab-foot');
   if(lTb) {
     lTb.innerHTML=D.nwInputs.debts.map(d=>`<tr>
@@ -4468,7 +4423,6 @@ function renderBalance(nw, liq) {
     if(lFt) lFt.innerHTML=`<tr class="trow-total"><td>Total Liabilities</td><td class="r neg">${cr(debt)}</td><td></td></tr>`;
   }
 
-  // Summary
   const sTb=document.querySelector('#bs-summary tbody');
   if(sTb) {
     const rows=[
@@ -4487,7 +4441,6 @@ function renderBalance(nw, liq) {
     </tr>`;
   }
 
-  // Type bars
   const types={};
   on.forEach(x=>{if(!types[x.typ])types[x.typ]=0;types[x.typ]+=x.val;});
   const tColors={Equity:'#02422B',Debt:'#1a5a80',Cash:'#DABD38',Gold:'#b8a020'};
@@ -4505,7 +4458,6 @@ function renderBalance(nw, liq) {
 
 // ─── SETTINGS ─────────────────────────────────────────────────
 function renderSettings(nw, liq) {
-  // Sync dropdowns with CONFIG
   const masterSel = document.getElementById('cfg-master-source');
   const sheet1Sel = document.getElementById('cfg-sheet1-filter');
   const stratSel = document.getElementById('cfg-strategy-source');
@@ -4516,11 +4468,9 @@ function renderSettings(nw, liq) {
   if(stratSel) stratSel.value = CONFIG.strategySource;
   if(hldSel) hldSel.value = CONFIG.holdingsSource;
   
-  // Update setting 1 result
   const nwResult = computeNetWorthBySource();
   sv('set1-result', cr(nwResult));
   
-  // Update setting 2 result and disable if not applicable
   const activeItems = computeActiveItems();
   sv('set2-result', activeItems.toString());
   const set2Na = document.getElementById('set2-na');
@@ -4534,15 +4484,12 @@ function renderSettings(nw, liq) {
     }
   }
   
-  // Update setting 3 result
   const psarVal = computePSARNotional();
   sv('set3-result', cr(psarVal));
   
-  // Update setting 4 result
   const hldVal = computeHoldingsTotal();
   sv('set4-result', cr(hldVal));
   
-  // Configuration summary table
   const cfgMap = {
     'masterSource': {
       'networth_inputs': 'Networth Inputs (established)',
@@ -4562,7 +4509,6 @@ function renderSettings(nw, liq) {
       'networth_inputs': 'Networth Inputs sheet'
     }
   };
-  
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4588,7 +4534,6 @@ function mkChart(id, cfg) {
   return CHARTS[id];
 }
 
-// ── Shared chart defaults ──────────────────────────────────────
 const CHART_COLORS = ['#02422B','#DABD38','#1a5a80','#b8a020','#5a9a6a','#c06030','#4a2080','#008080','#8B1A1A','#2d6a8a'];
 const CHART_FONT   = "'Lato', system-ui, sans-serif";
 function chartDefaults() {
@@ -4604,8 +4549,8 @@ function setAllocationView(view) {
   setTimeout(setupAllDts, 0);
 }
 
-let _allocBarMode  = 'strat'; // 'strat' | 'asset'
-let _allocBarDenom = 'nw';    // 'nw' | 'liq'
+let _allocBarMode  = 'strat';
+let _allocBarDenom = 'nw';
 
 function setAllocBarMode(mode, btn) {
   _allocBarMode = mode;
@@ -4638,12 +4583,11 @@ function refreshAllocBar() {
 // ALLOCATION PAGE
 // ═══════════════════════════════════════════════════════════════
 function renderAllocation() {
-  const assetData = getAssetAllocationData();    // base physical data — used for category/full tables
+  const assetData = getAssetAllocationData();
   const liq       = computeLiquidityBySource();
   const nw        = computeNetWorthBySource();
   const showExp   = CONFIG.allocationView === 'exposure';
 
-  // ── Update toggle button states ──────────────────────────────
   const btnBase = document.getElementById('alloc-toggle-base');
   const btnExp  = document.getElementById('alloc-toggle-exposure');
   const hint    = document.getElementById('alloc-toggle-hint');
@@ -4653,7 +4597,6 @@ function renderAllocation() {
     ? 'Full Exposure: physical assets + QAW Futures (equity) + Stock Futures (equity) + Gold Futures QAW (gold)'
     : 'Physical Assets: equity, debt, cash, gold at book value only';
 
-  // ── Choose dataset for charts based on toggle ────────────────
   const viewData   = showExp ? getEnrichedAllocation() : assetData;
   const viewTotal  = sum(viewData, x=>x.val);
   const viewEq     = sum(viewData.filter(x=>x.typ==='Equity'), x=>x.val);
@@ -4661,9 +4604,6 @@ function renderAllocation() {
   const viewCsh    = sum(viewData.filter(x=>x.typ==='Cash'),   x=>x.val);
   const viewGld    = sum(viewData.filter(x=>x.typ==='Gold'),   x=>x.val);
 
-  // ── KPI cards ────────────────────────────────────────────────
-  // Total Liquidity always shows base physical value (unchanged by toggle)
-  // Equity and Gold update with toggle to reflect futures exposure
   sv('alloc-liq',    cr(liq));
   sv('alloc-liq-s',  assetData.length+' active items');
   sv('alloc-eq',     cr(viewEq));
@@ -4675,7 +4615,6 @@ function renderAllocation() {
   sv('alloc-gold',   cr(viewGld));
   sv('alloc-gold-s', pct(viewGld, liq)+' of portfolio');
 
-  // ── Asset class doughnut ──────────────────────────────────────
   const assetSegs = [
     {label: showExp ? 'Equity (incl. futures)' : 'Equity', val:viewEq,  color:'#02422B'},
     {label:'Debt / Fixed Income',                            val:viewDbt, color:'#1a5a80'},
@@ -4694,7 +4633,6 @@ function renderAllocation() {
     if(showExp) al.innerHTML += `<div style="font-size:0.62rem;color:var(--text-lt);margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border-lt)"> </div>`;
   }
 
-  // ── Entity doughnut ─────────────────────────────────────────
   const rnV  = sum(viewData.filter(x=>x.ent==='Rishabh'),         x=>x.val);
   const misV = sum(viewData.filter(x=>x.ent==='Mishayan'),         x=>x.val);
   const mwV  = sum(viewData.filter(x=>x.ent==='Mishayan Wealth'),  x=>x.val);
@@ -4713,7 +4651,6 @@ function renderAllocation() {
   const el2 = document.getElementById('alloc-entity-legend');
   if(el2) el2.innerHTML = entSegs.map(s=>`<div class="alloc-leg-item"><div class="alloc-leg-dot" style="background:${s.color}"></div><span>${s.label}</span><strong style="margin-left:auto">${cr(s.val,1)}</strong><span style="color:var(--text-lt);margin-left:0.3rem">${pct(s.val,viewTotal)}</span></div>`).join('');
 
-  // ── Strategy doughnut ───────────────────────────────────────
   const stratMap = {};
   D.strats.forEach(r=>{
     if(!r.strat||!r.netExp) return;
@@ -4730,21 +4667,18 @@ function renderAllocation() {
   const sl = document.getElementById('alloc-strat-legend');
   if(sl) sl.innerHTML = stratSegs.map(s=>`<div class="alloc-leg-item"><div class="alloc-leg-dot" style="background:${s.color}"></div><span>${s.label}</span><strong style="margin-left:auto">${cr(s.val,1)}</strong><span style="color:var(--text-lt);margin-left:0.3rem">${nw>0?(s.val/nw*100).toFixed(1)+'% NW':''}</span></div>`).join('');
 
-  // ── Strategy/Asset bar chart (toggle: NW vs Liq, Strategy vs Asset) ──
   const assetNotionalSegs = [
     {label: showExp ? 'Equity (incl. futures)' : 'Equity', val:viewEq,  color:'#02422B', type:'Asset'},
     {label:'Debt / Fixed Inc', val:viewDbt, color:'#1a5a80', type:'Asset'},
     {label:'Cash',             val:viewCsh, color:'#DABD38', type:'Asset'},
     {label: showExp ? 'Gold (incl. futures)' : 'Gold', val:viewGld, color:'#b8a020', type:'Asset'},
   ].filter(s=>s.val>0);
-  // Store segs globally for toggle callbacks
   window._allocBarStratSegs = stratSegs.map((s,i) => ({...s, type:'Strategy'}));
   window._allocBarAssetSegs = assetNotionalSegs;
   window._allocBarNW  = nw;
   window._allocBarLiq = liq;
   refreshAllocBar();
 
-  // ── Notional exposure summary table ──────────────────────────
   const notionalRows = [
     ...stratSegs.map(s => ({name:s.label, type:'Strategy', val:s.val})),
     ...assetNotionalSegs.map(s => ({name:s.label, type:'Asset Class', val:s.val})),
@@ -4760,85 +4694,62 @@ function renderAllocation() {
     <td class="mono r">${liq>0?(r.val/liq).toFixed(2)+'x':'—'}</td>
   </tr>`).join('');
 
-  // ── Equity sub-category breakdown (Equity-typed only) ────────
-  // Only include D.eq (all equity stocks) + D.mf where assetType === 'Equity'
-  const eqHoldings  = D.eq;
-  const eqMFs       = D.mf.filter(h => (h.assetType||'').toLowerCase() === 'equity');
-  const nonEqMFs    = D.mf.filter(h => (h.assetType||'').toLowerCase() !== 'equity');
-  const eqAll       = [...eqHoldings, ...eqMFs];
+  // ── Equity breakdown — Networth Inputs is the source of truth (ties exactly to
+  // the donut/KPI Equity total), drilled down via Equity Holdings + Equity Mutual
+  // Fund Holdings sheets wherever a line item is one of those two buckets.
+  const eqBreak = computeEquityBreakdown(showExp);
 
-  const subcatMap = {};
-  eqAll.forEach(h => {
-    const k = h.subCat || h.tag || 'Other';
-    if(!subcatMap[k]) subcatMap[k]={curVal:0,buyVal:0,pnl:0,count:0,_virtual:false};
-    subcatMap[k].curVal += h.curVal;
-    subcatMap[k].buyVal += h.buyVal;
-    subcatMap[k].pnl    += h.pnl;
-    subcatMap[k].count++;
+  const chartLabels = [], chartVals = [];
+  eqBreak.groups.forEach(g => {
+    if(Object.keys(g.bySubcat).length) {
+      Object.entries(g.bySubcat).forEach(([k,v]) => { chartLabels.push(k); chartVals.push(v); });
+      if(g.untracked > 1) { chartLabels.push(g.p1 + ' — Other'); chartVals.push(g.untracked); }
+    } else {
+      chartLabels.push(g.p2 && g.p2 !== g.p1 ? g.p2 : g.p1);
+      chartVals.push(g.val);
+    }
   });
-  // Exposure view: add equity futures as synthetic rows
-  const qawEqFutVal = showExp ? sum(D.strats.filter(r=>r.strat==='QAW Futures'),   r=>r.netExp) : 0;
-  const stkFutVal2  = showExp ? sum(D.strats.filter(r=>r.strat==='Stock Futures'),  r=>r.netExp) : 0;
-  if(showExp && qawEqFutVal > 0) subcatMap['QAW Futures (Equity)'] = { curVal: qawEqFutVal, buyVal: qawEqFutVal, pnl: 0, count: 1, _virtual: true };
-  if(showExp && stkFutVal2  > 0) subcatMap['Stock Futures']        = { curVal: stkFutVal2,  buyVal: stkFutVal2,  pnl: 0, count: 1, _virtual: true };
-  const eqHoldingsTotal = sum(eqAll, x=>x.curVal);
-  const eqTotal = eqHoldingsTotal + qawEqFutVal + stkFutVal2;
-  const subcats = Object.entries(subcatMap).sort((a,b)=>b[1].curVal-a[1].curVal);
-
   mkChart('chart-alloc-subcat', {
     type:'bar',
-    data:{ labels:subcats.map(([k])=>k), datasets:[
-      { label:'Current Value (₹)', data:subcats.map(([,v])=>v.curVal), backgroundColor:subcats.map((_,i)=>CHART_COLORS[i%CHART_COLORS.length]), borderRadius:4 }
+    data:{ labels:chartLabels, datasets:[
+      { label:'Current Value (₹)', data:chartVals, backgroundColor:chartLabels.map((_,i)=>CHART_COLORS[i%CHART_COLORS.length]), borderRadius:4 }
     ] },
-    options:{ indexAxis:'y', plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx => ' '+cr(ctx.raw,1)+' ('+pct(ctx.raw,eqTotal)+' of equity)' } } } ,
+    options:{ indexAxis:'y', plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx => ' '+cr(ctx.raw,1)+' ('+pct(ctx.raw,eqBreak.total)+' of equity)' } } } ,
       scales:{ x:{ grid:{color:'rgba(200,201,164,0.3)'}, ticks:{ color:'#7a9b8a', font:{family:CHART_FONT,size:10}, callback: v => v>=1e7?(v/1e7).toFixed(1)+'Cr':v>=1e5?(v/1e5).toFixed(1)+'L':v } }, y:{ grid:{display:false}, ticks:{ color:'#4a6b5a', font:{family:CHART_FONT,size:10} } } } }
   });
 
   const scTb = document.querySelector('#alloc-subcat-table tbody');
   if(scTb) {
-    const eqRows = subcats.map(([k,v])=>{
-      const pp = v.buyVal>0?(v.pnl/v.buyVal*100):0;
-      const expBadge = v._virtual ? `<span style="font-size:0.55rem;background:var(--gold-mid,#b8901c);color:#fff;border-radius:3px;padding:1px 4px;margin-left:4px;vertical-align:middle">EXP</span>` : '';
-      return `<tr${v._virtual?' style="border-left:2px dashed var(--gold-mid,#b8901c)"':''}>
-        <td><strong>${k}</strong>${expBadge}</td>
-        <td class="mono r">${cr(v.curVal)}</td>
-        <td class="mono r muted">${v._virtual?'—':cr(v.buyVal)}</td>
-        <td class="mono r ${v.pnl>=0?'pos':'neg'}">${v._virtual?'—':(v.pnl>=0?'+':'')+(cr(v.pnl))}</td>
-        <td class="mono r ${pp>=0?'pos':'neg'}">${v._virtual?'—':(pp>=0?'+':'')+pp.toFixed(2)+'%'}</td>
-        <td class="mono r">${pct(v.curVal,eqTotal)}</td>
-      </tr>`;
-    }).join('');
-    const eqTotalPnl = sum(eqAll,x=>x.pnl);
-    const eqTotRow = `<tr class="trow-total"><td>Total Equity${showExp?' (incl. Exposure)':''}</td><td class="r">${cr(eqTotal)}</td><td></td><td class="r ${eqTotalPnl>=0?'pos':'neg'}">${eqTotalPnl>=0?'+':''}${cr(eqTotalPnl)}</td><td></td><td class="r">100%</td></tr>`;
-
-    // Non-equity MFs section (Liquid, Gold, Debt MFs)
-    let nonEqRows = '';
-    if(nonEqMFs.length) {
-      const neMap = {};
-      nonEqMFs.forEach(h => {
-        const k = h.subCat || h.tag || h.assetType || 'Other';
-        if(!neMap[k]) neMap[k]={curVal:0,buyVal:0,pnl:0};
-        neMap[k].curVal += h.curVal; neMap[k].buyVal += h.buyVal; neMap[k].pnl += h.pnl;
-      });
-      const neTotal = sum(nonEqMFs, x=>x.curVal);
-      nonEqRows = `<tr class="trow-section"><td colspan="6">Other MFs (Liquid / Debt / Gold) — excluded from equity breakdown</td></tr>`;
-      nonEqRows += Object.entries(neMap).sort((a,b)=>b[1].curVal-a[1].curVal).map(([k,v])=>{
-        const pp = v.buyVal>0?(v.pnl/v.buyVal*100):0;
-        return `<tr style="opacity:0.75">
-          <td><span style="color:var(--text-lt)">${k}</span></td>
-          <td class="mono r muted">${cr(v.curVal)}</td>
-          <td class="mono r muted">${cr(v.buyVal)}</td>
-          <td class="mono r ${v.pnl>=0?'pos':'neg'} muted">${(v.pnl>=0?'+':'')+cr(v.pnl)}</td>
-          <td class="mono r muted">${(pp>=0?'+':'')+pp.toFixed(2)+'%'}</td>
-          <td class="mono r muted">${pct(v.curVal,neTotal)}</td>
-        </tr>`;
-      }).join('');
-    }
-
-    scTb.innerHTML = eqRows + eqTotRow + nonEqRows;
+    let h = '';
+    eqBreak.groups.forEach(g => {
+      const label = g.p2 && g.p2 !== g.p1 ? g.p2 : g.p1;
+      const sub   = g.p2 && g.p2 !== g.p1 ? ` <span style="font-size:0.62rem;color:var(--text-lt);font-weight:400">(${g.p1})</span>` : '';
+      const expBadge = g._virtual ? `<span style="font-size:0.55rem;background:var(--gold-dim);color:#fff;border-radius:3px;padding:1px 4px;margin-left:4px;vertical-align:middle">EXP</span>` : '';
+      const hasChildren = Object.keys(g.bySubcat).length > 0;
+      h += `<tr class="trow-section"><td colspan="6"><strong>${label}</strong>${sub}${expBadge} — ${ebadge(g.ent)} <span style="opacity:0.7;font-weight:400;margin-left:0.4rem">${cr(g.val)} · ${pct(g.val,eqBreak.total)}</span></td></tr>`;
+      if(hasChildren) {
+        Object.entries(g.bySubcat).sort((a,b)=>b[1]-a[1]).forEach(([k,v]) => {
+          h += `<tr>
+            <td style="padding-left:1.4rem;color:var(--text-mute)">${k}</td>
+            <td class="mono r">${cr(v)}</td>
+            <td></td><td></td><td></td>
+            <td class="mono r muted">${pct(v,eqBreak.total)}</td>
+          </tr>`;
+        });
+        if(g.untracked > 1) {
+          h += `<tr>
+            <td style="padding-left:1.4rem;color:var(--text-lt);font-style:italic">Other / not in holdings sheets</td>
+            <td class="mono r muted">${cr(g.untracked)}</td>
+            <td></td><td></td><td></td>
+            <td class="mono r muted">${pct(g.untracked,eqBreak.total)}</td>
+          </tr>`;
+        }
+      }
+    });
+    h += `<tr class="trow-total"><td>Total Equity${showExp?' (incl. Exposure)':''}</td><td class="r">${cr(eqBreak.total)}</td><td></td><td></td><td></td><td class="r">100%</td></tr>`;
+    scTb.innerHTML = h;
   }
 
-  // ── NW Inputs equity line items (Balance Sheet perspective) ──
   const nwEqItems = onItems().filter(x => x.typ === 'Equity');
   const nwEqTb = document.querySelector('#alloc-nw-equity-table tbody');
   if(nwEqTb) {
@@ -4859,209 +4770,140 @@ function renderAllocation() {
     }).join('');
   }
 
-  // ── Allocation bars (base = physical only; exposure = physical + derivatives) ──
   const stkFutBar = sum(D.strats.filter(r=>r.strat==='Stock Futures'), r=>r.netExp);
-
 }
 
 // ═══════════════════════════════════════════════════════════════
 // RISK MANAGEMENT PAGE
 // ═══════════════════════════════════════════════════════════════
-// function renderRisk() {
-//   const nw  = computeNetWorthBySource();
-//   const liq = computeLiquidityBySource();
-//   const ad  = getAssetAllocationData();
-//   const psar = psarNot(), lo = loPrem(), gold = qawFut(), put = putNot();
-//   const eqVal  = sum(ad.filter(x=>x.typ==='Equity'), x=>x.val);
-//   const cshVal = sum(ad.filter(x=>x.typ==='Cash'),   x=>x.val);
-//   const eqHoldings = sum(D.eq, x=>x.curVal) + sum(D.mf.filter(x=>x.assetType==='Equity'), x=>x.curVal);
+function renderRisk() {
+  const nw  = computeNetWorthBySource();
+  const liq = computeLiquidityBySource();
+  const ad  = getAssetAllocationData();
+  const psar = psarNot(), lo = loPrem(), gold = qawFut(), put = putNot();
+  const eqVal  = sum(ad.filter(x=>x.typ==='Equity'), x=>x.val);
+  const cshVal = sum(ad.filter(x=>x.typ==='Cash'),   x=>x.val);
+  const eqHoldings = sum(D.eq, x=>x.curVal) + sum(D.mf.filter(x=>x.assetType==='Equity'), x=>x.curVal);
 
-//   sv('risk-eq-exp',   cr(eqHoldings + eqVal));
-//   sv('risk-eq-exp-s', 'Holdings + portfolio');
-//   sv('risk-psar',     cr(psar));
-//   sv('risk-psar-s',   xnw(psar,nw));
-//   sv('risk-lo',       cr(lo));
-//   sv('risk-gold',     cr(gold));
-//   sv('risk-cash',     cr(cshVal));
-//   sv('risk-cash-s',   pct(cshVal,liq)+' of liquidity');
+  sv('risk-eq-exp',   cr(eqHoldings + eqVal));
+  sv('risk-eq-exp-s', 'Holdings + portfolio');
+  sv('risk-psar',     cr(psar));
+  sv('risk-psar-s',   xnw(psar,nw));
+  sv('risk-lo',       cr(lo));
+  sv('risk-gold',     cr(gold));
+  sv('risk-cash',     cr(cshVal));
+  sv('risk-cash-s',   pct(cshVal,liq)+' of liquidity');
 
-//   // Render interactive stress chart + table
-//   runStressTest(parseFloat(document.getElementById('stress-slider')?.value || -10));
+  runStressTest(parseFloat(document.getElementById('stress-slider')?.value || -10));
 
-//   // Exposure mix chart
-//   const expSegs = [
-//     {label:'PSAR Notional', val:psar,   color:'#8B1A1A'},
-//     {label:'QAW/Gold Futures',val:gold, color:'#b8a020'},
-//     {label:'Equity Holdings', val:eqHoldings, color:'#02422B'},
-//     {label:'Debt MF',         val:sum(D.mf.filter(x=>x.assetType==='Debt'),x=>x.curVal), color:'#1a5a80'},
-//     {label:'LO Premium',      val:lo,   color:'#c06030'},
-//     {label:'Put Protection',  val:put,  color:'#008080'},
-//     {label:'Cash',            val:cshVal,color:'#DABD38'},
-//   ].filter(s=>s.val>0);
-//   mkChart('chart-risk-exposure', {
-//     type:'doughnut',
-//     data:{ labels:expSegs.map(s=>s.label), datasets:[{ data:expSegs.map(s=>s.val), backgroundColor:expSegs.map(s=>s.color), borderWidth:2, borderColor:'#fff' }] },
-//     options:{ cutout:'50%', plugins:{ legend:{ position:'right', labels:{ font:{family:CHART_FONT,size:10}, color:'#4a6b5a' } }, tooltip:{ callbacks:{ label: ctx => ' '+ctx.label+': '+cr(ctx.raw,1) } } } }
-//   });
+  const expSegs = [
+    {label:'PSAR Notional', val:psar,   color:'#8B1A1A'},
+    {label:'QAW/Gold Futures',val:gold, color:'#b8a020'},
+    {label:'Equity Holdings', val:eqHoldings, color:'#02422B'},
+    {label:'Debt MF',         val:sum(D.mf.filter(x=>x.assetType==='Debt'),x=>x.curVal), color:'#1a5a80'},
+    {label:'LO Premium',      val:lo,   color:'#c06030'},
+    {label:'Put Protection',  val:put,  color:'#008080'},
+    {label:'Cash',            val:cshVal,color:'#DABD38'},
+  ].filter(s=>s.val>0);
+  mkChart('chart-risk-exposure', {
+    type:'doughnut',
+    data:{ labels:expSegs.map(s=>s.label), datasets:[{ data:expSegs.map(s=>s.val), backgroundColor:expSegs.map(s=>s.color), borderWidth:2, borderColor:'#fff' }] },
+    options:{ cutout:'50%', plugins:{ legend:{ position:'right', labels:{ font:{family:CHART_FONT,size:10}, color:'#4a6b5a' } }, tooltip:{ callbacks:{ label: ctx => ' '+ctx.label+': '+cr(ctx.raw,1) } } } }
+  });
 
-//   // Scenario cards
-//   const scenarios = buildScenarios(nw, eqHoldings, psar, lo, gold, put, cshVal, liq);
-//   const sc = document.getElementById('scenario-cards');
-//   if(sc) sc.innerHTML = scenarios.map(s=>{
-//     const totalImpact = s.items.reduce((t,i)=>t+i.impact,0);
-//     return `<div class="scenario-card">
-//       <div style="overflow:hidden;margin-bottom:0.5rem">
-//         <span class="scenario-badge ${s.badgeClass}">${s.badge}</span>
-//         <div class="scenario-name">${s.name}</div>
-//       </div>
-//       <div style="font-size:0.68rem;color:var(--text-lt);margin-bottom:0.65rem;line-height:1.5">${s.desc}</div>
-//       ${s.items.map(i=>`<div class="scenario-impact-row">
-//         <span style="color:var(--text-mute)">${i.label}</span>
-//         <span class="mono ${i.impact>=0?'pos':'neg'}" style="font-size:0.73rem">${i.impact>=0?'+':''}${cr(i.impact)}</span>
-//       </div>`).join('')}
-//       <div class="scenario-total-row">
-//         <span>Net NW Impact</span>
-//         <span class="mono ${totalImpact>=0?'pos':'neg'}">${totalImpact>=0?'+':''}${cr(totalImpact)} (${nw>0?(totalImpact/nw*100).toFixed(1):'—'}% NW)</span>
-//       </div>
-//       ${s.action?`<div class="stress-action"><strong>Action:</strong> ${s.action}</div>`:''}
-//     </div>`;
-//   }).join('');
+  const scenarios = buildScenarios(nw, eqHoldings, psar, lo, gold, put, cshVal, liq);
+  const sc = document.getElementById('scenario-cards');
+  if(sc) sc.innerHTML = scenarios.map(s=>{
+    const totalImpact = s.items.reduce((t,i)=>t+i.impact,0);
+    return `<div class="scenario-card">
+      <div style="overflow:hidden;margin-bottom:0.5rem">
+        <span class="scenario-badge ${s.badgeClass}">${s.badge}</span>
+        <div class="scenario-name">${s.name}</div>
+      </div>
+      <div style="font-size:0.68rem;color:var(--text-lt);margin-bottom:0.65rem;line-height:1.5">${s.desc}</div>
+      ${s.items.map(i=>`<div class="scenario-impact-row">
+        <span style="color:var(--text-mute)">${i.label}</span>
+        <span class="mono ${i.impact>=0?'pos':'neg'}" style="font-size:0.73rem">${i.impact>=0?'+':''}${cr(i.impact)}</span>
+      </div>`).join('')}
+      <div class="scenario-total-row">
+        <span>Net NW Impact</span>
+        <span class="mono ${totalImpact>=0?'pos':'neg'}">${totalImpact>=0?'+':''}${cr(totalImpact)} (${nw>0?(totalImpact/nw*100).toFixed(1):'—'}% NW)</span>
+      </div>
+      ${s.action?`<div class="stress-action"><strong>Action:</strong> ${s.action}</div>`:''}
+    </div>`;
+  }).join('');
 
-//   // Risk heatmap table
-//   const buckets = buildRiskBuckets(nw, eqHoldings, psar, lo, gold, put, cshVal, liq);
-//   const htb = document.getElementById('risk-heatmap-tbody');
-//   if(htb) htb.innerHTML = buckets.map(b=>`<tr>
-//     <td><strong>${b.name}</strong></td>
-//     <td class="mono r">${cr(b.notional)}</td>
-//     <td class="mono r">${pct(b.notional,nw)}</td>
-//     ${[-10,-20,-30].map(m=>`<td class="mono r ${calcBucketImpact(b,m)>=0?'pos':'neg'}">${calcBucketImpact(b,m)>=0?'+':''}${cr(calcBucketImpact(b,m))}</td>`).join('')}
-//     <td class="mono r pos">${cr(calcGoldImpact(b,15))}</td>
-//     <td class="mono r ${calcRateImpact(b)<=0?'neg':'pos'}">${cr(calcRateImpact(b))}</td>
-//     <td class="mono r pos">${cr(calcBucketImpact(b,15))}</td>
-//     <td><span class="bdg ${b.ratingClass}">${b.rating}</span></td>
-//   </tr>`).join('');
+  const buckets = buildRiskBuckets(nw, eqHoldings, psar, lo, gold, put, cshVal, liq);
+  const htb = document.getElementById('risk-heatmap-tbody');
+  if(htb) htb.innerHTML = buckets.map(b=>`<tr>
+    <td><strong>${b.name}</strong></td>
+    <td class="mono r">${cr(b.notional)}</td>
+    <td class="mono r">${pct(b.notional,nw)}</td>
+    ${[-10,-20,-30].map(m=>`<td class="mono r ${calcBucketImpact(b,m)>=0?'pos':'neg'}">${calcBucketImpact(b,m)>=0?'+':''}${cr(calcBucketImpact(b,m))}</td>`).join('')}
+    <td class="mono r pos">${cr(calcGoldImpact(b,15))}</td>
+    <td class="mono r ${calcRateImpact(b)<=0?'neg':'pos'}">${cr(calcRateImpact(b))}</td>
+    <td class="mono r pos">${cr(calcBucketImpact(b,15))}</td>
+    <td><span class="bdg ${b.ratingClass}">${b.rating}</span></td>
+  </tr>`).join('');
 
-//   // Risk limits
-//   const limitsTb = document.getElementById('risk-limits-tbody');
-//   if(limitsTb) {
-//     const limits = [
-//       {lbl:'PSAR / Net Worth', cur:nw>0?(psar/nw*100).toFixed(1)+'%':'—', thr:'< 600% NW', ok:psar/nw<6, val:psar/nw},
-//       {lbl:'Equity Exposure / NW', cur:nw>0?((eqHoldings+eqVal)/nw*100).toFixed(1)+'%':'—', thr:'< 100%', ok:(eqHoldings+eqVal)/nw<1, val:(eqHoldings+eqVal)/nw},
-//       {lbl:'Cash Buffer / Liquidity', cur:pct(cshVal,liq), thr:'> 15%', ok:cshVal/liq>0.15, val:cshVal/liq},
-//       {lbl:'Gold Notional / NW', cur:nw>0?(gold/nw*100).toFixed(1)+'%':'—', thr:'< 60%', ok:gold/nw<0.6, val:gold/nw},
-//       {lbl:'LO Premium / NW', cur:nw>0?(lo/nw*100).toFixed(1)+'%':'—', thr:'< 3%', ok:lo/nw<0.03, val:lo/nw},
-//       {lbl:'Total Liabilities / Assets', cur:liq>0?(sum(D.debts,x=>x.val)/liq*100).toFixed(1)+'%':'—', thr:'< 15%', ok:sum(D.debts,x=>x.val)/liq<0.15, val:sum(D.debts,x=>x.val)/liq},
-//     ];
-//     limitsTb.innerHTML = limits.map(l=>`<tr>
-//       <td><strong>${l.lbl}</strong></td>
-//       <td class="mono r ${l.ok?'':'neg'}">${l.cur}</td>
-//       <td class="mono r muted">${l.thr}</td>
-//       <td><span class="bdg ${l.ok?'bdg-ok':'bdg-chk'}">${l.ok?'OK':'WATCH'}</span></td>
-//     </tr>`).join('');
-//   }
-// }
-
-
-
-  // NEW — from Portfolio Summary sheet
-  const ps = D.portfolioSummary;
-
-  if (ps && ps.country && ps.country.length) {
-    mkChart('chart-risk-geo', {
-      type: 'doughnut',
-      data: {
-        labels: ps.country.map(c => c.name),
-        datasets: [{
-          data: ps.country.map(c => c.val),
-          backgroundColor: ['#02422B', '#DABD38', '#1a5a80'],
-          borderWidth: 2,
-          borderColor: '#fff'
-        }]
-      },
-      options: {
-        cutout: '55%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx =>
-                ' ' +
-                ctx.label +
-                ': ' +
-                cr(ctx.raw, 1) +
-                (
-                  ps.country[ctx.dataIndex].share != null
-                    ? ' (' + (ps.country[ctx.dataIndex].share * 100).toFixed(1) + '%)'
-                    : ''
-                )
-            }
-          }
-        }
-      }
-    });
-
-    const legEl = document.getElementById('risk-geo-legend');
-
-    if (legEl) {
-      legEl.innerHTML = ps.country.map((c, i) => `
-        <div class="alloc-leg-item">
-          <div class="alloc-leg-dot" style="background:${['#02422B','#DABD38','#1a5a80'][i % 3]}"></div>
-          <span>${c.name}</span>
-          <strong style="margin-left:auto">${cr(c.val,1)}</strong>
-          <span style="color:var(--text-lt);margin-left:0.3rem">
-            ${c.share != null ? (c.share * 100).toFixed(1) + '%' : ''}
-          </span>
-        </div>
-      `).join('');
-    }
-  }
-
-  const levTb = document.getElementById('risk-leverage-tbody');
-
-  if (levTb && ps) {
-    const rowsDef = [
-      { lbl: 'Equity',        b: ps.eqExp },
-      { lbl: 'Gold',          b: ps.goldExp },
-      { lbl: 'Equity + Gold', b: ps.combinedExp },
+  const limitsTb = document.getElementById('risk-limits-tbody');
+  if(limitsTb) {
+    const limits = [
+      {lbl:'PSAR / Net Worth', cur:nw>0?(psar/nw*100).toFixed(1)+'%':'—', thr:'< 600% NW', ok:psar/nw<6, val:psar/nw},
+      {lbl:'Equity Exposure / NW', cur:nw>0?((eqHoldings+eqVal)/nw*100).toFixed(1)+'%':'—', thr:'< 100%', ok:(eqHoldings+eqVal)/nw<1, val:(eqHoldings+eqVal)/nw},
+      {lbl:'Cash Buffer / Liquidity', cur:pct(cshVal,liq), thr:'> 15%', ok:cshVal/liq>0.15, val:cshVal/liq},
+      {lbl:'Gold Notional / NW', cur:nw>0?(gold/nw*100).toFixed(1)+'%':'—', thr:'< 60%', ok:gold/nw<0.6, val:gold/nw},
+      {lbl:'LO Premium / NW', cur:nw>0?(lo/nw*100).toFixed(1)+'%':'—', thr:'< 3%', ok:lo/nw<0.03, val:lo/nw},
+      {lbl:'Total Liabilities / Assets', cur:liq>0?(sum(D.debts,x=>x.val)/liq*100).toFixed(1)+'%':'—', thr:'< 15%', ok:sum(D.debts,x=>x.val)/liq<0.15, val:sum(D.debts,x=>x.val)/liq},
     ];
-
-    levTb.innerHTML = rowsDef
-      .filter(r =>
-        r.b &&
-        (
-          r.b.underlying ||
-          r.b.futures ||
-          r.b.total ||
-          r.b.eqpart ||
-          r.b.goldpart
-        )
-      )
-      .map(r => {
-        const u = r.b.underlying || r.b.eqpart;
-        const f = r.b.futures || r.b.goldpart;
-        const t = r.b.total;
-
-        return `<tr>
-          <td><strong>${r.lbl}</strong></td>
-          <td class="mono r">${u ? cr(u.val) : '—'}</td>
-          <td class="mono r">${f ? cr(f.val) : '—'}</td>
-          <td class="mono r"><strong>${t ? cr(t.val) : '—'}</strong></td>
-          <td class="mono r">${t && t.levNW != null ? t.levNW.toFixed(2) + 'x' : '—'}</td>
-          <td class="mono r">${t && t.levLiq != null ? t.levLiq.toFixed(2) + 'x' : '—'}</td>
-        </tr>`;
-      })
-      .join('');
+    limitsTb.innerHTML = limits.map(l=>`<tr>
+      <td><strong>${l.lbl}</strong></td>
+      <td class="mono r ${l.ok?'':'neg'}">${l.cur}</td>
+      <td class="mono r muted">${l.thr}</td>
+      <td><span class="bdg ${l.ok?'bdg-ok':'bdg-chk'}">${l.ok?'OK':'WATCH'}</span></td>
+    </tr>`).join('');
   }
 
-
-
-
-
-
-
+  // NEW — Geographic exposure (India/Dubai) + Underlying vs Futures leverage,
+  // from the Portfolio Summary sheet.
+  const ps = D.portfolioSummary;
+  if(ps && ps.country && ps.country.length) {
+    mkChart('chart-risk-geo', {
+      type:'doughnut',
+      data:{ labels: ps.country.map(c=>c.name), datasets:[{ data: ps.country.map(c=>c.val),
+        backgroundColor:['#02422B','#DABD38','#1a5a80'], borderWidth:2, borderColor:'#fff' }] },
+      options:{ cutout:'55%', plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label: ctx => ' '+ctx.label+': '+cr(ctx.raw,1)+(ps.country[ctx.dataIndex].share!=null?' ('+(ps.country[ctx.dataIndex].share*100).toFixed(1)+'%)':'') } } } }
+    });
+    const legEl = document.getElementById('risk-geo-legend');
+    if(legEl) legEl.innerHTML = ps.country.map((c,i)=>`<div class="alloc-leg-item">
+      <div class="alloc-leg-dot" style="background:${['#02422B','#DABD38','#1a5a80'][i%3]}"></div>
+      <span>${c.name}</span><strong style="margin-left:auto">${cr(c.val,1)}</strong>
+      <span style="color:var(--text-lt);margin-left:0.3rem">${c.share!=null?(c.share*100).toFixed(1)+'%':''}</span>
+    </div>`).join('');
+  }
+  const levTb = document.getElementById('risk-leverage-tbody');
+  if(levTb && ps) {
+    const rowsDef = [
+      {lbl:'Equity',        b:ps.eqExp},
+      {lbl:'Gold',          b:ps.goldExp},
+      {lbl:'Equity + Gold', b:ps.combinedExp},
+    ];
+    levTb.innerHTML = rowsDef.filter(r=>r.b && (r.b.underlying||r.b.futures||r.b.total||r.b.eqpart||r.b.goldpart)).map(r=>{
+      const u = r.b.underlying||r.b.eqpart, f = r.b.futures||r.b.goldpart, t = r.b.total;
+      return `<tr>
+        <td><strong>${r.lbl}</strong></td>
+        <td class="mono r">${u?cr(u.val):'—'}</td>
+        <td class="mono r">${f?cr(f.val):'—'}</td>
+        <td class="mono r"><strong>${t?cr(t.val):'—'}</strong></td>
+        <td class="mono r">${t&&t.levNW!=null?(t.levNW).toFixed(2)+'x':'—'}</td>
+        <td class="mono r">${t&&t.levLiq!=null?(t.levLiq).toFixed(2)+'x':'—'}</td>
+      </tr>`;
+    }).join('');
+  }
+}
 
 // Stress test impact helper — asset beta model
-// PSAR: leveraged equity futures, beta=1 (tracks index); LO: long options gain on down move; Gold: negative equity beta; Debt: near-zero
 function runStressTest(mktMove) {
   const nw  = computeNetWorthBySource();
   const ad  = getAssetAllocationData();
@@ -5072,7 +4914,6 @@ function runStressTest(mktMove) {
 
   const m = mktMove / 100;
 
-  // Each strategy's P&L given market move m
   const rows = [
     { name:'PSAR (Leveraged F&O)',  notional:psar,       impact: psar * m,          beta: 1.0,   color:'#8B1A1A' },
     { name:'Equity Holdings',       notional:eqHoldings, impact: eqHoldings * m,     beta: 1.0,   color:'#02422B' },
@@ -5086,7 +4927,6 @@ function runStressTest(mktMove) {
   const totalImpact = rows.reduce((s,r)=>s+r.impact,0);
   const pctImpact   = nw>0?(totalImpact/nw*100).toFixed(2):0;
 
-  // Bar chart
   mkChart('chart-stress-impact', {
     type:'bar',
     data:{ labels:rows.map(r=>r.name), datasets:[{ label:'P&L Impact (₹)', data:rows.map(r=>r.impact), backgroundColor:rows.map(r=>r.impact>=0?'rgba(2,66,43,0.7)':'rgba(139,26,26,0.7)'), borderColor:rows.map(r=>r.impact>=0?'#02422B':'#8B1A1A'), borderWidth:1, borderRadius:4 }] },
@@ -5094,7 +4934,6 @@ function runStressTest(mktMove) {
       scales:{ x:{ grid:{color:'rgba(200,201,164,0.3)'}, ticks:{ color:'#7a9b8a', font:{family:CHART_FONT,size:10}, callback: v=>{ const a=Math.abs(v); return (v<0?'-':'')+(a>=1e7?(a/1e7).toFixed(1)+'Cr':a>=1e5?(a/1e5).toFixed(0)+'L':''); } } }, y:{ grid:{display:false}, ticks:{ color:'#4a6b5a', font:{family:CHART_FONT,size:10} } } } }
   });
 
-  // Table
   const tb = document.getElementById('stress-calc-tbody');
   if(tb) tb.innerHTML = rows.map(r=>`<tr>
     <td><strong>${r.name}</strong></td>
@@ -5137,7 +4976,6 @@ function updateReturnTable() {
     if(pe) pe.textContent = '+'+cr(profit,1);
     if(se) se.textContent = total>0 ? pct(profit,total) : '—';
   });
-  // Update total row
   const totalRow = document.querySelector('#ov-return-tbody .trow-total');
   if(totalRow) {
     const tds = totalRow.querySelectorAll('td');
@@ -5230,7 +5068,7 @@ function buildScenarios(nw, eqH, psar, lo, gold, put, csh, liq) {
 // ═══════════════════════════════════════════════════════════════
 // STRATEGY PERFORMANCE (NAV Analysis)
 // ═══════════════════════════════════════════════════════════════
-const NAV_DATA = { strategies:[], dates:[], navMatrix:{} }; // strategies:string[], dates:Date[], navMatrix:{strat:[nav]}
+const NAV_DATA = { strategies:[], dates:[], navMatrix:{} };
 
 function handleNavDrop(e) { const f=e.dataTransfer.files[0]; if(f) processNavFile(f); }
 function handleNavFile(e) { const f=e.target.files[0]; if(f) processNavFile(f); e.target.value=''; }
@@ -5258,7 +5096,6 @@ function parseNavExcel(wb) {
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], {header:1, defval:null, raw:false});
   if(!rows.length) return;
 
-  // Header row: find date col (index 0) + strategy names
   const hdr = rows[0].map(h=>String(h||'').trim());
   const strats = hdr.slice(1).filter(Boolean);
   NAV_DATA.strategies = strats;
@@ -5278,51 +5115,6 @@ function parseNavExcel(wb) {
     });
   }
 }
-
-// NEW — "Portfolio Summary" sheet: PSAR by country (India/Dubai) + Equity/Gold
-// exposure split into Underlying vs Futures, with leverage on NW and on Liquidity.
-// Parsed by label-matching rather than fixed row numbers, since this sheet has
-// a lot of blank spacer rows/cols that can shift between edits.
-function parsePortfolioSummary(wb) {
-  const empty = { country: [], eqExp: {}, goldExp: {}, combinedExp: {}, psarLevNW: null, psarLevLiq: null };
-  D.portfolioSummary = empty;
-  const sn = wb.SheetNames.find(n => /^portfolio summary$/i.test(n));
-  if(!sn || !wb.Sheets[sn]) return;
-  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null, raw:true });
-
-  let section = null; // 'eq' | 'gold' | 'combined'
-  const buckets = { eq:{}, gold:{}, combined:{} };
-  const country = [];
-  let psarLevNW = null, psarLevLiq = null;
-
-  for(let i=0; i<rows.length; i++) {
-    const r = rows[i]; if(!r) continue;
-    const c1 = r[1], c2 = r[2], c3 = r[3];
-    const c11 = r[11], c12 = r[12], c13 = r[13], c14 = r[14];
-
-    if(typeof c1 === 'string') {
-      const lbl = c1.trim();
-      if((lbl === 'India' || lbl === 'Dubai') && typeof c2 === 'number') {
-        country.push({ name: lbl, val: c2, share: typeof c3 === 'number' ? c3 : null });
-      }
-      if(lbl === 'Net PSAR Exposure' && typeof c3 === 'number') psarLevNW = c3;
-    }
-    if(c2 === 'Liquidity' && typeof c3 === 'number' && psarLevLiq === null) psarLevLiq = c3;
-
-    if(typeof c11 === 'string') {
-      const l11 = c11.trim();
-      if(l11 === 'Total Equity Exposure') section = 'eq';
-      else if(l11 === 'Total Gold Exposure') section = 'gold';
-      else if(l11 === 'Total EQ + Gold') section = 'combined';
-      else if(section && ['Underlying','Futures','EQ','Gold','Total'].includes(l11)) {
-        const key = l11 === 'EQ' ? 'eqPart' : l11 === 'Gold' ? 'goldPart' : l11.toLowerCase();
-        buckets[section][key] = { val: Number(c12)||0, levNW: c13, levLiq: c14 };
-      }
-    }
-  }
-  D.portfolioSummary = { country, eqExp: buckets.eq, goldExp: buckets.gold, combinedExp: buckets.combined, psarLevNW, psarLevLiq };
-}
-
 
 function calcDailyReturns(navs) {
   const r=[];
@@ -5360,7 +5152,6 @@ function calcMDD(navs) {
 }
 
 function calcMonthlyReturns(navs, dates) {
-  // Returns map: { 'YYYY-MM': ret }
   const monthly={};
   const valid = navs.map((v,i)=>({v,d:dates[i]})).filter(x=>x.v!==null);
   if(!valid.length) return monthly;
@@ -5368,12 +5159,10 @@ function calcMonthlyReturns(navs, dates) {
   for(const pt of valid) {
     const key=pt.d.getFullYear()+'-'+String(pt.d.getMonth()+1).padStart(2,'0');
     if(prevMonthKey && prevMonthKey!==key && prevMonthEnd!==null) {
-      // compute return for prevMonthKey
     }
     monthly[key]=pt.v;
     prevMonthKey=key;
   }
-  // Convert to returns
   const keys=Object.keys(monthly).sort();
   const result={};
   for(let i=1;i<keys.length;i++) {
@@ -5411,7 +5200,6 @@ function renderNavPerf() {
   const dates  = NAV_DATA.dates;
   if(!strats.length || !dates.length) return;
 
-  // Show results section
   const res = document.getElementById('navperf-results');
   if(res) res.style.display = 'block';
 
@@ -5421,7 +5209,6 @@ function renderNavPerf() {
 
   const RFR = 0.06;
 
-  // ── Performance metrics table ────────────────────────────────
   const metrics = strats.map(s=>{
     const navs   = NAV_DATA.navMatrix[s];
     const rets   = calcDailyReturns(navs);
@@ -5456,7 +5243,6 @@ function renderNavPerf() {
     <td class="mono r ${m.totalRet>=0?'pos':'neg'}">${fmtPct(m.totalRet)}</td>
   </tr>`).join('');
 
-  // ── Equity curves chart ──────────────────────────────────────
   const dateLabels = dates.map(d=>d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}));
   mkChart('chart-nav-curve', {
     type:'line',
@@ -5471,7 +5257,6 @@ function renderNavPerf() {
     }}
   });
 
-  // ── Drawdown chart ────────────────────────────────────────────
   mkChart('chart-nav-drawdown', {
     type:'line',
     data:{ labels:dateLabels, datasets: strats.map((s,i)=>{
@@ -5486,7 +5271,6 @@ function renderNavPerf() {
     }}
   });
 
-  // ── Monthly returns heatmap ──────────────────────────────────
   const hmWrap = document.getElementById('navperf-heatmap-wrap');
   if(hmWrap) {
     strats.forEach((s,si)=>{
@@ -5524,7 +5308,6 @@ function renderNavPerf() {
     });
   }
 
-  // ── Correlation matrix ────────────────────────────────────────
   const corrWrap = document.getElementById('navperf-corr-wrap');
   if(corrWrap) {
     const allReturns = strats.map(s=>calcDailyReturns(NAV_DATA.navMatrix[s]));
@@ -5552,12 +5335,11 @@ function renderNavPerf() {
 const STORAGE_KEY = 'propbook_rn_v1';
 
 function collectSnapshot() {
-  // Serialise the current D store + CONFIG into a plain object
   return {
-    version: 1,
+    version: 2,
     savedAt: new Date().toISOString(),
-    config: { ...CONFIG, allocationView: 'base' },  // always reset view to base on reload
-    dataDate: D.dataDate ? D.dataDate.toISOString?.() ?? String(D.dataDate) : null,
+    config: { ...CONFIG, allocationView: 'base' },
+    dataDate: D.dataDate ? (D.dataDate.toISOString?.() ?? String(D.dataDate)) : null,
     s1:     D.s1.map(x=>({...x, dat: x.dat ? (x.dat.toISOString?.() ?? String(x.dat)) : null})),
     strats: D.strats.map(x=>({...x})),
     stratTags: {...D.stratTags},
@@ -5565,74 +5347,82 @@ function collectSnapshot() {
     mf:     D.mf.map(x=>({...x})),
     debts:  D.debts.map(x=>({...x})),
     nwInputs: {
-      assets:       D.nwInputs.assets.map(x=>({...x})),
+      assets:       D.nwInputs.assets.map(x=>({...x, dat: x.dat ? (x.dat.toISOString?.() ?? String(x.dat)) : null})),
       debts:        D.nwInputs.debts.map(x=>({...x})),
       preNetworth:  D.nwInputs.preNetworth,
       preLiquidity: D.nwInputs.preLiquidity,
       preDebt:      D.nwInputs.preDebt,
     },
-    cashMargin: {
-      rows:          (D.cashMargin.rows||[]).map(x=>({...x})),
-      totalExp:      (D.cashMargin.totalExp||[]).map(x=>({...x})),
-      goldExp:       (D.cashMargin.goldExp||[]).map(x=>({...x})),
-      inputs:        (D.cashMargin.inputs||[]).map(x=>({...x})),
-      marginTable:   (D.cashMargin.marginTable||[]).map(x=>({...x})),
-      grandTotal:    D.cashMargin.grandTotal,
-      rnCashDeploy:  D.cashMargin.rnCashDeploy,
-      deploy: {
-        mishayan: (D.cashMargin.deploy?.mishayan||[]).map(x=>({...x})),
-        rishabh:  (D.cashMargin.deploy?.rishabh||[]).map(x=>({...x})),
-      }
-    }
+    cashMargin:   collectCashMarginSnap(D.cashMargin),
+    cashMarginMW: collectCashMarginSnap(D.cashMarginMW),   // NEW — was missing before, panel would go blank after any reload
+    portfolioSummary: { ...D.portfolioSummary }             // NEW — was missing before
   };
 }
 
-function applySnapshot(snap) {
-  if(!snap || snap.version !== 1) return false;
-  const revDate = v => {
-    if(!v) return null;
-    const d = new Date(v);
-    return isNaN(d) ? v : d;
-  };
-  D.dataDate = revDate(snap.dataDate);
-  D.s1     = (snap.s1||[]).map(x=>({...x, dat: revDate(x.dat)}));
-  D.strats    = (snap.strats||[]).map(x=>({...x}));
-  D.stratTags = snap.stratTags ? {...snap.stratTags} : {};
-  // Rebuild stratTags from strats if not present
-  if(!Object.keys(D.stratTags).length) D.strats.forEach(r=>{ if(r.strat&&r.tag) D.stratTags[r.strat]=r.tag; });
-  D.eq     = (snap.eq||[]).map(x=>({...x}));
-  D.mf     = (snap.mf||[]).map(x=>({...x}));
-  D.debts  = (snap.debts||[]).map(x=>({...x}));
-  D.nwInputs = {
-    assets:       (snap.nwInputs?.assets||[]).map(x=>({...x})),
-    debts:        (snap.nwInputs?.debts||[]).map(x=>({...x})),
-    preNetworth:  snap.nwInputs?.preNetworth  ?? null,
-    preLiquidity: snap.nwInputs?.preLiquidity ?? null,
-    preDebt:      snap.nwInputs?.preDebt      ?? null,
-  };
-  const cm = snap.cashMargin || {};
-  D.cashMargin = {
+function collectCashMarginSnap(cm) {
+  return {
     rows:          (cm.rows||[]).map(x=>({...x})),
     totalExp:      (cm.totalExp||[]).map(x=>({...x})),
     goldExp:       (cm.goldExp||[]).map(x=>({...x})),
     inputs:        (cm.inputs||[]).map(x=>({...x})),
     marginTable:   (cm.marginTable||[]).map(x=>({...x})),
-    grandTotal:    cm.grandTotal    ?? 0,
-    rnCashDeploy:  cm.rnCashDeploy  ?? null,
+    grandTotal:    cm.grandTotal,
+    rnCashDeploy:  cm.rnCashDeploy,
+    deploy: {
+      mishayan: (cm.deploy?.mishayan||[]).map(x=>({...x})),
+      rishabh:  (cm.deploy?.rishabh||[]).map(x=>({...x})),
+    }
+  };
+}
+
+function restoreCashMarginSnap(snap) {
+  const cm = snap || {};
+  return {
+    rows:          (cm.rows||[]).map(x=>({...x})),
+    totalExp:      (cm.totalExp||[]).map(x=>({...x})),
+    goldExp:       (cm.goldExp||[]).map(x=>({...x})),
+    inputs:        (cm.inputs||[]).map(x=>({...x})),
+    marginTable:   (cm.marginTable||[]).map(x=>({...x})),
+    grandTotal:    cm.grandTotal   ?? 0,
+    rnCashDeploy:  cm.rnCashDeploy ?? null,
     headers: [], rawRows: [],
     deploy: {
       mishayan: (cm.deploy?.mishayan||[]).map(x=>({...x})),
       rishabh:  (cm.deploy?.rishabh||[]).map(x=>({...x})),
     }
   };
+}
+
+function applySnapshot(snap) {
+  if(!snap || (snap.version !== 1 && snap.version !== 2)) return false;
+  const revDate = v => { if(!v) return null; const d = new Date(v); return isNaN(d) ? v : d; };
+  D.dataDate  = revDate(snap.dataDate);
+  D.s1        = (snap.s1||[]).map(x=>({...x, dat: revDate(x.dat)}));
+  D.strats    = (snap.strats||[]).map(x=>({...x}));
+  D.stratTags = snap.stratTags ? {...snap.stratTags} : {};
+  if(!Object.keys(D.stratTags).length) D.strats.forEach(r=>{ if(r.strat&&r.tag) D.stratTags[r.strat]=r.tag; });
+  D.eq     = (snap.eq||[]).map(x=>({...x}));
+  D.mf     = (snap.mf||[]).map(x=>({...x}));
+  D.debts  = (snap.debts||[]).map(x=>({...x}));
+  D.nwInputs = {
+    assets:       (snap.nwInputs?.assets||[]).map(x=>({...x, dat: revDate(x.dat)})),
+    debts:        (snap.nwInputs?.debts||[]).map(x=>({...x})),
+    preNetworth:  snap.nwInputs?.preNetworth  ?? null,
+    preLiquidity: snap.nwInputs?.preLiquidity ?? null,
+    preDebt:      snap.nwInputs?.preDebt      ?? null,
+  };
+  D.cashMargin      = restoreCashMarginSnap(snap.cashMargin);
+  D.cashMarginMW    = restoreCashMarginSnap(snap.cashMarginMW);
+  D.portfolioSummary = snap.portfolioSummary
+    ? { ...snap.portfolioSummary }
+    : { country: [], eqExp: {}, goldExp: {}, combinedExp: {}, psarLevNW: null, psarLevLiq: null };
   if(snap.config) { Object.assign(CONFIG, snap.config); CONFIG.masterSource = 'networth_inputs'; }
   return true;
 }
 
 function saveToStorage() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(collectSnapshot()));
-  } catch(e) { console.warn('Storage save failed:', e); }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(collectSnapshot())); }
+  catch(e) { console.warn('Storage save failed:', e); }
 }
 
 function loadFromStorage() {
@@ -5643,25 +5433,19 @@ function loadFromStorage() {
   } catch(e) { console.warn('Storage load failed:', e); return false; }
 }
 
-// ── Auto-save after every render ────────────────────────────────
-// (hooked in after renderAll override below)
-
-// ── Boot: try to load saved data, else show upload screen ───────
 function boot() {
   const loaded = loadFromStorage();
   if(loaded && (D.s1.length || D.eq.length || D.nwInputs.assets.length)) {
     document.getElementById('upload-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     showPage('overview', document.querySelector('.nav-tab'));
-    renderAll();
+    try { renderAll(); } catch(e) { console.error('renderAll failed on boot:', e); }
     return;
   }
-  // Try server auto-load: works when running under server.js
   fetch('/api/data').then(res => {
     if(!res.ok) throw new Error('no server data');
-    const fname = res.headers.get('X-Filename') || 'data.xlsx';
-    return res.arrayBuffer().then(buf => ({ buf, fname }));
-  }).then(({ buf, fname }) => {
+    return res.arrayBuffer().then(buf => ({ buf }));
+  }).then(({ buf }) => {
     const wb = XLSX.read(new Uint8Array(buf), {type:'array', cellDates:true, raw:true});
     parseAll(wb);
     saveToStorage();
@@ -5669,15 +5453,13 @@ function boot() {
     document.getElementById('app').style.display = 'block';
     showPage('overview', document.querySelector('.nav-tab'));
     renderAll();
-  }).catch(() => {
-    // No server endpoint — upload screen stays visible (normal browser mode)
-  });
+  }).catch(() => { /* no server endpoint — upload screen stays visible */ });
 }
 
 // ══════════════════════════════════════════════════════════════════
 // UPDATE DATA — diff engine
 // ══════════════════════════════════════════════════════════════════
-let UPD_PENDING = null; // holds parsed D-snapshot from the new file
+let UPD_PENDING = null;
 
 const handleUpdateDrop = e => { const f=e.dataTransfer.files[0]; if(f) processUpdateFile(f); };
 const handleUpdateFile = e => { const f=e.target.files[0]; if(f) processUpdateFile(f); e.target.value=''; };
@@ -5689,11 +5471,10 @@ function processUpdateFile(file) {
   reader.onload = ev => {
     try {
       const wb = XLSX.read(new Uint8Array(ev.target.result), {type:'array', cellDates:true, raw:true});
-      // Parse into a temporary store
       const oldD = collectSnapshot();
-      parseAll(wb);                        // populates D with new data
+      parseAll(wb);
       const newSnap = collectSnapshot();
-      applySnapshot(oldD);                 // restore old data — user hasn't confirmed yet
+      applySnapshot(oldD);
       UPD_PENDING = newSnap;
       if(st) st.textContent = '✓ ' + file.name + ' parsed — review changes below';
       buildDiff(oldD, newSnap);
@@ -5706,52 +5487,37 @@ function processUpdateFile(file) {
   reader.readAsArrayBuffer(file);
 }
 
-function rowKey_s1(r)     { return (r.p1||'')+'|'+(r.p2||'')+'|'+(r.cat||'')+'|'+(r.ent||''); }
-function rowKey_strat(r)  { return (r.account||'')+'|'+(r.strat||''); }
-function rowKey_eq(r)     { return r.sym||''; }
-function rowKey_mf(r)     { return r.sym||''; }
+function rowKey_s1(r)    { return (r.p1||'')+'|'+(r.p2||'')+'|'+(r.cat||'')+'|'+(r.ent||''); }
+function rowKey_strat(r) { return (r.acc||'')+'|'+(r.strat||''); }
+function rowKey_eq(r)    { return r.sym||''; }
+function rowKey_mf(r)    { return r.sym||''; }
 
 function diffSections(oldSnap, newSnap) {
   const results = [];
-
   function diffArr(oldArr, newArr, keyFn, label, valFn) {
-    const oldMap = {};
-    (oldArr||[]).forEach(r => { oldMap[keyFn(r)] = r; });
-    const newMap = {};
-    (newArr||[]).forEach(r => { newMap[keyFn(r)] = r; });
-
-    // Added
-    Object.entries(newMap).forEach(([k, r]) => {
-      if(!oldMap[k]) results.push({ sheet: label, item: k, oldVal: null, newVal: valFn(r), status: 'added' });
-    });
-    // Removed
-    Object.entries(oldMap).forEach(([k, r]) => {
-      if(!newMap[k]) results.push({ sheet: label, item: k, oldVal: valFn(r), newVal: null, status: 'removed' });
-    });
-    // Changed
+    const oldMap = {}; (oldArr||[]).forEach(r => { oldMap[keyFn(r)] = r; });
+    const newMap = {}; (newArr||[]).forEach(r => { newMap[keyFn(r)] = r; });
+    Object.entries(newMap).forEach(([k, r]) => { if(!oldMap[k]) results.push({ sheet: label, item: k, oldVal: null, newVal: valFn(r), status: 'added' }); });
+    Object.entries(oldMap).forEach(([k, r]) => { if(!newMap[k]) results.push({ sheet: label, item: k, oldVal: valFn(r), newVal: null, status: 'removed' }); });
     Object.entries(oldMap).forEach(([k, r]) => {
       if(newMap[k]) {
         const ov = valFn(r), nv = valFn(newMap[k]);
-        if(Math.abs((Number(ov)||0) - (Number(nv)||0)) > 0.5) { // ₹0.50 threshold
-          results.push({ sheet: label, item: k, oldVal: ov, newVal: nv, status: 'changed' });
-        }
+        if(Math.abs((Number(ov)||0) - (Number(nv)||0)) > 0.5) results.push({ sheet: label, item: k, oldVal: ov, newVal: nv, status: 'changed' });
       }
     });
   }
-
   diffArr(oldSnap.s1,     newSnap.s1,     rowKey_s1,    'Sheet1',       r => r.val);
   diffArr(oldSnap.strats, newSnap.strats, rowKey_strat, 'Strategies',   r => r.netExp);
   diffArr(oldSnap.eq,     newSnap.eq,     rowKey_eq,    'Equity',       r => r.curVal);
   diffArr(oldSnap.mf,     newSnap.mf,     rowKey_mf,    'Mutual Funds', r => r.curVal);
-
   return results;
 }
 
 function buildDiff(oldSnap, newSnap) {
-  const diffs = diffSections(oldSnap, newSnap);
+  const diffs   = diffSections(oldSnap, newSnap);
   const added   = diffs.filter(d=>d.status==='added');
-  const changed  = diffs.filter(d=>d.status==='changed');
-  const removed  = diffs.filter(d=>d.status==='removed');
+  const changed = diffs.filter(d=>d.status==='changed');
+  const removed = diffs.filter(d=>d.status==='removed');
 
   sv('upd-diff-added',   added.length);
   sv('upd-diff-changed', changed.length);
@@ -5766,19 +5532,15 @@ function buildDiff(oldSnap, newSnap) {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-lt);padding:1.5rem;font-style:italic">No changes detected — data is identical to currently loaded file</td></tr>';
     return;
   }
-
   const fmt = v => v===null ? '—' : cr(v);
   const fmtDelta = (ov, nv) => {
     if(ov===null || nv===null) return '—';
     const d = (Number(nv)||0) - (Number(ov)||0);
     return `<span style="color:${d>=0?'var(--green-pos)':'var(--red-neg)'}">${d>=0?'+':''}${cr(d)}</span>`;
   };
-
   tbody.innerHTML = [...added, ...changed, ...removed].map(d => {
-    const badge = d.status==='added'
-      ? '<span class="diff-badge-added">NEW</span>'
-      : d.status==='removed'
-      ? '<span class="diff-badge-removed">REMOVED</span>'
+    const badge = d.status==='added' ? '<span class="diff-badge-added">NEW</span>'
+      : d.status==='removed' ? '<span class="diff-badge-removed">REMOVED</span>'
       : '<span class="diff-badge-changed">CHANGED</span>';
     const rowClass = d.status==='added' ? 'diff-row-added' : d.status==='removed' ? 'diff-row-removed' : 'diff-row-changed';
     const delta = d.status==='changed' ? fmtDelta(d.oldVal, d.newVal) : '—';
@@ -5818,12 +5580,9 @@ function renderUpdateStatus() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) {
       const snap = JSON.parse(raw);
-      if(snap.savedAt) {
-        sv('upd-saved-at', 'Saved ' + new Date(snap.savedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}));
-      }
+      if(snap.savedAt) sv('upd-saved-at', 'Saved ' + new Date(snap.savedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}));
     }
   } catch(e) { sv('upd-saved-at', 'Saved data found'); }
-
   const onCount = D.s1.filter(x=>x.sta==='On').length;
   sv('upd-s1-count', D.s1.length);
   sv('upd-s1-on', onCount + ' active (On)');
@@ -5837,6 +5596,7 @@ function confirmClearData() {
   if(confirm('Clear all saved data? The page will reload and you will need to re-upload your Excel file.')) {
     _skipSaveOnUnload = true;
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(NOTES_KEY);
     location.reload();
   }
 }
@@ -5844,410 +5604,155 @@ function confirmClearData() {
 // ═══════════════════════════════════════════════════════════════
 // CASH & MARGIN PAGE
 // ═══════════════════════════════════════════════════════════════
-// function renderCashMargin() {
-//   const cm = D.cashMargin;
-
-//   // ── KPI cards (new format: margin table + grand total) ──
-//   const availRow    = cm.marginTable.find(r => /available on zerodha/i.test(r.system));
-//   const shortRow    = cm.marginTable.find(r => /shortfall|excess.{0,3}shortfall/i.test(r.system));
-//   const totalCapRow = cm.marginTable.find(r => /total capital required/i.test(r.system));
-//   const grandTotal  = cm.grandTotal || 0;
-//   const availTotal  = availRow?.total  || 0;
-//   const shortTotal  = shortRow?.total  || 0;
-//   const totalCap    = totalCapRow?.total || 0;
-
-//   sv('mg-mis-cash',   grandTotal > 0 ? cr(grandTotal) : '—');
-//   sv('mg-mis-deploy', availTotal > 0 ? cr(availTotal) : '—');
-//   const rnEl = document.getElementById('mg-rn-deploy');
-//   if(rnEl) {
-//     rnEl.textContent = shortTotal ? cr(shortTotal) : '—';
-//     rnEl.style.color = shortTotal < 0 ? 'var(--red-neg)' : shortTotal > 0 ? 'var(--green-pos)' : 'inherit';
-//   }
-//   const tdEl = document.getElementById('mg-total-deploy');
-//   if(tdEl) { tdEl.textContent = totalCap > 0 ? cr(totalCap) : '—'; }
-//   const rnDeployEl = document.getElementById('mg-rn-cash-deploy');
-//   if(rnDeployEl) {
-//     const v = cm.rnCashDeploy;
-//     rnDeployEl.textContent = (v !== null && v !== undefined) ? cr(v) : '—';
-//     rnDeployEl.style.color = v > 0 ? 'var(--green-pos)' : v < 0 ? 'var(--red-neg)' : 'inherit';
-//   }
-
-//   // ── Exposure by Account waterfall ──
-//   const expTb = document.querySelector('#mg-mis-waterfall tbody');
-//   if(expTb && cm.totalExp.length) {
-//     expTb.innerHTML = cm.totalExp.map(item => `<tr>
-//       <td style="color:var(--text-mute)">${item.name}</td>
-//       <td class="mono r ${item.val < 0 ? 'neg' : 'muted'}">${cr(item.val)}</td>
-//     </tr>`).join('') + (grandTotal ? `<tr class="trow-total">
-//       <td>Grand Total</td><td class="mono r">${cr(grandTotal)}</td>
-//     </tr>` : '');
-//   }
-
-//   // ── Margin by Strategy waterfall ──
-//   const STRAT_SYSTEMS = /^(long options|psar|dma|gold fut|total capital required)$/i;
-//   const stratRows = cm.marginTable.filter(r => STRAT_SYSTEMS.test(r.system));
-//   const stratTb = document.querySelector('#mg-rn-waterfall tbody');
-//   if(stratTb && stratRows.length) {
-//     stratTb.innerHTML = stratRows.map(r => `<tr class="${/total capital/i.test(r.system)?'trow-total':''}">
-//       <td style="color:var(--text-mute)">${r.system}</td>
-//       <td class="mono r muted">${r.total ? cr(r.total) : '—'}</td>
-//     </tr>`).join('');
-//   }
-
-//   // ── Margin breakdown table ──
-//   const mgTb = document.querySelector('#mg-margin-table tbody');
-//   if(mgTb && cm.marginTable?.length) {
-//     const isKey = s => /available|required|shortfall|total capital/i.test(s);
-//     mgTb.innerHTML = cm.marginTable.map(r => {
-//       const key = isKey(r.system);
-//       const neg = r.system.toLowerCase().includes('shortfall');
-//       return `<tr class="${key?'trow-total':''}">
-//         <td><strong${neg?' style="color:var(--red-neg)"':''}>${r.system}</strong></td>
-//         <td class="mono r${neg?' neg':''}">${r.cashComp   ? cr(r.cashComp)    : '—'}</td>
-//         <td class="mono r${neg?' neg':''}">${r.nonCash    ? cr(r.nonCash)     : '—'}</td>
-//         <td class="mono r${neg?' neg':''}">${r.liquidcase ? cr(r.liquidcase)  : '—'}</td>
-//         <td class="mono r${neg?' neg':''}">${r.cash       ? cr(r.cash)        : '—'}</td>
-//         <td class="mono r${key?' pos':neg?' neg':''}">${r.total ? cr(r.total) : '—'}</td>
-//         <td class="mono r muted">${r.pctPV ? (r.pctPV*100).toFixed(1)+'%' : '—'}</td>
-//       </tr>`;
-//     }).join('');
-//   }
-
-//   // ── Gold exposure table ──
-//   const goldTb = document.querySelector('#mg-gold-table tbody');
-//   if(goldTb && cm.goldExp?.length) {
-//     const goldTotal = sum(cm.goldExp, x=>x.val);
-//     goldTb.innerHTML = cm.goldExp.map(g => `<tr>
-//       <td>${g.name}</td>
-//       <td class="mono r">${g.val ? cr(g.val) : '—'}</td>
-//       <td style="font-size:0.67rem;color:var(--text-mute)">${g.note||'—'}</td>
-//     </tr>`).join('') + `<tr class="trow-total"><td>Total</td><td class="r">${cr(goldTotal)}</td><td></td></tr>`;
-//   }
-
-//   // ── Input parameters table ──
-//   const inpTb = document.querySelector('#mg-inputs-table tbody');
-//   if(inpTb && cm.inputs?.length) {
-//     inpTb.innerHTML = cm.inputs.map(p => `<tr>
-//       <td>${p.name}</td>
-//       <td class="mono r">${p.val ? cr(p.val) : '—'}</td>
-//     </tr>`).join('');
-//   }
-
-//   // ── Broker totals table + chart ──
-//   const brTb = document.querySelector('#mg-broker-table tbody');
-//   const brokers = cm.rows || [];
-//   const brokerTotal = sum(brokers, b=>b.val);
-//   if(brTb && brokers.length) {
-//     brTb.innerHTML = brokers.map(b=>`<tr>
-//       <td><strong>${b.name}</strong></td>
-//       <td class="mono r">${cr(b.val)}</td>
-//       <td class="mono r muted">${pct(b.val, brokerTotal)}</td>
-//     </tr>`).join('') + `<tr class="trow-total"><td>Total</td><td class="r">${cr(brokerTotal)}</td><td class="r">100%</td></tr>`;
-//   }
-
-//   if(brokers.length) {
-//     mkChart('chart-mg-broker', {
-//       type:'bar',
-//       data:{ labels:brokers.map(b=>b.name), datasets:[{
-//         label:'Exposure', data:brokers.map(b=>b.val),
-//         backgroundColor:CHART_COLORS.slice(0,brokers.length), borderRadius:4
-//       }]},
-//       options:{ indexAxis:'y', plugins:{ legend:{display:false},
-//         tooltip:{ callbacks:{ label: ctx=>' '+cr(ctx.raw)+' ('+pct(ctx.raw,brokerTotal)+')' }}},
-//         scales:{
-//           x:{ ticks:{ callback:v=>'₹'+(v/1e7).toFixed(1)+'Cr', font:{size:10} }, grid:{color:'rgba(0,0,0,0.05)'} },
-//           y:{ ticks:{ font:{size:10} } }
-//         }, maintainAspectRatio:false }
-//     });
-//   }
-// }
-
 function renderCashMargin() {
   const cm = D.cashMargin;
 
-  // ── KPI cards (new format: margin table + grand total) ──
   const availRow    = cm.marginTable.find(r => /available on zerodha/i.test(r.system));
   const shortRow    = cm.marginTable.find(r => /shortfall|excess.{0,3}shortfall/i.test(r.system));
-  const totalCapRow = cm.marginTable.find(r => /total capital required/i.test(r.system));
+  const totalCapRow = cm.marginTable.find(r => /total required/i.test(r.system));
   const grandTotal  = cm.grandTotal || 0;
-  const availTotal  = availRow?.total || 0;
-  const shortTotal  = shortRow?.total || 0;
+  const availTotal  = availRow?.total  || 0;
+  const shortTotal  = shortRow?.total  || 0;
   const totalCap    = totalCapRow?.total || 0;
 
-  sv('mg-mis-cash', grandTotal > 0 ? cr(grandTotal) : '—');
-  sv('mg-mis-deploy', availTotal > 0 ? cr(availTotal) : '—');
-
+  sv('mg-mis-cash',   grandTotal ? cr(grandTotal) : '—');
+  sv('mg-mis-deploy', availTotal ? cr(availTotal) : '—');
   const rnEl = document.getElementById('mg-rn-deploy');
-  if (rnEl) {
-    rnEl.textContent = shortTotal ? cr(shortTotal) : '—';
-    rnEl.style.color =
-      shortTotal < 0
-        ? 'var(--red-neg)'
-        : shortTotal > 0
-        ? 'var(--green-pos)'
-        : 'inherit';
+  if(rnEl) {
+    rnEl.textContent = shortRow ? cr(shortTotal) : '—';
+    rnEl.style.color = shortTotal < 0 ? 'var(--red-neg)' : shortTotal > 0 ? 'var(--green-pos)' : 'inherit';
   }
-
-  const tdEl = document.getElementById('mg-total-deploy');
-  if (tdEl) {
-    tdEl.textContent = totalCap > 0 ? cr(totalCap) : '—';
-  }
-
+  sv('mg-total-deploy', totalCap ? cr(totalCap) : '—');
   const rnDeployEl = document.getElementById('mg-rn-cash-deploy');
-  if (rnDeployEl) {
+  if(rnDeployEl) {
     const v = cm.rnCashDeploy;
-    rnDeployEl.textContent =
-      v !== null && v !== undefined ? cr(v) : '—';
-    rnDeployEl.style.color =
-      v > 0
-        ? 'var(--green-pos)'
-        : v < 0
-        ? 'var(--red-neg)'
-        : 'inherit';
+    rnDeployEl.textContent = (v !== null && v !== undefined) ? cr(v) : '—';
+    rnDeployEl.style.color = v > 0 ? 'var(--green-pos)' : v < 0 ? 'var(--red-neg)' : 'inherit';
   }
 
-  // ── Exposure by Account waterfall ──
   const expTb = document.querySelector('#mg-mis-waterfall tbody');
-  if (expTb && cm.totalExp.length) {
-    expTb.innerHTML =
-      cm.totalExp
-        .map(
-          item => `<tr>
+  if(expTb) expTb.innerHTML = cm.totalExp.map(item => `<tr>
       <td style="color:var(--text-mute)">${item.name}</td>
       <td class="mono r ${item.val < 0 ? 'neg' : 'muted'}">${cr(item.val)}</td>
-    </tr>`
-        )
-        .join('') +
-      (grandTotal
-        ? `<tr class="trow-total">
-      <td>Grand Total</td>
-      <td class="mono r">${cr(grandTotal)}</td>
-    </tr>`
-        : '');
-  }
+    </tr>`).join('') + (grandTotal ? `<tr class="trow-total"><td>Grand Total</td><td class="mono r">${cr(grandTotal)}</td></tr>` : '');
 
-  // ── Margin by Strategy waterfall ──
-  const STRAT_SYSTEMS =
-    /^(long options|psar|dma|gold fut|total capital required)$/i;
-
-  const stratRows = cm.marginTable.filter(r =>
-    STRAT_SYSTEMS.test(r.system)
-  );
-
+  const STRAT_SYSTEMS = /^(long options|psar|dma|gold fut|total required)$/i;
+  const stratRows = cm.marginTable.filter(r => STRAT_SYSTEMS.test(r.system));
   const stratTb = document.querySelector('#mg-rn-waterfall tbody');
-
-  if (stratTb && stratRows.length) {
-    stratTb.innerHTML = stratRows
-      .map(
-        r => `<tr class="${/total capital/i.test(r.system) ? 'trow-total' : ''}">
+  if(stratTb) stratTb.innerHTML = stratRows.map(r => `<tr class="${/total required/i.test(r.system)?'trow-total':''}">
       <td style="color:var(--text-mute)">${r.system}</td>
       <td class="mono r muted">${r.total ? cr(r.total) : '—'}</td>
-    </tr>`
-      )
-      .join('');
-  }
+    </tr>`).join('');
 
-  // ── Margin breakdown table ──
   const mgTb = document.querySelector('#mg-margin-table tbody');
-
-  if (mgTb && cm.marginTable?.length) {
-    const isKey = s =>
-      /available|required|shortfall|total capital/i.test(s);
-
-    mgTb.innerHTML = cm.marginTable
-      .map(r => {
-        const key = isKey(r.system);
-        const neg = r.system.toLowerCase().includes('shortfall');
-
-        return `<tr class="${key ? 'trow-total' : ''}">
-        <td><strong${neg ? ' style="color:var(--red-neg)"' : ''}>${r.system}</strong></td>
-        <td class="mono r${neg ? ' neg' : ''}">${r.cashComp ? cr(r.cashComp) : '—'}</td>
-        <td class="mono r${neg ? ' neg' : ''}">${r.nonCash ? cr(r.nonCash) : '—'}</td>
-        <td class="mono r${neg ? ' neg' : ''}">${r.liquidcase ? cr(r.liquidcase) : '—'}</td>
-        <td class="mono r${neg ? ' neg' : ''}">${r.cash ? cr(r.cash) : '—'}</td>
-        <td class="mono r${key ? ' pos' : neg ? ' neg' : ''}">${r.total ? cr(r.total) : '—'}</td>
-        <td class="mono r muted">${r.pctPV ? (r.pctPV * 100).toFixed(1) + '%' : '—'}</td>
+  if(mgTb) {
+    const isKey = s => /available|required|shortfall/i.test(s);
+    mgTb.innerHTML = cm.marginTable.map(r => {
+      const key = isKey(r.system);
+      const neg = r.system.toLowerCase().includes('shortfall') && r.total < 0;
+      return `<tr class="${key?'trow-total':''}">
+        <td><strong${neg?' style="color:var(--red-neg)"':''}>${r.system}</strong></td>
+        <td class="mono r${neg?' neg':''}">${r.cashComp   ? cr(r.cashComp)    : '—'}</td>
+        <td class="mono r${neg?' neg':''}">${r.nonCash    ? cr(r.nonCash)     : '—'}</td>
+        <td class="mono r${neg?' neg':''}">${r.liquidcase ? cr(r.liquidcase)  : '—'}</td>
+        <td class="mono r${neg?' neg':''}">${r.cash       ? cr(r.cash)        : '—'}</td>
+        <td class="mono r${key&&!neg?' pos':neg?' neg':''}">${r.total ? cr(r.total) : '—'}</td>
+        <td class="mono r muted">${r.pctPV ? (r.pctPV*100).toFixed(1)+'%' : '—'}</td>
       </tr>`;
-      })
-      .join('');
+    }).join('');
   }
 
-  // ── Gold exposure table ──
   const goldTb = document.querySelector('#mg-gold-table tbody');
-
-  if (goldTb && cm.goldExp?.length) {
-    const goldTotal = sum(cm.goldExp, x => x.val);
-
-    goldTb.innerHTML =
-      cm.goldExp
-        .map(
-          g => `<tr>
+  if(goldTb && cm.goldExp?.length) {
+    const goldTotal = sum(cm.goldExp, x=>x.val);
+    goldTb.innerHTML = cm.goldExp.map(g => `<tr>
       <td>${g.name}</td>
       <td class="mono r">${g.val ? cr(g.val) : '—'}</td>
-      <td style="font-size:0.67rem;color:var(--text-mute)">${g.note || '—'}</td>
-    </tr>`
-        )
-        .join('') +
-      `<tr class="trow-total">
-      <td>Total</td>
-      <td class="r">${cr(goldTotal)}</td>
-      <td></td>
-    </tr>`;
+      <td style="font-size:0.67rem;color:var(--text-mute)">${g.note||'—'}</td>
+    </tr>`).join('') + `<tr class="trow-total"><td>Total</td><td class="r">${cr(goldTotal)}</td><td></td></tr>`;
   }
 
-  // ── Input parameters table ──
   const inpTb = document.querySelector('#mg-inputs-table tbody');
-
-  if (inpTb && cm.inputs?.length) {
-    inpTb.innerHTML = cm.inputs
-      .map(
-        p => `<tr>
+  if(inpTb && cm.inputs?.length) {
+    inpTb.innerHTML = cm.inputs.map(p => `<tr>
       <td>${p.name}</td>
       <td class="mono r">${p.val ? cr(p.val) : '—'}</td>
-    </tr>`
-      )
-      .join('');
+    </tr>`).join('');
   }
 
-  // ── Broker totals table + chart ──
   const brTb = document.querySelector('#mg-broker-table tbody');
   const brokers = cm.rows || [];
-  const brokerTotal = sum(brokers, b => b.val);
-
-  if (brTb && brokers.length) {
-    brTb.innerHTML =
-      brokers
-        .map(
-          b => `<tr>
+  const brokerTotal = sum(brokers, b=>b.val);
+  if(brTb) brTb.innerHTML = brokers.map(b=>`<tr>
       <td><strong>${b.name}</strong></td>
       <td class="mono r">${cr(b.val)}</td>
       <td class="mono r muted">${pct(b.val, brokerTotal)}</td>
-    </tr>`
-        )
-        .join('') +
-      `<tr class="trow-total">
-      <td>Total</td>
-      <td class="r">${cr(brokerTotal)}</td>
-      <td class="r">100%</td>
-    </tr>`;
-  }
+    </tr>`).join('') + (brokers.length?`<tr class="trow-total"><td>Total</td><td class="r">${cr(brokerTotal)}</td><td class="r">100%</td></tr>`:'');
 
-  if (brokers.length) {
+  if(brokers.length) {
     mkChart('chart-mg-broker', {
-      type: 'bar',
-      data: {
-        labels: brokers.map(b => b.name),
-        datasets: [{
-          label: 'Exposure',
-          data: brokers.map(b => b.val),
-          backgroundColor: CHART_COLORS.slice(0, brokers.length),
-          borderRadius: 4
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx =>
-                ' ' + cr(ctx.raw) + ' (' + pct(ctx.raw, brokerTotal) + ')'
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              callback: v => '₹' + (v / 1e7).toFixed(1) + 'Cr',
-              font: { size: 10 }
-            },
-            grid: { color: 'rgba(0,0,0,0.05)' }
-          },
-          y: {
-            ticks: { font: { size: 10 } }
-          }
-        },
-        maintainAspectRatio: false
-      }
+      type:'bar',
+      data:{ labels:brokers.map(b=>b.name), datasets:[{ label:'Exposure', data:brokers.map(b=>b.val), backgroundColor:CHART_COLORS.slice(0,brokers.length), borderRadius:4 }]},
+      options:{ indexAxis:'y', plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx=>' '+cr(ctx.raw)+' ('+pct(ctx.raw,brokerTotal)+')' }}},
+        scales:{ x:{ ticks:{ callback:v=>'₹'+(v/1e7).toFixed(1)+'Cr', font:{size:10} }, grid:{color:'rgba(0,0,0,0.05)'} }, y:{ ticks:{ font:{size:10} } } }, maintainAspectRatio:false }
     });
   }
 
-  // NEW — Mishayan Wealth mirrors the same layout
+  // Mishayan Wealth — mirrors the panel above, from the separate MW Cash & Margin sheet
   renderCashMarginBlock(D.cashMarginMW, 'mw');
 }
 
-// Generalized renderer — pass 'mw' suffix for the Mishayan Wealth panels
+// Generalized renderer for the Mishayan Wealth margin block (same layout as above)
 function renderCashMarginBlock(cm, suffix) {
-  if (!cm || !cm.rawRows || !cm.rawRows.length) return;
-
-  const availRow = cm.marginTable.find(r => /available on zerodha/i.test(r.system));
-  const totalCapRow = cm.marginTable.find(r => /total capital required/i.test(r.system));
-  const shortRow = cm.marginTable.find(r => /shortfall/i.test(r.system));
+  const availRow    = (cm.marginTable||[]).find(r => /available on zerodha/i.test(r.system));
+  const shortRow     = (cm.marginTable||[]).find(r => /shortfall/i.test(r.system));
 
   sv('mg-grand-' + suffix, cr(cm.grandTotal || 0));
   sv('mg-avail-' + suffix, availRow ? cr(availRow.total) : '—');
 
   const shortEl = document.getElementById('mg-short-' + suffix);
-  if (shortEl) {
+  if(shortEl) {
     const v = shortRow ? shortRow.total : 0;
     shortEl.textContent = shortRow ? cr(v) : '—';
-    shortEl.style.color =
-      v < 0
-        ? 'var(--red-neg)'
-        : v > 0
-        ? 'var(--green-pos)'
-        : 'inherit';
+    shortEl.style.color = v < 0 ? 'var(--red-neg)' : v > 0 ? 'var(--green-pos)' : 'inherit';
   }
 
-  sv('mg-cap-' + suffix, totalCapRow ? cr(totalCapRow.total) : '—');
-
   const tb = document.querySelector('#mg-margin-table-' + suffix + ' tbody');
-
-  if (tb) {
-    const isKey = s => /available|required|shortfall|total capital/i.test(s);
-
-    tb.innerHTML = cm.marginTable
-      .map(r => {
-        const key = isKey(r.system);
-        const neg = r.system.toLowerCase().includes('shortfall');
-
-        return `<tr class="${key ? 'trow-total' : ''}">
-          <td><strong${neg ? ' style="color:var(--red-neg)"' : ''}>${r.system}</strong></td>
-          <td class="mono r${neg ? ' neg' : ''}">${r.cashComp ? cr(r.cashComp) : '—'}</td>
-          <td class="mono r${neg ? ' neg' : ''}">${r.nonCash ? cr(r.nonCash) : '—'}</td>
-          <td class="mono r${neg ? ' neg' : ''}">${r.liquidcase ? cr(r.liquidcase) : '—'}</td>
-          <td class="mono r${neg ? ' neg' : ''}">${r.cash ? cr(r.cash) : '—'}</td>
-          <td class="mono r${key ? ' pos' : neg ? ' neg' : ''}">${r.total ? cr(r.total) : '—'}</td>
-          <td class="mono r muted">${r.pctPV ? (r.pctPV * 100).toFixed(1) + '%' : '—'}</td>
-        </tr>`;
-      })
-      .join('');
+  if(tb) {
+    const isKey = s => /available|required|shortfall/i.test(s);
+    tb.innerHTML = (cm.marginTable||[]).map(r => {
+      const key = isKey(r.system);
+      const neg = r.system.toLowerCase().includes('shortfall') && r.total < 0;
+      return `<tr class="${key ? 'trow-total' : ''}">
+        <td><strong${neg ? ' style="color:var(--red-neg)"' : ''}>${r.system}</strong></td>
+        <td class="mono r${neg ? ' neg' : ''}">${r.cashComp ? cr(r.cashComp) : '—'}</td>
+        <td class="mono r${neg ? ' neg' : ''}">${r.nonCash ? cr(r.nonCash) : '—'}</td>
+        <td class="mono r${neg ? ' neg' : ''}">${r.liquidcase ? cr(r.liquidcase) : '—'}</td>
+        <td class="mono r${neg ? ' neg' : ''}">${r.cash ? cr(r.cash) : '—'}</td>
+        <td class="mono r${key && !neg ? ' pos' : neg ? ' neg' : ''}">${r.total ? cr(r.total) : '—'}</td>
+        <td class="mono r muted">${r.pctPV ? (r.pctPV * 100).toFixed(1) + '%' : '—'}</td>
+      </tr>`;
+    }).join('');
   }
 }
 
-
-
-
-
-
-// ── Update renderAll to include new pages ───────────────────────
-const _origRenderAll = renderAll;
-renderAll = function() {
-  _origRenderAll();
-  if(D.s1.length || D.eq.length) {
-    renderAllocation();
-    renderRisk();
-  }
-  renderCashMargin();
-};
-
 // ═══════════════════════════════════════════════════════════════
-// NOTES
+// NOTES — stored in localStorage (this is a static, standalone dashboard;
+// there is no backend, so notes persist locally in this browser only).
 // ═══════════════════════════════════════════════════════════════
-let _notesData = [];
-let _notesEditingId   = null;
+const NOTES_KEY = 'propbook_rn_notes_v1';
+let _notesData        = [];
+let _notesEditingId    = null;
 let _notesReplyingToId = null;
-let _notesLoaded = false;
+
+function _loadNotesFromStorage() {
+  try { return JSON.parse(localStorage.getItem(NOTES_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+function _saveNotesToStorage() {
+  try { localStorage.setItem(NOTES_KEY, JSON.stringify(_notesData)); } catch(e) {}
+}
+function _uid() { return 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 
 function initNotesAuthor() {
   const saved = localStorage.getItem('pb_note_author') || '';
@@ -6255,25 +5760,8 @@ function initNotesAuthor() {
   if(inp && saved) inp.value = saved;
 }
 
-async function loadNotes() {
-  if(_notesLoaded) return;
-  const loading = document.getElementById('notes-loading');
-  const listEl  = document.getElementById('notes-list');
-  const empty   = document.getElementById('notes-empty');
-  if(loading) loading.style.display = '';
-  if(listEl)  listEl.innerHTML = '';
-  if(empty)   empty.style.display = 'none';
-  try {
-    const res = await fetch('/api/notes');
-    if(res.status === 501) throw new Error('Notes require the hosted Vercel deployment');
-    if(!res.ok) throw new Error('Server error ' + res.status);
-    _notesData = await res.json();
-    _notesLoaded = true;
-  } catch(e) {
-    if(loading) { loading.style.display = ''; loading.textContent = '⚠ ' + e.message; }
-    return;
-  }
-  if(loading) loading.style.display = 'none';
+function loadNotes() {
+  _notesData = _loadNotesFromStorage();
   initNotesAuthor();
   renderNotesList();
 }
@@ -6284,15 +5772,9 @@ function escapeHtml(s) {
 
 function renderNoteCard(n, isReply) {
   const fmt = d => new Date(d).toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  const authorBadge = n.author
-    ? `<span class="note-author-badge">${escapeHtml(n.author)}</span><span style="opacity:0.3;margin:0 0.35rem">·</span>`
-    : '';
-  const editedLine = n.updatedAt !== n.createdAt
-    ? `<span style="opacity:0.3;margin:0 0.35rem">·</span><span>Edited ${fmt(n.updatedAt)}</span>`
-    : '';
-  const replyBtn = !isReply
-    ? `<button class="btn-note-reply" onclick="openReplyNote('${n.id}')">↩ Reply</button>`
-    : '';
+  const authorBadge = n.author ? `<span class="note-author-badge">${escapeHtml(n.author)}</span><span style="opacity:0.3;margin:0 0.35rem">·</span>` : '';
+  const editedLine = n.updatedAt !== n.createdAt ? `<span style="opacity:0.3;margin:0 0.35rem">·</span><span>Edited ${fmt(n.updatedAt)}</span>` : '';
+  const replyBtn = !isReply ? `<button class="btn-note-reply" onclick="openReplyNote('${n.id}')">↩ Reply</button>` : '';
   return `<div class="note-card${isReply?' note-card-reply':''}" id="note-card-${n.id}">
     <div class="note-card-meta">
       ${authorBadge}<span>Added ${fmt(n.createdAt)}</span>${editedLine}
@@ -6310,139 +5792,80 @@ function renderNotesList() {
   const listEl = document.getElementById('notes-list');
   const empty  = document.getElementById('notes-empty');
   if(!listEl) return;
-  const topLevel = _notesData.filter(n => !n.parentId)
-    .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-  if(!topLevel.length) {
-    listEl.innerHTML = '';
-    if(empty) empty.style.display = '';
-    return;
-  }
+  const topLevel = _notesData.filter(n => !n.parentId).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if(!topLevel.length) { listEl.innerHTML = ''; if(empty) empty.style.display = ''; return; }
   if(empty) empty.style.display = 'none';
   listEl.innerHTML = topLevel.map(n => {
-    const replies = _notesData.filter(r => r.parentId === n.id)
-      .sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
-    const repliesHtml = replies.length
-      ? `<div class="note-replies">${replies.map(r => renderNoteCard(r, true)).join('')}</div>`
-      : '';
+    const replies = _notesData.filter(r => r.parentId === n.id).sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const repliesHtml = replies.length ? `<div class="note-replies">${replies.map(r => renderNoteCard(r, true)).join('')}</div>` : '';
     return renderNoteCard(n, false) + repliesHtml;
   }).join('');
 }
 
 function _showNoteForm(titleText, content, replyParent) {
-  const form    = document.getElementById('notes-form');
-  const title   = document.getElementById('notes-form-title');
-  const ta      = document.getElementById('notes-textarea');
-  const status  = document.getElementById('notes-save-status');
-  const ctx     = document.getElementById('notes-reply-context');
-  const preview = document.getElementById('notes-reply-preview');
+  const form = document.getElementById('notes-form'), title = document.getElementById('notes-form-title');
+  const ta = document.getElementById('notes-textarea'), status = document.getElementById('notes-save-status');
+  const ctx = document.getElementById('notes-reply-context'), preview = document.getElementById('notes-reply-preview');
   if(title)  title.textContent  = titleText;
   if(ta)     ta.value           = content;
   if(status) status.textContent = '';
   if(replyParent) {
-    const pText = replyParent.author
-      ? `${replyParent.author}: ${replyParent.content}`
-      : replyParent.content;
+    const pText = replyParent.author ? `${replyParent.author}: ${replyParent.content}` : replyParent.content;
     if(preview) preview.textContent = pText.length > 130 ? pText.slice(0, 130) + '…' : pText;
     if(ctx) ctx.style.display = '';
-  } else {
-    if(ctx) ctx.style.display = 'none';
-  }
+  } else if(ctx) ctx.style.display = 'none';
   if(form) form.style.display = '';
   if(ta)   { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
   if(form) form.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
-function openNewNote() {
-  _notesEditingId    = null;
-  _notesReplyingToId = null;
-  _showNoteForm('New Note', '', null);
-}
-
+function openNewNote() { _notesEditingId = null; _notesReplyingToId = null; _showNoteForm('New Note', '', null); }
 function openReplyNote(parentId) {
-  _notesEditingId    = null;
-  _notesReplyingToId = parentId;
+  _notesEditingId = null; _notesReplyingToId = parentId;
   const parent = _notesData.find(n => n.id === parentId);
   _showNoteForm('New Reply', '', parent || null);
 }
-
 function openEditNote(id) {
   const note = _notesData.find(n => n.id === id);
   if(!note) return;
-  _notesEditingId    = id;
-  _notesReplyingToId = null;
+  _notesEditingId = id; _notesReplyingToId = null;
   const authorInp = document.getElementById('notes-author');
   if(authorInp && note.author) authorInp.value = note.author;
   _showNoteForm('Edit Note', note.content, null);
 }
-
 function cancelNote() {
-  _notesEditingId    = null;
-  _notesReplyingToId = null;
+  _notesEditingId = null; _notesReplyingToId = null;
   const form = document.getElementById('notes-form');
   if(form) form.style.display = 'none';
 }
 
-async function submitNote() {
-  const ta        = document.getElementById('notes-textarea');
-  const authorInp = document.getElementById('notes-author');
-  const status    = document.getElementById('notes-save-status');
-  const saveBtn   = document.querySelector('#notes-form .btn-note-save');
-  const content   = ta        ? ta.value.trim()        : '';
-  const author    = authorInp ? authorInp.value.trim() : '';
-  if(!content) {
-    if(status) { status.textContent = 'Note cannot be empty.'; status.style.color = 'var(--red-neg)'; }
-    return;
-  }
+function submitNote() {
+  const ta = document.getElementById('notes-textarea'), authorInp = document.getElementById('notes-author');
+  const status = document.getElementById('notes-save-status');
+  const content = ta ? ta.value.trim() : '', author = authorInp ? authorInp.value.trim() : '';
+  if(!content) { if(status) { status.textContent = 'Note cannot be empty.'; status.style.color = 'var(--red-neg)'; } return; }
   if(author) localStorage.setItem('pb_note_author', author);
-  if(saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
-  if(status)  { status.textContent = ''; status.style.color = 'var(--text-mute)'; }
-  try {
-    const body = _notesEditingId
-      ? { action:'update', id:_notesEditingId, content, author }
-      : { action:'create', content, author, parentId: _notesReplyingToId };
-    const res = await fetch('/api/notes', {
-      method:  'POST',
-      headers: {'Content-Type':'application/json'},
-      body:    JSON.stringify(body)
-    });
-    if(!res.ok) throw new Error('Server error ' + res.status);
-    const saved = await res.json();
-    if(_notesEditingId) {
-      const idx = _notesData.findIndex(n => n.id === _notesEditingId);
-      if(idx !== -1) _notesData[idx] = saved;
-    } else {
-      _notesData.unshift(saved);
-    }
-    _notesEditingId    = null;
-    _notesReplyingToId = null;
-    cancelNote();
-    renderNotesList();
-  } catch(e) {
-    if(status) { status.textContent = 'Failed to save: ' + e.message; status.style.color = 'var(--red-neg)'; }
-  } finally {
-    if(saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+  const now = new Date().toISOString();
+  if(_notesEditingId) {
+    const idx = _notesData.findIndex(n => n.id === _notesEditingId);
+    if(idx !== -1) { _notesData[idx].content = content; _notesData[idx].author = author; _notesData[idx].updatedAt = now; }
+  } else {
+    _notesData.unshift({ id:_uid(), content, author, parentId:_notesReplyingToId, createdAt:now, updatedAt:now });
   }
+  _saveNotesToStorage();
+  _notesEditingId = null; _notesReplyingToId = null;
+  cancelNote();
+  renderNotesList();
 }
 
-async function deleteNote(id) {
+function deleteNote(id) {
   const hasReplies = _notesData.some(n => n.parentId === id);
-  const msg = hasReplies
-    ? 'Delete this note and all its replies? This cannot be undone.'
-    : 'Delete this note? This cannot be undone.';
+  const msg = hasReplies ? 'Delete this note and all its replies? This cannot be undone.' : 'Delete this note? This cannot be undone.';
   if(!confirm(msg)) return;
-  try {
-    const res = await fetch('/api/notes', {
-      method:  'POST',
-      headers: {'Content-Type':'application/json'},
-      body:    JSON.stringify({ action:'delete', id })
-    });
-    if(!res.ok) throw new Error('Server error ' + res.status);
-    _notesData = _notesData.filter(n => n.id !== id && n.parentId !== id);
-    if(_notesEditingId === id || _notesReplyingToId === id) cancelNote();
-    renderNotesList();
-  } catch(e) {
-    alert('Failed to delete note: ' + e.message);
-  }
+  _notesData = _notesData.filter(n => n.id !== id && n.parentId !== id);
+  _saveNotesToStorage();
+  if(_notesEditingId === id || _notesReplyingToId === id) cancelNote();
+  renderNotesList();
 }
 
 // ── Auto-save on page unload ────────────────────────────────────
